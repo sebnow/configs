@@ -1,0 +1,11 @@
+# vim: ft=zsh
+
+alias ls='ls -G -h'
+alias df='df -h'
+
+# Just in case we overwrite something important
+alias mv='mv -iv'
+alias cp='cp -iv'
+alias rm='rm -iv'
+
+alias ping='ping -c3'
