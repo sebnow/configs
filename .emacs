@@ -7,5 +7,9 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
+;; Backup in a central directory
+(setq backup-directory-alist `(("." . ,(expand-file-name "~/.emacs.d/backups")))
+      auto-save-default nil)
+
 ;; Load configuration "modules"
 (load "bindings.el")
