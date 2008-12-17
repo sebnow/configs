@@ -1,6 +1,9 @@
 # vim: ft=zsh
 
-alias ls='ls -G -h'
+# Darwin's ls is a little different to Linux's
+[[ "x$(uname -s)" = "xDarwin" ]] \
+	&& alias ls='ls -G -h' \
+	|| alias ls='ls --color=always -h'
 alias df='df -h'
 
 # Just in case we overwrite something important
