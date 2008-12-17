@@ -10,7 +10,7 @@ keys = [
 	Key([modKey], "q", lazy.window.kill()),
 ]
 
-groups = map(str, range(1,6))
+groups = ["a", "s", "d", "f", "v"]
 for group in groups:
 	keys.append(Key([modKey], str(group), lazy.group[group].toscreen()))
 
