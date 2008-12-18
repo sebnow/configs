@@ -13,3 +13,4 @@
 
 ;; Load configuration "modules"
 (load "bindings.el")
+(load "modes")
