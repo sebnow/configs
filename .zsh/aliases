@@ -12,3 +12,7 @@ alias cp='cp -iv'
 alias rm='rm -iv'
 
 alias ping='ping -c3'
+
+# Elisp compiler
+alias elc='emacs -batch -f batch-byte-compile'
+
