@@ -12,5 +12,5 @@
       auto-save-default nil)
 
 ;; Load configuration "modules"
-(load "bindings.el")
+(load "bindings")
 (load "modes")
