@@ -18,10 +18,6 @@ if has('syntax') " && (&t_Co > 2)
 	syntax on
 endif
 
-hi Normal ctermfg=gray
-"hi Comment ctermfg=darkgray ctermbg=none
-hi String ctermfg=green ctermbg=none
-
 set ruler               " Always show current positions along the bottom
 if version >= 700
     set spelllang=en_au
