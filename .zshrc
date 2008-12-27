@@ -7,10 +7,17 @@ source ~/.zsh/options
 source ~/.zsh/prompt
 
 ## Exported variables
-if [ "x$(uname -s)" = "xDarwin" ]; then
+# Use emacs(client) if we can
+if which emacs > /dev/null 2>&1; then
+	export EDITOR=emacsclient
+	export VISUAL=emacsclient
+	export ALTERNATE_EDITOR=emacs
+# Use TextMate on Mac OS X
+elif [ -x "/usr/local/bin/mate" ]; then
 	export EDITOR="mate -w"
+# Default to vim
 else
-	export EDITOR="vim"
+	export EDITOR=vim
 fi
 
 # Man page colours
