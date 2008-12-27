@@ -5,6 +5,9 @@ source ~/.zsh/bindings
 source ~/.zsh/functions
 source ~/.zsh/options
 source ~/.zsh/prompt
+if [ -f ~/.zsh/local ]; then
+	source ~/.zsh/local
+fi
 
 ## Exported variables
 # Use emacs(client) if we can
