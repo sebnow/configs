@@ -1,2 +1,4 @@
 /.zsh/local
-
+.DS_Store
+*~
+*.swp
