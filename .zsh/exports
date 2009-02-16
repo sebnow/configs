@@ -1,16 +1,19 @@
 ## Exported variables
-# Use emacs(client) if we can
-if [ -x "/usr/local/bin/mate" ]; then
-	export EDITOR="mate -w"
-elif which emacs > /dev/null 2>&1; then
-	export EDITOR=emacsclient
-	export VISUAL=emacsclient
-	export ALTERNATE_EDITOR=emacs
-# Use TextMate on Mac OS X
-# Default to vim
-else
+
+# Set main editor to vim (fallback to vi)
+if [ "$(type -p vim)" != "" ]; then
 	export EDITOR=vim
+else
+	export EDITOR=vi
 fi
+
+# Use TextMate for visual on Mac OS X, fallback to Emacs
+if [ "$(type -p mate)" != "" ]; then
+	export VISUAL="mate -w"
+else
+	export VISUAL=emacsclient
+fi
+export ALTERNATE_EDITOR=emacs
 
 # Man page colours
 export LESS_TERMCAP_mb=$'\E[01;31m'
