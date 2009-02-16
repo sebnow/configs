@@ -4,4 +4,4 @@
 ;; Set default mode to org mode
 (set 'default-major-mode 'org-mode)
 
-(provide 'modes)
+(provide 'sn-org)
