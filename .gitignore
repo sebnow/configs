@@ -2,3 +2,5 @@
 .DS_Store
 *~
 *.swp
+/.emacs.d/sn-local.el
+

@@ -31,3 +31,6 @@
 (require 'sn-bindings)
 (require 'sn-lang-modes)
 (require 'sn-org)
+; Local overrides if exist
+(if (file-exists-p (expand-file-name "~/.emacs.d/sn-local.el"))
+    (require 'sn-local))
