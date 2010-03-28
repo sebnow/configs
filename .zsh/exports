@@ -1,19 +1,8 @@
 ## Exported variables
 
 # Set main editor to vim (fallback to vi)
-if [ "$(type -p vim)" != "" ]; then
-	export EDITOR=vim
-else
-	export EDITOR=vi
-fi
-
-# Use TextMate for visual on Mac OS X, fallback to Emacs
-if [ "$(type -p mate)" != "" ]; then
-	export VISUAL="mate -w"
-elif [ "$(type -p emacsclient)" != "" ]; then
-	export VISUAL=emacsclient
-fi
-export ALTERNATE_EDITOR=emacs
+export EDITOR=vim
+export ALTERNATE_EDITOR=vi
 
 # Man page colours
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -23,3 +12,4 @@ export LESS_TERMCAP_se=$'\E[0m'
 export LESS_TERMCAP_so=$'\E[01;44;33m'
 export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
+
