@@ -1,6 +1,4 @@
 /.zsh/local
-.DS_Store
 *~
-*.swp
-/.emacs.d/sn-local.el
+/.emacs.d/custom-local.el
 
