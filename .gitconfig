@@ -1,3 +1,10 @@
 [user]
 	name = Sebastian Nowicki
 	email = sebnow@gmail.com
+[color]
+    diff = true
+    grep = true
+    interactive = true
+    pager = true
+    status = true
+
