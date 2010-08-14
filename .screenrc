@@ -1,0 +1,36 @@
+deflogin on
+defshell -$SHELL
+startup_message off
+vbell off
+defutf8 on
+defscrollback 10240
+defnonblock 5
+
+#attrcolor b ".I"
+#term screen-256color-bce
+#defbce on
+
+bind 0 select 10 # Make screen 0 be a proper screen
+
+# Set directory to $HOME so screen can be started outside.
+chdir
+
+# Some vi bindings
+bind h focus left
+bind j focus down 
+bind k focus up
+bind l focus right
+bind J resize -5
+bind K resize +5
+
+shelltitle "$ |shell"
+screen 1
+
+#caption string "%?%F%{=r}%?%{= wk}%h %-Lw%{+s} %f-%n %t %{-s}%+Lw"
+#caption string "%{= Kd} %-w%{+ g}%n %t%{-}%+w%= "
+#caption string "%?%F%{= k}%:%{= K}%?%{+ .w} %h "
+caption string " %{= kK}%?%F%{+ Kw}%?%n %t %h"
+
+hardstatus alwayslastline
+hardstatus string "%{= kw}%{+ .K} %-w%{- .w}%n %t%{-}%+w %=%{= kK}"
+
