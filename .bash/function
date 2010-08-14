@@ -1,0 +1,9 @@
+#!/bin/bash
+# Clear the window title to the default, if ssh has a LocalCommand to
+# set screen's window title, i.e.:
+#   LocalCommand printf "\ek%%s\e\\" %h
+function ssh {
+    `which ssh` $*
+    printf "\ek\e\\"
+}
+
