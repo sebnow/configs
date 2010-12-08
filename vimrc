@@ -63,7 +63,7 @@ filetype indent on
 if has('autocmd')
 	au Syntax cpp,c,php runtime syntax/doxygen.vim
 	au FileType text,latex setlocal textwidth=72 fo+=ta
-	au FileType haskell setlocal expandtab
+	au FileType haskell,cabal setlocal expandtab
 	au FileType vim setlocal keywordprg=:help
 	au BufRead,BufNewFile PKGBUILD setlocal filetype=sh
 	au BufRead,BufNewFile .Xdefaults* setlocal filetype=xdefaults
