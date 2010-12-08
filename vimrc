@@ -1,12 +1,3 @@
-""" Maps {{{
-" NERDTree mappings
-if exists("loaded_nerd_tree")
-	nmap <Leader>tt :NERDTreeToggle<CR>
-	nmap <Leader>to :NERDTree<CR>
-	nmap <Leader>tc :NERDTreeClose<CR>
-endif
-" }}}
-
 """ Behaviour {{{
 set nocompatible
 " Hide buffers instead of closing
