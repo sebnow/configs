@@ -65,6 +65,7 @@ if has('autocmd')
 	au FileType text,latex setlocal textwidth=72 fo+=ta
 	au FileType haskell,cabal setlocal expandtab
 	au FileType vim setlocal keywordprg=:help
+	au FileType perl setlocal iskeyword+=:
 	au BufRead,BufNewFile PKGBUILD setlocal filetype=sh
 	au BufRead,BufNewFile .Xdefaults* setlocal filetype=xdefaults
 endif
