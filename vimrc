@@ -51,7 +51,11 @@ set foldmethod=marker
 set foldlevel=1
 " }}}
 
+" Load pathogen. This must be done before 'filetype' is enabled
+call pathogen#runtime_append_all_bundles()
+
 """ Filetype goodness {{{
+filetype off " Force reload
 filetype on
 filetype plugin on
 filetype indent on
