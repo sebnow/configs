@@ -6,5 +6,6 @@ _gitbranch() {
 	type -t __git_ps1 >/dev/null && __git_ps1 $*
 }
 
-PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")\n\[\033k\033\\]\u@\h$ '
+[[ "$TERM" =~ "screen" ]] && PROMPT_COMMAND='echo -n -e "\033k\033\\"'
+PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")\n\u@\h$ '
 
