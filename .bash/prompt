@@ -1,3 +1,10 @@
 #!/bin/bash
-PS1='pwd: \W\n\[\033k\033\\\]\u@\h$ '
+C_PWD="[32m"
+C_RST="[0m"
+[ -r /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
+_gitbranch() {
+	type -t __git_ps1 >/dev/null && __git_ps1 $*
+}
+
+PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")\n\[\033k\033\\]\u@\h$ '
 
