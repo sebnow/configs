@@ -10,7 +10,5 @@ ifexec numlockx &
 [ -r ~/.fehbg ] && sh ~/.fehbg &
 urxvtd -q -o -f
 urxvtc
-# XMonad doesn't set the cursor by default. Do so here.
-xsetroot -cursor_name left_ptr
 exec xmonad
 

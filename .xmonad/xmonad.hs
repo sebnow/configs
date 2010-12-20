@@ -3,6 +3,7 @@ import XMonad
 import XMonad.Hooks.DynamicLog hiding (dzen)
 import XMonad.Layout.Decoration (Theme(..), defaultTheme)
 import XMonad.Layout.NoBorders (smartBorders)
+import XMonad.Util.Cursor
 import XMonad.Util.Themes (ThemeInfo(..))
 
 myConfig = defaultConfig
@@ -13,6 +14,7 @@ myConfig = defaultConfig
     , modMask            = mod4Mask
     , workspaces         = ["1:main", "2:web", "3:chat"] ++ map show [4 .. 9]
     , keys               = \c -> myKeys c `M.union` keys defaultConfig c
+    , startupHook        = setDefaultCursor xC_left_ptr
     , layoutHook         = smartBorders $ layoutHook defaultConfig
     }
 
