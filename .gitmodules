@@ -1,0 +1,6 @@
+[submodule "vim"]
+	path = vim
+	url = git://github.com/sebnow/vimrc.git
+[submodule "vimrc"]
+	path = vimrc
+	url = git://github.com/sebnow/vimrc.git
