@@ -33,15 +33,16 @@ tangoTheme = TI
     , themeAuthor      = "Sebastian Nowicki"
     , themeDescription = "Tango Project color scheme"
     , theme = defaultTheme
-        { activeColor         = "#2e3436"
+        { activeColor         = "#3465a4"
         , activeTextColor     = "#eeeeec"
-        , activeBorderColor   = "#555753"
-        , inactiveColor       = "#555753"
+        , activeBorderColor   = "#204a87"
+        , inactiveColor       = "#2e3436"
         , inactiveTextColor   = "#d3d7cf"
         , inactiveBorderColor = "#2e3436"
         , urgentColor         = "#f57900"
-        , urgentTextColor     = "#fcaf3e"
+        , urgentTextColor     = "#2e3436"
         , urgentBorderColor   = "#ce5c00"
+        , decoHeight          = 16
         }
     }
 
