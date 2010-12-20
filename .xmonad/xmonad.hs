@@ -1,4 +1,5 @@
 import qualified Data.Map as M
+import System.FilePath((</>))
 import XMonad
 import XMonad.Hooks.DynamicLog hiding (dzen)
 import XMonad.Layout.Decoration (Theme(..), defaultTheme)
@@ -114,5 +115,9 @@ dzenPP' t = dzenPP
 
 dzen t = statusBar (dzenCmd t AlignLeft) (dzenPP' t) toggleStrutsKey
 
-main = spawn (trayer myTheme trayerWidth) >> dzen myTheme myConfig >>= xmonad
+main = do
+    xmonadDir <- getXMonadDir
+    spawn (trayer myTheme trayerWidth)
+    spawn $ xmonadDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
+    xmonad =<< dzen myTheme myConfig
 
