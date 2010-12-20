@@ -10,7 +10,7 @@ myConfig = defaultConfig
     , focusedBorderColor = activeBorderColor myTheme
     , borderWidth        = 1
     , modMask            = mod4Mask
-    , workspaces         = ["www", "chat"] ++ map show [3 .. 9]
+    , workspaces         = ["1:main", "2:web", "3:chat"] ++ map show [4 .. 9]
     , keys               = \c -> myKeys c `M.union` keys defaultConfig c
     }
 
