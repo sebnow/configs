@@ -2,6 +2,7 @@ import qualified Data.Map as M
 import System.FilePath((</>))
 import XMonad
 import XMonad.Hooks.DynamicLog hiding (dzen)
+import XMonad.Hooks.UrgencyHook (withUrgencyHook, NoUrgencyHook(..))
 import XMonad.Layout.Decoration (Theme(..), defaultTheme)
 import XMonad.Layout.NoBorders (smartBorders)
 import XMonad.Util.Cursor
@@ -44,8 +45,8 @@ tangoTheme = TI
         , inactiveColor       = "#2e3436"
         , inactiveTextColor   = "#d3d7cf"
         , inactiveBorderColor = "#2e3436"
-        , urgentColor         = "#f57900"
-        , urgentTextColor     = "#2e3436"
+        , urgentColor         = "#2e3436"
+        , urgentTextColor     = "#f57900"
         , urgentBorderColor   = "#ce5c00"
         , decoHeight          = 16
         }
@@ -119,5 +120,5 @@ main = do
     xmonadDir <- getXMonadDir
     spawn (trayer myTheme trayerWidth (Just 65))
     spawn $ xmonadDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
-    xmonad =<< dzen myTheme myConfig
+    xmonad . withUrgencyHook NoUrgencyHook =<< dzen myTheme myConfig
 
