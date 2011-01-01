@@ -30,9 +30,8 @@ mpd v = forever . MPD.withMPD $ do
     liftIO $ threadDelay 1000000 -- TODO: Wait for event from MPD
 
 formatSong :: MPD.Song -> String
-formatSong (MPD.Song {MPD.sgTags = tags}) = artist ++ " - " ++ title
-    where artist = maybe "Unknown" head (M.lookup MPD.Artist tags)
-          title  = maybe "Unknown" head (M.lookup MPD.Title tags)
+formatSong s = tag MPD.Artist ++ " - " ++ tag MPD.Title
+    where tag m = maybe "Unknown" head (M.lookup m (sgTags s))
 
 allWidgets :: [Widget]
 allWidgets = [ mpd
