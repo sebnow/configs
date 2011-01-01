@@ -1,0 +1,7 @@
+#!/bin/sh
+while (( 1 )); do
+	date "+%a %H:%M"
+	echo -n " "
+	sleep 60;
+done
+

@@ -85,8 +85,8 @@ dzenCmd t a = unwords
     , "-w", "839"
     ]
 
-trayer :: (Integral a) => Theme -> a -> String
-trayer t w = unwords
+trayer :: (Integral a) => Theme -> a -> Maybe a -> String
+trayer t w m = unwords $
     [ "trayer"
     , "--SetPartialStrut true"
     , "--widthtype request"
@@ -98,7 +98,7 @@ trayer t w = unwords
     , "--width", show w
     , "--edge top"
     , "--align right"
-    ]
+    ] ++ maybe [] (\x -> ["--margin", show x]) m
 
 quote :: String -> String
 quote s = "'" ++ s ++ "'"
@@ -117,7 +117,7 @@ dzen t = statusBar (dzenCmd t AlignLeft) (dzenPP' t) toggleStrutsKey
 
 main = do
     xmonadDir <- getXMonadDir
-    spawn (trayer myTheme trayerWidth)
+    spawn (trayer myTheme trayerWidth (Just 65))
     spawn $ xmonadDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
     xmonad =<< dzen myTheme myConfig
 
