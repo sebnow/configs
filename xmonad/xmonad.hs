@@ -127,13 +127,17 @@ dzenPP' p t = dzenPP
     , ppHidden          = ppInactive
     , ppHiddenNoWindows = if hiddenEnabled then ppInactive else const ""
     , ppUrgent          = dzenColor (urgentTextColor t) (urgentColor t) . dzenStrip
-    , ppTitle           = dzenColor (activeTextColor t) (activeColor t) . pad . shorten 80
+    , ppTitle           = dzenColor (activeTextColor t) (activeColor t) . padTo 80 . shorten 80
     , ppLayout          = ppInactive . \l -> case l of
         "Tall"         -> dzIcon "tall"
         "Mirror Tall"  -> dzIcon "mtall"
         "Full"         -> dzIcon "full"
     } where ppInactive = dzenColor (inactiveTextColor t) (inactiveColor t) . pad
             dzIcon = wrap "^i(" ".xbm)" . (p </>)
+
+-- Pad a string with spaces to be at least n characters long.
+padTo :: Int -> String -> String
+padTo n s = wrap " " (replicate (n - length s - 1) ' ') s
 
 dzen p t = statusBar (dzenCmd t AlignLeft) (dzenPP' p t) toggleStrutsKey
 
