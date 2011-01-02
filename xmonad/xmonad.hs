@@ -1,4 +1,5 @@
 import qualified Data.Map as M
+import System.Directory (getAppUserDataDirectory)
 import System.FilePath((</>))
 import XMonad
 import XMonad.Hooks.DynamicLog hiding (dzen)
@@ -118,21 +119,28 @@ trayer t w m = unwords $
 quote :: String -> String
 quote s = "'" ++ s ++ "'"
 
-dzenPP' :: Theme -> PP
-dzenPP' t = dzenPP
+-- A dzen pretty printer. Icons will be used from directory 'p'.
+-- Colours will be used from the theme 't'.
+dzenPP' :: FilePath -> Theme -> PP
+dzenPP' p t = dzenPP
     { ppCurrent         = dzenColor (activeTextColor t) (activeColor t) . pad
     , ppHidden          = ppInactive
     , ppHiddenNoWindows = if hiddenEnabled then ppInactive else const ""
     , ppUrgent          = dzenColor (urgentTextColor t) (urgentColor t) . dzenStrip
     , ppTitle           = dzenColor (activeTextColor t) (activeColor t) . pad . shorten 80
-    , ppLayout          = ppInactive
+    , ppLayout          = ppInactive . \l -> case l of
+        "Tall"         -> dzIcon "tall"
+        "Mirror Tall"  -> dzIcon "mtall"
+        "Full"         -> dzIcon "full"
     } where ppInactive = dzenColor (inactiveTextColor t) (inactiveColor t) . pad
+            dzIcon = wrap "^i(" ".xbm)" . (p </>)
 
-dzen t = statusBar (dzenCmd t AlignLeft) (dzenPP' t) toggleStrutsKey
+dzen p t = statusBar (dzenCmd t AlignLeft) (dzenPP' p t) toggleStrutsKey
 
 main = do
     xmonadDir <- getXMonadDir
+    dzIconDir <- getAppUserDataDirectory "dzen" >>= return . (</> "icons")
     spawn (trayer myTheme trayerWidth (Just 65))
     spawn $ xmonadDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
-    xmonad . withUrgencyHook NoUrgencyHook =<< dzen myTheme myConfig
+    xmonad . withUrgencyHook NoUrgencyHook =<< dzen dzIconDir myTheme myConfig
 
