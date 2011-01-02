@@ -13,13 +13,16 @@ import XMonad.Util.Themes (ThemeInfo(..))
 hiddenEnabled :: Bool
 hiddenEnabled = False
 
+myWorkspaces         = ["1:main", "2:web", "3:chat"] ++ map show [4 .. 9]
+(wsMain : wsWeb : wsChat : _) = myWorkspaces
+
 myConfig = defaultConfig
     { terminal           = "urxvtc"
     , normalBorderColor  = inactiveBorderColor myTheme
     , focusedBorderColor = activeBorderColor myTheme
     , borderWidth        = 1
     , modMask            = mod4Mask
-    , workspaces         = ["1:main", "2:web", "3:chat"] ++ map show [4 .. 9]
+    , workspaces         = myWorkspaces
     , keys               = \c -> myKeys c `M.union` keys defaultConfig c
     , startupHook        = setDefaultCursor xC_left_ptr
     , layoutHook         = smartBorders $ layoutHook defaultConfig
@@ -39,8 +42,8 @@ toggleStrutsKey XConfig{modMask = modMask} = (modMask, xK_b)
 -- }}}
 
 myManageHook = composeAll
-    [ className =? "chromium" --> doShift "2:web"
-    , className =? "Pidgin" --> doShift "3:chat"
+    [ className =? "chromium" --> doShift wsWeb
+    , className =? "Pidgin" --> doShift wsChat
     ]
 
 -- Themes {{{
