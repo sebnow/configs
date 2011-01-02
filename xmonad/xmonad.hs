@@ -5,8 +5,13 @@ import XMonad.Hooks.DynamicLog hiding (dzen)
 import XMonad.Hooks.UrgencyHook (withUrgencyHook, NoUrgencyHook(..))
 import XMonad.Layout.Decoration (Theme(..), defaultTheme)
 import XMonad.Layout.NoBorders (smartBorders)
+import XMonad.ManageHook
 import XMonad.Util.Cursor
 import XMonad.Util.Themes (ThemeInfo(..))
+
+-- Whether to hide empty workspaces in DynamicLog hook
+hiddenEnabled :: Bool
+hiddenEnabled = False
 
 myConfig = defaultConfig
     { terminal           = "urxvtc"
@@ -18,6 +23,7 @@ myConfig = defaultConfig
     , keys               = \c -> myKeys c `M.union` keys defaultConfig c
     , startupHook        = setDefaultCursor xC_left_ptr
     , layoutHook         = smartBorders $ layoutHook defaultConfig
+    , manageHook         = myManageHook <+> manageHook defaultConfig
     }
 
 trayerWidth :: (Integral a) => a
@@ -31,6 +37,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList
 toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
 toggleStrutsKey XConfig{modMask = modMask} = (modMask, xK_b)
 -- }}}
+
+myManageHook = composeAll
+    [ className =? "chromium" --> doShift "2:web"
+    , className =? "Pidgin" --> doShift "3:chat"
+    ]
 
 -- Themes {{{
 tangoTheme :: ThemeInfo
@@ -108,7 +119,7 @@ dzenPP' :: Theme -> PP
 dzenPP' t = dzenPP
     { ppCurrent         = dzenColor (activeTextColor t) (activeColor t) . pad
     , ppHidden          = ppInactive
-    , ppHiddenNoWindows = ppInactive
+    , ppHiddenNoWindows = if hiddenEnabled then ppInactive else const ""
     , ppUrgent          = dzenColor (urgentTextColor t) (urgentColor t) . dzenStrip
     , ppTitle           = dzenColor (activeTextColor t) (activeColor t) . pad . shorten 80
     , ppLayout          = ppInactive
