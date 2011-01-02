@@ -43,7 +43,7 @@ toggleStrutsKey XConfig{modMask = modMask} = (modMask, xK_b)
 -- }}}
 
 myManageHook = composeAll
-    [ className =? "chromium" --> doShift wsWeb
+    [ className =? "Chromium" --> doShift wsWeb
     , className =? "Pidgin" --> doShift wsChat
     ]
 
