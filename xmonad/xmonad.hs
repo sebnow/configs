@@ -142,9 +142,8 @@ padTo n s = wrap " " (replicate (n - length s - 1) ' ') s
 dzen p t = statusBar (dzenCmd t AlignLeft) (dzenPP' p t) toggleStrutsKey
 
 main = do
-    xmonadDir <- getXMonadDir
-    dzIconDir <- getAppUserDataDirectory "dzen" >>= return . (</> "icons")
+    dzenDir <- getAppUserDataDirectory "dzen"
     spawn (trayer myTheme trayerWidth (Just 65))
-    spawn $ xmonadDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
-    xmonad . withUrgencyHook NoUrgencyHook =<< dzen dzIconDir myTheme myConfig
+    spawn $ dzenDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
+    xmonad . withUrgencyHook NoUrgencyHook =<< dzen (dzenDir </> "icons") myTheme myConfig
 
