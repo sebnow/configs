@@ -1,7 +1,21 @@
 #!/bin/sh
+
+ICONDIR="$HOME/.dzen/icons"
+
+# Check if packages are up to date. This requires a pacman -Sy to be run
+# regularly.
+pacman_status() {
+	local colour="#d3d7cf";
+	# Pacman exists with 0 if there are outdated packages, 1 otherwise
+	pacman -Qu >/dev/null 2>&1
+	(( $? == 0 )) && colour="#f57900"
+	echo -n "^fg($colour)^i($ICONDIR/pacman.xbm)^fg() "
+}
+
 while (( 1 )); do
-	date "+%a %H:%M"
-	echo -n " "
+	pacman_status
+	date "+%a %H:%M " | tr -d '\n'
+	echo
 	sleep 60;
 done
 

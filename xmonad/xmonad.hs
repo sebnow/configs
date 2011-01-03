@@ -14,6 +14,10 @@ import XMonad.Util.Themes (ThemeInfo(..))
 hiddenEnabled :: Bool
 hiddenEnabled = False
 
+-- Width of the dzen status bar on the right
+dzenStatusWidth :: Int
+dzenStatusWidth = 85
+
 myWorkspaces         = ["1:main", "2:web", "3:chat"] ++ map show [4 .. 9]
 (wsMain : wsWeb : wsChat : _) = myWorkspaces
 
@@ -101,8 +105,8 @@ dzenCmd t a = unwords
     , "-w", "839"
     ]
 
-trayer :: (Integral a) => Theme -> a -> Maybe a -> String
-trayer t w m = unwords $
+trayer :: (Integral a) => Theme -> a -> a -> String
+trayer t w m = unwords
     [ "trayer"
     , "--SetPartialStrut true"
     , "--widthtype request"
@@ -114,7 +118,8 @@ trayer t w m = unwords $
     , "--width", show w
     , "--edge top"
     , "--align right"
-    ] ++ maybe [] (\x -> ["--margin", show x]) m
+    , "--margin", show m
+    ]
 
 quote :: String -> String
 quote s = "'" ++ s ++ "'"
@@ -143,7 +148,7 @@ dzen p t = statusBar (dzenCmd t AlignLeft) (dzenPP' p t) toggleStrutsKey
 
 main = do
     dzenDir <- getAppUserDataDirectory "dzen"
-    spawn (trayer myTheme trayerWidth (Just 65))
+    spawn (trayer myTheme trayerWidth dzenStatusWidth)
     spawn $ dzenDir </> "dzen_status | " ++ (dzenCmd myTheme AlignRight) ++ " -x 839"
     xmonad . withUrgencyHook NoUrgencyHook =<< dzen (dzenDir </> "icons") myTheme myConfig
 
