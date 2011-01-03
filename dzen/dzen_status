@@ -1,21 +1,52 @@
 #!/bin/sh
+# This script will collect information from various sources and output
+# on a single line. This output is suitable for applications such as
+# dzen.
+#
+# Information is multiplexed using dmplex. It reads in a format
+# "N OUTPUT" where N is a section number, from left to right. A pipe is
+# used to make this asynchronous. Whenever something is output into the
+# pipe, dmplex will update that section and print it along with the
+# others. This means there can be several asynchronous loops with
+# different sleep intervals.
 
 ICONDIR="$HOME/.dzen/icons"
+FIFO=$(mktemp -u /tmp/$(whoami)-dzen-dmplex.XXXXXXXXXX)
+(( $? != 0 )) && FIFO="$HOME/.dzen/dmplex.tmp"
+rm -f "$FIFO"
+mkfifo "$FIFO" || exit 1
+
+mplex() {
+	local section=$1; shift
+	echo "$section $* " > $FIFO
+}
 
 # Check if packages are up to date. This requires a pacman -Sy to be run
 # regularly.
 pacman_status() {
-	local colour="#d3d7cf";
-	# Pacman exists with 0 if there are outdated packages, 1 otherwise
-	pacman -Qu >/dev/null 2>&1
-	(( $? == 0 )) && colour="#f57900"
-	echo -n "^fg($colour)^i($ICONDIR/pacman.xbm)^fg() "
+	local section=$1; shift
+	which pacman >/dev/null 2>&1
+	(( $? )) && return # Fail silently if `pacman` doesn't exist
+	while (( 1 )); do
+		local colour="#d3d7cf";
+		# Pacman exits with 0 if there are outdated packages, 1 otherwise
+		pacman -Qu >/dev/null 2>&1
+		(( $? == 0 )) && colour="#f57900"
+		mplex $section "^fg($colour)^i($ICONDIR/pacman.xbm)^fg()"
+		sleep 3600
+	done &
 }
 
-while (( 1 )); do
-	pacman_status
-	date "+%a %H:%M " | tr -d '\n'
-	echo
-	sleep 60;
-done
+dzdate() {
+	local section=$1; shift
+	while (( 1 )); do
+		mplex $section "$(date '+%a %H:%M')"
+		sleep 60
+	done &
+}
+
+pacman_status 16
+dzdate 32
+
+tail -f "$FIFO" | dmplex
 
