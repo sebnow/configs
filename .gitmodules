@@ -19,3 +19,6 @@
 [submodule "vim/bundle/perlomni"]
 	path = vim/bundle/perlomni
 	url = https://github.com/c9s/perlomni.vim.git
+[submodule "vim/bundle/nerdcommenter"]
+	path = vim/bundle/nerdcommenter
+	url = https://github.com/scrooloose/nerdcommenter.git
