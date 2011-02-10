@@ -3,8 +3,8 @@ set nocompatible
 " Hide buffers instead of closing
 set hidden
 set nowrap
-set wildmode=list,longest
-set wildignore=*.o,*.pyc,*~
+set wildmode=list:longest
+set wildignore+=*.o,*.pyc,*~,*.hi
 
 " Searching
 set ignorecase
