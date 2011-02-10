@@ -46,19 +46,18 @@ if has("syntax") && (&t_Co > 2 || has("gui_running"))
 endif
 
 set foldenable
-" Default method syntax related ones should be set based on filetype
+" Default method. Syntax related ones should be set based on filetype
 set foldmethod=marker
 set foldlevel=1
 " }}}
 
 " Load pathogen. This must be done before 'filetype' is enabled
 call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
 
 """ Filetype goodness {{{
 filetype off " Force reload
-filetype on
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 if has('autocmd')
 	au Syntax cpp,c,php runtime syntax/doxygen.vim
