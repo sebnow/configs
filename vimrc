@@ -34,7 +34,6 @@ nnoremap <C-y> 5<C-y>
 set title
 set termencoding=utf-8
 set encoding=utf-8
-set lazyredraw
 set showmatch
 set laststatus=2
 set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\ 
