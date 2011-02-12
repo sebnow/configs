@@ -25,3 +25,6 @@
 [submodule "vim/bundle/perl"]
 	path = vim/bundle/perl
 	url = https://github.com/petdance/vim-perl.git
+[submodule "vim/bundle/matchit"]
+	path = vim/bundle/matchit
+	url = https://github.com/tsaleh/vim-matchit.git
