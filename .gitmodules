@@ -31,3 +31,6 @@
 [submodule "vim/bundle/inkpot"]
 	path = vim/bundle/inkpot
 	url = https://github.com/ciaranm/inkpot.git
+[submodule "vim/bundle/syntastic"]
+	path = vim/bundle/syntastic
+	url = https://github.com/scrooloose/syntastic.git
