@@ -48,10 +48,12 @@ if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	endtry
 endif
 
-set foldenable
-" Default method. Syntax related ones should be set based on filetype
-set foldmethod=marker
-set foldlevel=1
+if has("folding")
+	set foldenable
+	" Default method. Syntax related ones should be set based on filetype
+	set foldmethod=marker
+	set foldlevel=1
+endif
 " }}}
 
 " Load pathogen. This must be done before 'filetype' is enabled
