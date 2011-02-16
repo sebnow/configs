@@ -41,7 +41,11 @@ set shortmess+=axrI
 set ruler
 if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax on
-	colorscheme rdark
+	try
+		colorscheme inkpot
+	catch /^Vim\%((\a\+)\)\=:E185/
+		colorscheme default
+	endtry
 endif
 
 set foldenable

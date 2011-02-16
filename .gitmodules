@@ -28,3 +28,6 @@
 [submodule "vim/bundle/matchit"]
 	path = vim/bundle/matchit
 	url = https://github.com/tsaleh/vim-matchit.git
+[submodule "vim/bundle/inkpot"]
+	path = vim/bundle/inkpot
+	url = https://github.com/ciaranm/inkpot.git
