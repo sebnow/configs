@@ -60,7 +60,9 @@ filetype plugin indent on
 if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax on
 	if &t_Co >= 88
-		colorscheme inkpot
+		colorscheme jellybeans
+		" Reset background colour
+		hi! Normal ctermbg=NONE guibg=NONE
 	endif
 endif
 
