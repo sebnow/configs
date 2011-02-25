@@ -42,4 +42,4 @@
 	url = https://github.com/nanotech/jellybeans.vim.git
 [submodule "vim/bundle/bufexplorer"]
 	path = vim/bundle/bufexplorer
-	url = git://github.com/vim-scripts/bufexplorer.zip.git
+	url = https://github.com/vim-scripts/bufexplorer.zip
