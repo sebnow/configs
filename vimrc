@@ -39,14 +39,6 @@ set laststatus=2
 set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\ 
 set shortmess+=axrI
 set ruler
-if has("syntax") && (&t_Co > 2 || has("gui_running"))
-	syntax on
-	try
-		colorscheme inkpot
-	catch /^Vim\%((\a\+)\)\=:E185/
-		colorscheme default
-	endtry
-endif
 
 if has("folding")
 	set foldenable
@@ -63,6 +55,14 @@ call pathogen#helptags()
 """ Filetype goodness {{{
 filetype off " Force reload
 filetype plugin indent on
+
+" Load color scheme after pathogen so the RTP is correct
+if has("syntax") && (&t_Co > 2 || has("gui_running"))
+	syntax on
+	if &t_Co >= 88
+		colorscheme inkpot
+	endif
+endif
 
 if has('autocmd')
 	au Syntax cpp,c,php runtime syntax/doxygen.vim
