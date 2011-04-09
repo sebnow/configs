@@ -66,6 +66,10 @@ if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	endif
 endif
 
+if has("python")
+	let g:clang_use_library = 1
+endif
+
 if has('autocmd')
 	au Syntax cpp,c,php runtime syntax/doxygen.vim
 	au FileType text,latex setlocal textwidth=72 fo+=ta
