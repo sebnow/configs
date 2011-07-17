@@ -1,7 +1,7 @@
+import Prelude ()
 import Yi
 import Yi.Prelude
-import Prelude ()
-import qualified Yi.Keymap.Vim (keymap)
+import Yi.Keymap.Vim (keymapSet)
 import Yi.Style
 import Yi.Style.Library
 import Data.Monoid
@@ -35,12 +35,13 @@ tangoTheme = defaultTheme `override` \super _ -> super
         tangoRed = RGB 167 0 0
         tangoWhite = RGB 255 255 255
 
-main :: IO ()
-main = yi $ defaultConfig
-  { defaultKm = Yi.Keymap.Vim.keymap
-  , configKillringAccumulate = False
-  , startFrontEnd = startFrontEnd defaultConfig
-  , configUI = (configUI defaultConfig)
-    { configTheme = tangoTheme
+config :: Config
+config = defaultVimConfig
+    { defaultKm = keymapSet
+    , configUI = (configUI defaultVimConfig)
+        { configTheme = tangoTheme
+        }
     }
-  }
+
+main :: IO ()
+main = yi config
