@@ -21,20 +21,34 @@ mplex() {
 	echo "$section $* " > $FIFO
 }
 
+pacman_icon() {
+	local section=$1; shift
+	which pacman >/dev/null 2>&1
+	(( $? )) && return # Fail silently if `pacman` doesn't exist
+	local colour="#d3d7cf";
+	# Pacman exits with 0 if there are outdated packages, 1 otherwise
+	pacman -Qu >/dev/null 2>&1
+	(( $? == 0 )) && colour="#f57900"
+	mplex $section "^fg($colour)^i($ICONDIR/pacman.xbm)^fg()" &
+}
+
 # Check if packages are up to date. This requires a pacman -Sy to be run
 # regularly.
 pacman_status() {
 	local section=$1; shift
-	which pacman >/dev/null 2>&1
-	(( $? )) && return # Fail silently if `pacman` doesn't exist
-	while (( 1 )); do
-		local colour="#d3d7cf";
-		# Pacman exits with 0 if there are outdated packages, 1 otherwise
-		pacman -Qu >/dev/null 2>&1
-		(( $? == 0 )) && colour="#f57900"
-		mplex $section "^fg($colour)^i($ICONDIR/pacman.xbm)^fg()"
-		sleep 3600
-	done &
+	local inotify=$(which inotifywait 2> /dev/null)
+	if [[ ! "x$inotify" = "x" ]]; then
+		pacman_icon $section
+		while (( 1 )); do
+				local file=$(inotifywait -e delete --format "%f" /var/lib/pacman 2>/dev/null)
+				[[ $file = "db.lck" ]] && pacman_icon $section
+		done &
+	else
+		while (( 1 )); do
+				pacman_icon $section
+				sleep 3600;
+		done &
+	fi
 }
 
 dzdate() {
