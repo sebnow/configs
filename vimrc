@@ -73,7 +73,7 @@ endif
 if has('autocmd')
 	au Syntax cpp,c,php runtime syntax/doxygen.vim
 	au FileType text,latex setlocal textwidth=72 fo+=ta
-	au FileType haskell,cabal setlocal expandtab
+	au FileType haskell,cabal setlocal expandtab makeprg=cabal\ build
 	au FileType vim setlocal keywordprg=:help
 	au FileType perl setlocal iskeyword+=:
 	au BufRead,BufNewFile PKGBUILD setlocal filetype=sh
