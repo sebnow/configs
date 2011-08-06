@@ -7,4 +7,6 @@
     interactive = true
     pager = true
     status = true
+[apply]
+	whitespace = fix
 
