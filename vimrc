@@ -76,6 +76,7 @@ if has('autocmd')
 	au FileType haskell,cabal setlocal expandtab makeprg=cabal\ build
 	au FileType vim setlocal keywordprg=:help
 	au FileType perl setlocal iskeyword+=:
+	au FileType markdown,gitcommit setl spell
 	au BufRead,BufNewFile PKGBUILD setlocal filetype=sh
 	au BufRead,BufNewFile .Xdefaults* setlocal filetype=xdefaults
 endif
