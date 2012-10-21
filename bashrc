@@ -2,7 +2,12 @@
 # Check for an interactive session
 [ -z "$PS1" ] && return
 
-alias ls='ls --color=auto'
+if [[ $(uname -s) = "Darwin" ]]; then
+	alias ls='ls -G'
+else
+	alias ls='ls --color=auto'
+fi
+
 
 source ~/.bash/exports
 source ~/.bash/function
