@@ -49,9 +49,6 @@
 [submodule "vim/bundle/haskell-fold"]
 	path = vim/bundle/haskell-fold
 	url = git://github.com/Twinside/vim-haskellFold.git
-[submodule "vim/bundle/neocomplcache"]
-	path = vim/bundle/neocomplcache
-	url = git://github.com/Shougo/neocomplcache.git
 [submodule "vim/bundle/syntastic"]
 	path = vim/bundle/syntastic
 	url = git://github.com/scrooloose/syntastic.git
