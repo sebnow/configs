@@ -6,6 +6,14 @@ _gitbranch() {
 	type -t __git_ps1 >/dev/null && __git_ps1 $*
 }
 
+_perlbrew_lib() {
+	type -t perlbrew >/dev/null || return
+	local fmt=$1; shift
+	local lib=$(perlbrew list | awk '/^\*/ {print $2}')
+	[ -z "$fmt" ] && fmt="%s"
+	[ -n "$lib" ] && printf "$fmt" "$lib"
+}
+
 [[ "$TERM" =~ "screen" ]] && PROMPT_COMMAND='echo -n -e "\033k\033\\"'
-PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")\n\u@\h$ '
+PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")$(_perlbrew_lib " (perl:%s)")\n\u@\h$ '
 
