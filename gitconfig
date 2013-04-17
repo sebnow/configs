@@ -9,4 +9,7 @@
     status = true
 [apply]
 	whitespace = fix
-
+[branch "master"]
+	mergeoptions = --no-ff
+[branch "develop"]
+	mergeoptions = --no-ff
