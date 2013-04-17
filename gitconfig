@@ -13,3 +13,5 @@
 	mergeoptions = --no-ff
 [branch "develop"]
 	mergeoptions = --no-ff
+[alias]
+	st = status --short
