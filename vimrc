@@ -48,9 +48,30 @@ if has("folding")
 endif
 " }}}
 
-" Load pathogen. This must be done before 'filetype' is enabled
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
+" Load vundle. This must be done before 'filetype' is enabled
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" Bundles!
+Bundle 'Rip-Rip/clang_complete'
+Bundle 'Twinside/vim-haskellFold'
+Bundle 'c9s/perlomni.vim'
+Bundle 'ciaranm/inkpot'
+Bundle 'godlygeek/tabular'
+Bundle 'jpalardy/vim-slime'
+Bundle 'majutsushi/tagbar'
+Bundle 'msanders/snipmate.vim'
+Bundle 'nanotech/jellybeans.vim'
+Bundle 'petdance/vim-perl'
+Bundle 'rodjek/vim-puppet'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/syntastic'
+Bundle 'tpope/vim-repeat'
+Bundle 'tpope/vim-surround'
+Bundle 'tsaleh/vim-matchit'
+Bundle 'vim-scripts/bufexplorer.zip'
+Bundle 'vim-scripts/wombat256.vim'
 
 """ Filetype goodness {{{
 filetype off " Force reload
