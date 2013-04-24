@@ -59,6 +59,7 @@ Bundle 'c9s/perlomni.vim'
 Bundle 'ciaranm/inkpot'
 Bundle 'godlygeek/tabular'
 Bundle 'jpalardy/vim-slime'
+Bundle 'kien/ctrlp.vim'
 Bundle 'majutsushi/tagbar'
 Bundle 'msanders/snipmate.vim'
 Bundle 'nanotech/jellybeans.vim'
@@ -101,5 +102,18 @@ if has('autocmd')
 	au BufRead,BufNewFile PKGBUILD setlocal filetype=sh
 	au BufRead,BufNewFile .Xdefaults* setlocal filetype=xdefaults
 endif
+" }}}
+
+""" Naughty plugin config
+" These plugins don't support being configured through
+" runtimepath/after/plugin
+
+" {{{ CtrlP
+let g:ctrlp_extensions = ['mixed']
+" Only change directory if working within a "project"
+" (there's a VCS repo)
+let g:ctrlp_working_path_mode = 'r'
+" Search files, buffers and MRU by default
+let g:ctrlp_cmd = 'CtrlPMixed'
 " }}}
 
