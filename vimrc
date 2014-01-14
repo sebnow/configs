@@ -55,6 +55,7 @@ call vundle#rc()
 " Bundles!
 Bundle 'Blackrush/vim-gocode'
 Bundle 'Rip-Rip/clang_complete'
+Bundle 'Townk/vim-autoclose'
 Bundle 'Twinside/vim-haskellFold'
 Bundle 'c9s/perlomni.vim'
 Bundle 'ciaranm/inkpot'
