@@ -53,6 +53,7 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
 " Bundles!
+Bundle 'Blackrush/vim-gocode'
 Bundle 'Rip-Rip/clang_complete'
 Bundle 'Twinside/vim-haskellFold'
 Bundle 'c9s/perlomni.vim'
