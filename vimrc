@@ -58,6 +58,7 @@ Bundle 'Rip-Rip/clang_complete'
 Bundle 'Townk/vim-autoclose'
 Bundle 'Twinside/vim-haskellFold'
 Bundle 'c9s/perlomni.vim'
+Bundle 'chriskempson/base16-vim'
 Bundle 'ciaranm/inkpot'
 Bundle 'godlygeek/tabular'
 Bundle 'jpalardy/vim-slime'
@@ -83,11 +84,14 @@ filetype plugin indent on
 " Load color scheme after pathogen so the RTP is correct
 if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax on
+	set bg=dark
 	if &t_Co >= 88
 		colorscheme jellybeans
-		" Reset background colour
-		hi! Normal ctermbg=NONE guibg=NONE
+	elseif &t_Co >= 256
+		colorscheme base16-tomorrow
 	endif
+	" Reset background colour
+	"hi! Normal ctermbg=NONE guibg=NONE
 endif
 
 if has("python")
