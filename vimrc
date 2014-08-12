@@ -76,6 +76,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'vim-perl/vim-perl'
 Plugin 'vim-scripts/bufexplorer.zip'
 Plugin 'vim-scripts/matchit.zip'
+Plugin 'vim-scripts/vim-less'
 Plugin 'vim-scripts/wombat256.vim'
 
 call vundle#end()
