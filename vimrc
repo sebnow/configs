@@ -49,33 +49,36 @@ endif
 " }}}
 
 " Load vundle. This must be done before 'filetype' is enabled
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
-" Bundles!
-Bundle 'Blackrush/vim-gocode'
-Bundle 'Rip-Rip/clang_complete'
-Bundle 'Townk/vim-autoclose'
-Bundle 'Twinside/vim-haskellFold'
-Bundle 'c9s/perlomni.vim'
-Bundle 'chriskempson/base16-vim'
-Bundle 'ciaranm/inkpot'
-Bundle 'godlygeek/tabular'
-Bundle 'jpalardy/vim-slime'
-Bundle 'kien/ctrlp.vim'
-Bundle 'majutsushi/tagbar'
-Bundle 'msanders/snipmate.vim'
-Bundle 'nanotech/jellybeans.vim'
-Bundle 'vim-perl/vim-perl'
-Bundle 'rodjek/vim-puppet'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'scrooloose/nerdtree'
-Bundle 'scrooloose/syntastic'
-Bundle 'tpope/vim-repeat'
-Bundle 'tpope/vim-surround'
-Bundle 'tsaleh/vim-matchit'
-Bundle 'vim-scripts/bufexplorer.zip'
-Bundle 'vim-scripts/wombat256.vim'
+" Plugins!
+Plugin 'Blackrush/vim-gocode'
+Plugin 'Rip-Rip/clang_complete'
+Plugin 'Townk/vim-autoclose'
+Plugin 'Twinside/vim-haskellFold'
+Plugin 'c9s/perlomni.vim'
+Plugin 'chriskempson/base16-vim'
+Plugin 'ciaranm/inkpot'
+Plugin 'gmarik/Vundle.vim'
+Plugin 'godlygeek/tabular'
+Plugin 'jpalardy/vim-slime'
+Plugin 'kien/ctrlp.vim'
+Plugin 'majutsushi/tagbar'
+Plugin 'msanders/snipmate.vim'
+Plugin 'nanotech/jellybeans.vim'
+Plugin 'rodjek/vim-puppet'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'tpope/vim-repeat'
+Plugin 'tpope/vim-surround'
+Plugin 'vim-perl/vim-perl'
+Plugin 'vim-scripts/bufexplorer.zip'
+Plugin 'vim-scripts/matchit.zip'
+Plugin 'vim-scripts/wombat256.vim'
+
+call vundle#end()
 
 """ Filetype goodness {{{
 filetype off " Force reload
