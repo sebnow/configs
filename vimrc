@@ -78,6 +78,7 @@ Plugin 'vim-scripts/bufexplorer.zip'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'vim-scripts/vim-less'
 Plugin 'vim-scripts/wombat256.vim'
+Plugin 'wting/rust.vim'
 
 call vundle#end()
 
