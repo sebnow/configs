@@ -4,7 +4,7 @@ set nocompatible
 set hidden
 set nowrap
 set wildmode=list:longest
-set wildignore+=*.o,*.pyc,*~,*.hi
+set wildignore+=*.o,*.pyc,*~,*.hi,.git/**
 
 " Searching
 set ignorecase
@@ -128,7 +128,7 @@ endif
 let g:ctrlp_extensions = ['mixed']
 " Only change directory if working within a "project"
 " (there's a VCS repo)
-let g:ctrlp_working_path_mode = 'r'
+let g:ctrlp_working_path_mode = 'ra'
 " Search files, buffers and MRU by default
 let g:ctrlp_cmd = 'CtrlPMixed'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard']
