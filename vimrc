@@ -36,9 +36,19 @@ set termencoding=utf-8
 set encoding=utf-8
 set showmatch
 set laststatus=2
-set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\ 
 set shortmess+=axrI
 set ruler
+
+" Statusline
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+let g:airline_symbols.linenr = ''
+" TODO: Put this in gvimrc
+if has('gui_running')
+	let g:airline_powerline_fonts=1
+endif
+set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\
 
 if has("folding")
 	set foldenable
@@ -57,6 +67,7 @@ Plugin 'Blackrush/vim-gocode'
 Plugin 'Rip-Rip/clang_complete'
 Plugin 'Townk/vim-autoclose'
 Plugin 'Twinside/vim-haskellFold'
+Plugin 'bling/vim-airline'
 Plugin 'c9s/perlomni.vim'
 Plugin 'chriskempson/base16-vim'
 Plugin 'ciaranm/inkpot'
