@@ -22,6 +22,9 @@ set textwidth=72
 set noexpandtab
 set wrap!
 set fo+=cronql1
+if v:version > 703 || v:version == 703 && has("patch541")
+  set formatoptions+=j " Delete comment character when joining commented lines
+endif
 " }}}
 
 """ Navigation {{{
