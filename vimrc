@@ -41,6 +41,8 @@ set showmatch
 set laststatus=2
 set shortmess+=axrI
 set ruler
+set scrolloff=1
+set sidescrolloff=5
 
 " Statusline
 if !exists('g:airline_symbols')
