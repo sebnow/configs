@@ -58,39 +58,33 @@ if has("folding")
 endif
 " }}}
 
-" Load vundle. This must be done before 'filetype' is enabled
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
 " Plugins!
-Plugin 'Blackrush/vim-gocode'
-Plugin 'Rip-Rip/clang_complete'
-Plugin 'Townk/vim-autoclose'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'bling/vim-airline'
-Plugin 'bronson/vim-trailing-whitespace'
-Plugin 'chriskempson/base16-vim'
-Plugin 'gmarik/Vundle.vim'
-Plugin 'godlygeek/tabular'
-Plugin 'kien/ctrlp.vim'
-Plugin 'marijnh/tern_for_vim'
-Plugin 'msanders/snipmate.vim'
-Plugin 'nanotech/jellybeans.vim'
-Plugin 'nathanaelkane/vim-indent-guides'
-Plugin 'rodjek/vim-puppet'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/syntastic'
-Plugin 'tpope/vim-dispatch'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-surround'
-Plugin 'vim-scripts/bufexplorer.zip'
-Plugin 'vim-scripts/matchit.zip'
-Plugin 'vim-scripts/vim-less'
-Plugin 'wting/rust.vim'
-
-call vundle#end()
+call plug#begin('~/.vim/plugged')
+Plug 'Blackrush/vim-gocode'
+Plug 'Rip-Rip/clang_complete'
+Plug 'Townk/vim-autoclose'
+Plug 'bling/vim-airline'
+Plug 'bronson/vim-trailing-whitespace'
+Plug 'chriskempson/base16-vim'
+Plug 'godlygeek/tabular'
+Plug 'kien/ctrlp.vim'
+Plug 'marijnh/tern_for_vim'
+Plug 'msanders/snipmate.vim'
+Plug 'nanotech/jellybeans.vim'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'rodjek/vim-puppet'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/syntastic'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/bufexplorer.zip'
+Plug 'vim-scripts/matchit.zip'
+Plug 'vim-scripts/vim-less'
+Plug 'wting/rust.vim'
+call plug#end()
 
 """ Filetype goodness {{{
 filetype off " Force reload
