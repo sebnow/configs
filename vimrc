@@ -72,11 +72,13 @@ Plug 'bling/vim-airline'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'chriskempson/base16-vim'
 Plug 'godlygeek/tabular'
+Plug 'jelera/vim-javascript-syntax', {'for': 'javascript'}
 Plug 'kien/ctrlp.vim'
-Plug 'marijnh/tern_for_vim'
+Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
 Plug 'msanders/snipmate.vim'
 Plug 'nanotech/jellybeans.vim'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'rodjek/vim-puppet'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
