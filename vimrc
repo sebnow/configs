@@ -67,7 +67,6 @@ endif
 call plug#begin('~/.vim/plugged')
 Plug 'Blackrush/vim-gocode'
 Plug 'Rip-Rip/clang_complete'
-Plug 'Townk/vim-autoclose'
 Plug 'bling/vim-airline'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'chriskempson/base16-vim'
@@ -81,17 +80,18 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'rodjek/vim-puppet'
 Plug 'scrooloose/nerdcommenter'
-Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-vinegar'
 Plug 'vim-scripts/bufexplorer.zip'
 Plug 'vim-scripts/matchit.zip'
 Plug 'vim-scripts/vim-less'
 Plug 'wting/rust.vim'
 call plug#end()
+
 
 """ Filetype goodness {{{
 filetype off " Force reload
