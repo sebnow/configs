@@ -72,7 +72,7 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'chriskempson/base16-vim'
 Plug 'godlygeek/tabular'
 Plug 'jlanzarotta/bufexplorer'
-Plug 'kien/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
 Plug 'nanotech/jellybeans.vim'
 Plug 'othree/html5.vim', {'for': 'html'}
