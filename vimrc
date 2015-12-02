@@ -82,9 +82,9 @@ Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 Plug 'unblevable/quick-scope'
+Plug 'wellle/targets.vim'
 Plug 'wting/rust.vim', {'for': 'rust'}
 call plug#end()
 
