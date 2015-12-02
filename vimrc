@@ -71,25 +71,21 @@ Plug 'bling/vim-airline'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'chriskempson/base16-vim'
 Plug 'godlygeek/tabular'
-Plug 'pangloss/vim-javascript', {'for': 'javascript'}
+Plug 'jlanzarotta/bufexplorer'
 Plug 'kien/ctrlp.vim'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
-Plug 'msanders/snipmate.vim'
 Plug 'nanotech/jellybeans.vim'
-Plug 'nathanaelkane/vim-indent-guides'
 Plug 'othree/html5.vim', {'for': 'html'}
+Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'rodjek/vim-puppet'
-Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
-Plug 'vim-scripts/bufexplorer.zip'
-Plug 'vim-scripts/matchit.zip'
-Plug 'vim-scripts/vim-less'
-Plug 'wting/rust.vim'
+Plug 'unblevable/quick-scope'
+Plug 'wting/rust.vim', {'for': 'rust'}
 call plug#end()
 
 
