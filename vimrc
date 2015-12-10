@@ -78,6 +78,7 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'rodjek/vim-puppet'
+Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
@@ -85,7 +86,6 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-vinegar'
 Plug 'unblevable/quick-scope'
 Plug 'wellle/targets.vim'
-Plug 'wting/rust.vim', {'for': 'rust'}
 call plug#end()
 
 
