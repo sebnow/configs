@@ -63,6 +63,16 @@ if has("folding")
 endif
 " }}}
 
+" Bootstrap vim-plug
+if has('nvim')
+	let s:vimdir = fnamemodify($MYVIMRC, ':p:h')
+else
+	let s:vimdir = fnamemodify($MYVIMRC, ':p:h') . '/.vim' " Not necessarily correct
+endif
+if empty(glob(s:vimdir . '/autoload/plug.vim'))
+	execute 'silent !curl -fsLo ' s:vimdir . '/autoload/plug.vim --create-dirs' 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+endif
+
 " Plugins!
 call plug#begin('~/.vim/plugged')
 Plug 'Blackrush/vim-gocode', {'for': 'go'}
