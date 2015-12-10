@@ -65,14 +65,13 @@ endif
 
 " Plugins!
 call plug#begin('~/.vim/plugged')
-Plug 'Blackrush/vim-gocode'
+Plug 'Blackrush/vim-gocode', {'for': 'go'}
 Plug 'Rip-Rip/clang_complete'
 Plug 'bling/vim-airline'
 Plug 'bronson/vim-trailing-whitespace'
-Plug 'chriskempson/base16-vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'godlygeek/tabular'
 Plug 'jlanzarotta/bufexplorer'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
 Plug 'nanotech/jellybeans.vim'
 Plug 'othree/html5.vim', {'for': 'html'}
@@ -85,6 +84,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-vinegar'
 Plug 'unblevable/quick-scope'
+Plug 'w0ng/vim-hybrid'
 Plug 'wellle/targets.vim'
 call plug#end()
 
@@ -97,13 +97,13 @@ filetype plugin indent on
 if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax on
 	set bg=dark
-	if &t_Co >= 88
+	if &t_Co >= 256
+		colorscheme hybrid
+	elseif &t_Co >= 88
 		colorscheme jellybeans
-	elseif &t_Co >= 256
-		colorscheme base16-tomorrow
 	endif
 	" Reset background colour
-	"hi! Normal ctermbg=NONE guibg=NONE
+	hi! Normal ctermbg=NONE guibg=NONE
 endif
 
 if has("python")
