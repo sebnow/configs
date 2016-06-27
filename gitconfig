@@ -16,3 +16,7 @@
 [alias]
 	root = !readlink -f ./$(git rev-parse --show-cdup)
 	st = status --short
+[push]
+	default = simple
+[log]
+	decorate = short
