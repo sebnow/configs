@@ -4,6 +4,3 @@ if [[ $(uname -s) = "Darwin" ]]; then
 else
 	alias ls='ls --color=auto'
 fi
-
-gvim --version | grep '+clientserver' >/dev/null && alias gvim='gvim --remote'
-vim --version  | grep '+clientserver' >/dev/null && alias vim='vim --remote'
