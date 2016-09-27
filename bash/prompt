@@ -1,19 +1,13 @@
 #!/bin/bash
 C_PWD="[32m"
+C_HIGHLIGHT="[34m"
+C_LOWLIGHT="[90m"
 C_RST="[0m"
 [ -r /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 _gitbranch() {
-	type -t __git_ps1 >/dev/null && __git_ps1 $*
-}
-
-_perlbrew_lib() {
-	type -t perlbrew >/dev/null || return
-	local fmt=$1; shift
-	local lib=$(perlbrew list | awk '/^\*/ {print $2}')
-	[ -z "$fmt" ] && fmt="%s"
-	[ -n "$lib" ] && printf "$fmt" "$lib"
+	type -t __git_ps1 >/dev/null && __git_ps1 "$*"
 }
 
 [[ "$TERM" =~ "screen" ]] && PROMPT_COMMAND='echo -n -e "\033k\033\\"'
-PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch "(git:%s)")$(_perlbrew_lib " (perl:%s)")\n\u@\h$ '
+PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch " ${C_LOWLIGHT}[git:${C_HIGHLIGHT}%s${C_LOWLIGHT}]${C_RST}")\n\u@\h$ '
 
