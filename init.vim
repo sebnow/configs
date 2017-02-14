@@ -18,3 +18,4 @@ runtime colorscheme.vim
 " These plugins don't support being configured through
 " runtimepath/after/plugin
 runtime ctrlp.vim
+runtime airline.vim
