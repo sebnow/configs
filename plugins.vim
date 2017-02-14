@@ -12,7 +12,6 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'othree/yajs.vim', {'for': 'javascript'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
-Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-vinegar'
@@ -20,3 +19,4 @@ Plug 'unblevable/quick-scope'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0ng/vim-hybrid'
+Plug 'w0rp/ale'
