@@ -7,5 +7,5 @@ set guioptions-=T
 set guioptions+=c
 
 set bg=dark
-colorscheme base16-tomorrow
+colorscheme hybrid
 set guifont=Inconsolata\ for\ Powerline:h14,Inconsolata:h14,Menlo\ Regular:h11,Source\ Code\ Pro\ Medium:h11
