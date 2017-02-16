@@ -1,4 +1,6 @@
+"
 " {{{ CtrlP
+"
 let g:ctrlp_extensions = ['mixed']
 " Only change directory if working within a "project"
 " (there's a VCS repo)
@@ -11,3 +13,8 @@ let g:ctrlp_custom_ignore = {
 	\ }
 " }}}
 
+"
+" {{{ Airline
+"
+let g:airline_powerline_fonts = 1
+" }}}
