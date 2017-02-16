@@ -1,6 +1,8 @@
 Plug 'Blackrush/vim-gocode', {'for': 'go'}
+Plug 'Chiel92/vim-autoformat'
 Plug 'IN3D/vim-raml'
 Plug 'Rip-Rip/clang_complete'
+Plug 'Valloric/YouCompleteMe'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'editorconfig/editorconfig-vim'
@@ -20,4 +22,3 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0ng/vim-hybrid'
 Plug 'w0rp/ale'
-Plug 'Valloric/YouCompleteMe'
