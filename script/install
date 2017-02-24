@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+abspath() {
+	local path="$1";
+
+	if [[ -d $path ]]; then
+		(cd "$path"; pwd -P)
+	else
+		echo "$path"
+	fi
+}
+
+SRC="$(abspath $(dirname $0))"
+DST="$HOME"
+
+ln -s "$SRC/Xdefaults" "$DST/.Xdefaults"
+ln -s "$SRC/Xdefaults.gruvbox" "$DST/.Xdefaults.theme"
+ln -s "$SRC/bash" "$DST/.bash"
+ln -s "$SRC/bashrc" "$DST/.bashrc"
+ln -s "$SRC/vim" "$DST/.config/nvim"
+ln -s "$SRC/vim" "$DST/.vim"
+ln -s "$SRC/vimrc" "$DST/.vimrc"
+ln -s "$SRC/xprofile" "$DST/.xprofile"
+
+### Linux only
+if [ "$OSTYPE" == "linux-gnu" ]; then
+	ln -s "$SRC/fontconfig" "$DST/.config/fontconfig"
+	ln -s "$SRC/i3" "$DST/.config/i3"
+fi
+
