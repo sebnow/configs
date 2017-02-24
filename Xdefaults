@@ -6,9 +6,8 @@
 URxvt*loginShell:           false
 URxvt*scrollBar:            false
 URxvt*saveLines:            10000
-URxvt*font:                 -*-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
-URxvt*geometry:             80x24
-URxvt*internalBorder:       2
+URxvt*font:                 xft:Inconsolata for Powerline:size=14
+URxvt*internalBorder:       3
 URxvt*perl-ext-common:      default,matcher
 URxvt.matcher.button:       1
 URxvt.urlLauncher:          xdg-open
