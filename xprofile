@@ -1,0 +1,16 @@
+#!/bin/sh
+ifexec() {
+	local prg="$1"; shift
+	which "$prg" > /dev/null 2>&1 && "$prg" $*
+}
+
+[ -r ~/.fehbg ] && sh ~/.fehbg &
+
+# Prevent tearing
+ifexec nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceCompositionPipeline = On }"
+
+ifexec unclutter -root -noevents &
+ifexec numlockx &
+ifexec dex -a &
+ifexec urxvtd -q -o -f
+exec i3
