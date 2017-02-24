@@ -20,7 +20,7 @@ ln -s "$SRC/bash" "$DST/.bash"
 ln -s "$SRC/bashrc" "$DST/.bashrc"
 ln -s "$SRC/vim" "$DST/.config/nvim"
 ln -s "$SRC/vim" "$DST/.vim"
-ln -s "$SRC/vimrc" "$DST/.vimrc"
+ln -s "$SRC/vim/vimrc" "$DST/.vimrc"
 ln -s "$SRC/xprofile" "$DST/.xprofile"
 
 ### Linux only
