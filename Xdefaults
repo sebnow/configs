@@ -20,3 +20,10 @@ URxvt*scrollWithBuffer:     false
 URxvt*urgentOnBell:         true
 Xcursor.theme:              Vanilla-DMZ
 
+! Fonts
+Xft.antialias: 1
+Xft.autohint: 0
+Xft.hinting: 1
+Xft.hintstyle: hintsfull
+Xft.rgba: rgb
+Xft.lcdfilter: lcddefault
