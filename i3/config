@@ -110,3 +110,30 @@ for_window [class="^.*"] border pixel 2
 gaps inner 10
 gaps outer 10
 
+### Theme
+set $fg #ebdbb2
+set $bg #282828
+set $black #282828
+set $dark_grey #928374
+set $dark_red #cc241d
+set $red #fb4934
+set $dark_green #98971a
+set $green #b8bb26
+set $dark_yellow #d79921
+set $yellow #fabd2f
+set $dark_blue #458588
+set $blue #83a598
+set $dark_magenta #b16286
+set $magenta #d3869b
+set $dark_cyan #689d6a
+set $cyan #8ec07c
+set $grey #a89984
+set $light_grey #ebdbb2
+
+# class                 border       background   text         indicator    child_border
+client.focused          $light_grey  $black       $fg          $light_grey  $grey
+client.focused_inactive $dark_grey   $black       $grey        $dark_grey   $dark_grey
+client.unfocused        $black       $black       $grey        $dark_grey   $black
+client.urgent           $red         $dark_red    $fg          $red         $red
+client.placeholder      $blue        $dark_blue   $fg          $blue        $blue
+client.background       $bg

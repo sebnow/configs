@@ -10,7 +10,7 @@ Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'jlanzarotta/bufexplorer'
 Plug 'jreybert/vimagit'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
-Plug 'nanotech/jellybeans.vim'
+Plug 'morhetz/gruvbox'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'othree/yajs.vim', {'for': 'javascript'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
@@ -20,5 +20,4 @@ Plug 'tpope/vim-vinegar'
 Plug 'unblevable/quick-scope'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'w0ng/vim-hybrid'
 Plug 'w0rp/ale'

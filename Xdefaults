@@ -18,6 +18,9 @@ URxvt*scrollKey:            true
 URxvt*scrollWithBuffer:     false
 URxvt*urgentOnBell:         true
 
+URxvt*depth: 32
+URxvt*buffered: true
+
 ! Fonts
 Xft.antialias: 1
 Xft.autohint: 0

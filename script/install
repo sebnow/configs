@@ -15,7 +15,7 @@ SRC="$(abspath $(dirname $0))"
 DST="$HOME"
 
 ln -s "$SRC/Xdefaults" "$DST/.Xdefaults"
-ln -s "$SRC/Xdefaults.gruvbox" "$DST/.Xdefaults.theme"
+ln -s "$SRC/Xdefaults.theme" "$DST/.Xdefaults.theme"
 ln -s "$SRC/bash" "$DST/.bash"
 ln -s "$SRC/bashrc" "$DST/.bashrc"
 ln -s "$SRC/vim" "$DST/.config/nvim"
