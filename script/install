@@ -25,6 +25,7 @@ ln -s "$SRC/xprofile" "$DST/.xprofile"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
+	ln -s "$SRC/compton.conf" "$DST/.config/compton.conf"
 	ln -s "$SRC/fontconfig" "$DST/.config/fontconfig"
 	ln -s "$SRC/i3" "$DST/.config/i3"
 fi
