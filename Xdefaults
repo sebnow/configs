@@ -17,7 +17,6 @@ URxvt*scrollTtyKeypress:    true
 URxvt*scrollKey:            true
 URxvt*scrollWithBuffer:     false
 URxvt*urgentOnBell:         true
-Xcursor.theme:              Vanilla-DMZ
 
 ! Fonts
 Xft.antialias: 1
