@@ -11,6 +11,6 @@ ifexec nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { Force
 
 ifexec unclutter -root -noevents &
 ifexec numlockx &
-ifexec dex -a &
 ifexec urxvtd -q -o -f
+ifexec dex -a
 exec i3
