@@ -1,4 +1,6 @@
 #!/bin/bash
+export TERMINAL="urxvtc"
 export EDITOR=vim
 export ALTERNATE_EDITOR=vi
 
+export PATH="$PATH:$HOME/.cabal/bin"
