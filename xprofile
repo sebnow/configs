@@ -13,4 +13,4 @@ ifexec unclutter -root -noevents &
 ifexec numlockx &
 ifexec urxvtd -q -o -f
 ifexec dex -a
-exec i3
+exec ssh-agent i3
