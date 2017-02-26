@@ -1,4 +1,3 @@
-""" Behaviour {{{
 set nocompatible
 " Hide buffers instead of closing
 set hidden
@@ -6,13 +5,13 @@ set nowrap
 set wildmode=list:longest
 set wildignore+=*.o,*.pyc,*~,*.hi,.git/**
 
-" Searching
+" Searching {{{
 set ignorecase
 set smartcase
 set incsearch
-""" }}}
+" }}}
 
-""" Editing {{{
+" Editing {{{
 set autoindent
 set smarttab
 set shiftround
@@ -23,17 +22,21 @@ set noexpandtab
 set wrap!
 set fo+=cronql1
 if v:version > 703 || v:version == 703 && has("patch541")
-  set formatoptions+=j " Delete comment character when joining commented lines
+	set formatoptions+=j " Delete comment character when joining commented lines
 endif
 " }}}
 
-""" Display {{{
+" Completion {{{
+set completeopt+=menuone,preview,noinsert
+" }}}
+
+" Display {{{
 set title
 set termencoding=utf-8
 set encoding=utf-8
 set showmatch
 set laststatus=2
-set shortmess+=axrI
+set shortmess+=acI
 set ruler
 set scrolloff=1
 set sidescrolloff=5
