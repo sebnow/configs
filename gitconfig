@@ -20,3 +20,5 @@
 	default = simple
 [log]
 	decorate = short
+[core]
+	excludesfile = ~/.gitignore
