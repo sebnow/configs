@@ -3,6 +3,7 @@ Plug 'Chiel92/vim-autoformat'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'danilo-augusto/vim-afterglow'
 Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', {'for': 'go'}
