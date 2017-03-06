@@ -1,4 +1,4 @@
-/.zsh/local
-*~
-/.emacs.d/custom-local.el
+/zsh/local
+/bash/local*
+/emacs.d/custom-local.el
 
