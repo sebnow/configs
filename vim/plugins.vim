@@ -12,6 +12,7 @@ Plug 'jreybert/vimagit'
 Plug 'lifepillar/vim-mucomplete'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
+Plug 'mileszs/ack.vim'
 Plug 'morhetz/gruvbox'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'othree/yajs.vim', {'for': 'javascript'}
