@@ -5,6 +5,7 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
 Plug 'editorconfig/editorconfig-vim'
+Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'jlanzarotta/bufexplorer'
 Plug 'jreybert/vimagit'
