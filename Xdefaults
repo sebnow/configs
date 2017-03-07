@@ -1,6 +1,6 @@
 ! Import colour scheme
 ! Should be a symbolic link pointing to the appropriate theme
-#include ".Xdefaults.theme"
+#include "Xdefaults.theme"
 
 ! Settings
 URxvt*loginShell:           false
