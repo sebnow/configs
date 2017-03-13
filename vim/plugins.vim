@@ -1,4 +1,3 @@
-Plug 'Blackrush/vim-gocode', {'for': 'go'}
 Plug 'Chiel92/vim-autoformat'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'bronson/vim-trailing-whitespace'
