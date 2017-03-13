@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=MPD Last.fm Scrobbler
+Comment=Last.fm Scrobble for MPD
+Exec=mpdscribble
+StartupNotify=false
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=false
