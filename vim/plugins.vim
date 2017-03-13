@@ -8,6 +8,8 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'jlanzarotta/bufexplorer'
+Plug 'jreybert/vimagit'
+Plug 'lambdatoast/elm.vim'
 Plug 'lifepillar/vim-mucomplete'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
