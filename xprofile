@@ -6,11 +6,8 @@ ifexec() {
 
 [ -r ~/.fehbg ] && sh ~/.fehbg &
 
-# Prevent tearing
-ifexec nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceCompositionPipeline = On }"
-
 ifexec unclutter -root -noevents &
 ifexec numlockx &
 ifexec urxvtd -q -o -f
 ifexec dex -a
-exec ssh-agent i3
+exec i3
