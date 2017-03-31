@@ -11,24 +11,38 @@ abspath() {
 	fi
 }
 
-SRC="$(abspath $(dirname $0))"
+inst() {
+	src="$1"; shift;
+	dst="$1"; shift;
+	[ -e "$dst" ] || ln -s "$src" "$dst"
+}
+
+SRC="$(abspath $(dirname $(dirname $0)))"
 DST="$HOME"
 
-ln -s "$SRC/Xdefaults" "$DST/.Xdefaults"
-ln -s "$SRC/bash" "$DST/.bash"
-ln -s "$SRC/bashrc" "$DST/.bashrc"
-ln -s "$SRC/gitconfig" "$DST/.gitconfig"
-ln -s "$SRC/gitignore" "$DST/.gitignore"
-ln -s "$SRC/vim" "$DST/.config/nvim"
-ln -s "$SRC/vim" "$DST/.vim"
-ln -s "$SRC/vim/vimrc" "$DST/.vimrc"
-ln -s "$SRC/xprofile" "$DST/.xprofile"
+[ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
+
+inst "$SRC/Xdefaults" "$DST/.Xdefaults"
+inst "$SRC/bash" "$DST/.bash"
+inst "$SRC/bashrc" "$DST/.bashrc"
+inst "$SRC/gitconfig" "$DST/.gitconfig"
+inst "$SRC/gitignore" "$DST/.gitignore"
+inst "$SRC/vim" "$DST/.config/nvim"
+inst "$SRC/vim" "$DST/.vim"
+inst "$SRC/vim/vimrc" "$DST/.vimrc"
+inst "$SRC/xprofile" "$DST/.xprofile"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
-	ln -s "$SRC/compton.conf" "$DST/.config/compton.conf"
-	ln -s "$SRC/conky" "$DST/.config/conky"
-	ln -s "$SRC/fontconfig" "$DST/.config/fontconfig"
-	ln -s "$SRC/i3" "$DST/.config/i3"
+	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
+
+	inst "$SRC/autostart" "$DST/.config/autostart"
+	inst "$SRC/compton.conf" "$DST/.config/compton.conf"
+	inst "$SRC/conky" "$DST/.config/conky"
+	inst "$SRC/fontconfig" "$DST/.config/fontconfig"
+	inst "$SRC/i3" "$DST/.config/i3"
+	inst "$SRC/icons" "$DST/.icons"
+	inst "$SRC/mpd" "$DST/.config/mpd"
+	inst "$SRC/rofi" "$DST/.config/rofi"
 fi
 
