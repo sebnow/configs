@@ -4,3 +4,6 @@ export EDITOR=vim
 export ALTERNATE_EDITOR=vi
 
 export PATH="$PATH:$HOME/.cabal/bin"
+
+# Use the keychain SSH agent if it's available
+which keychain > /dev/null 2>&1 && eval $(keychain --eval --quiet)
