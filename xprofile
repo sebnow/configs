@@ -8,7 +8,6 @@ ifexec() {
 
 ifexec unclutter -root -noevents &
 ifexec numlockx &
-ifexec polybar main &
 ifexec xbindkeys
 ifexec urxvtd -q -o -f
 ifexec dex -a

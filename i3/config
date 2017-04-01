@@ -2,6 +2,11 @@ set $mod Mod4
 font pango:Ioveska 12
 floating_modifier $mod
 
+exec --no-startup-id polybar main &
+
+# Hide window title bars and thicker border
+for_window [class="^.*"] border pixel 2
+
 # start a terminal
 bindsym $mod+Return exec i3-sensible-terminal
 
@@ -106,9 +111,6 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 ### Gaps
-for_window [class="^.*"] border pixel 2
-gaps inner 10
-gaps outer 10
 
 ### Theme
 set $fg #d0d0d0
