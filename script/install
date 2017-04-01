@@ -22,7 +22,6 @@ DST="$HOME"
 
 [ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
 
-inst "$SRC/Xdefaults" "$DST/.Xdefaults"
 inst "$SRC/bash" "$DST/.bash"
 inst "$SRC/bashrc" "$DST/.bashrc"
 inst "$SRC/gitconfig" "$DST/.gitconfig"
@@ -30,12 +29,12 @@ inst "$SRC/gitignore" "$DST/.gitignore"
 inst "$SRC/vim" "$DST/.config/nvim"
 inst "$SRC/vim" "$DST/.vim"
 inst "$SRC/vim/vimrc" "$DST/.vimrc"
-inst "$SRC/xprofile" "$DST/.xprofile"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
 
+	inst "$SRC/Xdefaults" "$DST/.Xdefaults"
 	inst "$SRC/autostart" "$DST/.config/autostart"
 	inst "$SRC/compton.conf" "$DST/.config/compton.conf"
 	inst "$SRC/conky" "$DST/.config/conky"
@@ -44,5 +43,7 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 	inst "$SRC/icons" "$DST/.icons"
 	inst "$SRC/mpd" "$DST/.config/mpd"
 	inst "$SRC/rofi" "$DST/.config/rofi"
+	inst "$SRC/xbindkeysrc" "$DST/.xbindkeysrc"
+	inst "$SRC/xprofile" "$DST/.xprofile"
 fi
 

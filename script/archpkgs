@@ -16,7 +16,11 @@ pkgs=(\
 	keychain \
 	lightdm \
 	lightdm-gtk-greeter \
+	mpc \
+	mpd \
+	ncmcppp \
 	openssh \
+	pamixer \
 	pavucontrol \
 	pulseaudio \
 	pulseaudio-alsa \
@@ -24,6 +28,7 @@ pkgs=(\
 	rxvt-unicode \
 	unzip \
 	vim \
+	xbindkeys \
 	xf86-input-libinput \
 	xorg-server \
 )

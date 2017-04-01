@@ -8,6 +8,7 @@ ifexec() {
 
 ifexec unclutter -root -noevents &
 ifexec numlockx &
+ifexec xbindkeys
 ifexec urxvtd -q -o -f
 ifexec dex -a
 exec i3
