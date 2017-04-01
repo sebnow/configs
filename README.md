@@ -2,8 +2,10 @@
 
 ## Fonts
 
- * terminus
- * Ioveska
+ * Icon: FontAwesome
+ * Monospace: Ioveska
+ * Sans: Roboto
+ * Serif: Merriweather
 
 ## Programs
 
