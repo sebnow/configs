@@ -1,0 +1,31 @@
+#!/bin/bash
+pkgs=(\
+	arc-gtk-theme \
+	arc-icon-theme \
+	base-devel
+	chromium \
+	ctags \
+	efibootmgr \
+	feh \
+	geeqie \
+	git \
+	i3-wm \
+	i3blocks \
+	i3lock \
+	i3status \
+	keychain \
+	lightdm \
+	lightdm-gtk-greeter \
+	openssh \
+	pavucontrol \
+	pulseaudio \
+	pulseaudio-alsa \
+	rofi \
+	rxvt-unicode \
+	unzip \
+	vim \
+	xf86-input-libinput \
+	xorg-server \
+)
+
+sudo pacman -Sy ${pkgs[@]}
