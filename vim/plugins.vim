@@ -5,6 +5,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
 Plug 'editorconfig/editorconfig-vim'
+Plug 'elixir-lang/vim-elixir'
 Plug 'fatih/vim-go', {'for': 'go'}
 Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'jlanzarotta/bufexplorer'
@@ -18,6 +19,7 @@ Plug 'morhetz/gruvbox'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'othree/yajs.vim', {'for': 'javascript'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
+Plug 'slashmili/alchemist.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-vinegar'
