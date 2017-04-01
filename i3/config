@@ -1,5 +1,5 @@
 set $mod Mod4
-font pango:Inconsolata 13
+font pango:Ioveska 12
 floating_modifier $mod
 
 # start a terminal

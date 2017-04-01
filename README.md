@@ -3,22 +3,27 @@
 ## Fonts
 
  * terminus
- * Inconsolata
- * Inconsolata for Powerline
+ * Ioveska
 
 ## Programs
 
 ### Linux
 
  * compton
- * conky
- * i3-gaps
+ * i3
+ * polybar
  * rofi
  * rxvt-unicode
+
+#### GTK
+
+ * Theme: Arc Dark
+ * Icons: Arc
 
 Optional:
 
  * dex
  * feh
+ * keychain
  * numlockx
  * unclutter

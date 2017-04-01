@@ -6,7 +6,7 @@
 URxvt*loginShell:           false
 URxvt*scrollBar:            false
 URxvt*saveLines:            10000
-URxvt*font:                 xft:Inconsolata for Powerline:size=14
+URxvt*font:                 xft:Iosevka:size=14
 URxvt*internalBorder:       3
 URxvt*perl-ext-common:      default,matcher
 URxvt.matcher.button:       1
