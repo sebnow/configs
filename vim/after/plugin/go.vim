@@ -12,3 +12,9 @@ let g:go_highlight_build_constraints = 1
 let g:go_auto_type_info = 1
 let g:go_fmt_command = "goimports"
 let g:go_snippet_case_type = "camelcase"
+
+augroup gomap
+	au FileType go nmap <buffer> <localleader>ir :GoRename<CR>
+	au FileType go nmap <buffer> <localleader>rt :GoTest<CR>
+	au FileType go nmap <buffer> <localleader>rl :GoMetaLinter<CR>
+augroup END
