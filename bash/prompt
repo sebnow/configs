@@ -1,13 +1,11 @@
 #!/bin/bash
-C_PWD="[32m"
-C_HIGHLIGHT="[34m"
-C_LOWLIGHT="[90m"
-C_RST="[0m"
-[ -r /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 _gitbranch() {
 	type -t __git_ps1 >/dev/null && __git_ps1 "$*"
 }
 
-[[ "$TERM" =~ "screen" ]] && PROMPT_COMMAND='echo -n -e "\033k\033\\"'
-PS1='pwd: ${C_PWD}\w${C_RST}$(_gitbranch " ${C_LOWLIGHT}[git:${C_HIGHLIGHT}%s${C_LOWLIGHT}]${C_RST}")\n\u@\h$ '
-
+SEP=""
+PS1=""
+PS1="$PS1\[\e[100;30m\] \u@\h \[\e[42;90m\]${SEP}"
+PS1="$PS1\[\e[42;30m\] \w \[\e[0;32m\]${SEP}"
+PS1="$PS1\$(_gitbranch '  %s')"
+PS1="$PS1\[\e[0m\]\n>>= "
