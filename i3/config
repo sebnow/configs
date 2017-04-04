@@ -1,5 +1,5 @@
 set $mod Mod4
-font pango:Ioveska 12
+font pango:Iosevka 12
 floating_modifier $mod
 
 exec --no-startup-id polybar main &
