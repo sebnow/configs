@@ -3,7 +3,7 @@
 ## Fonts
 
  * Icon: FontAwesome
- * Monospace: Ioveska
+ * Monospace: Iosevka
  * Sans: Roboto
  * Serif: Merriweather
 
