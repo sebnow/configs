@@ -4,6 +4,7 @@ set hidden
 set nowrap
 set wildmode=list:longest
 set wildignore+=*.o,*.pyc,*~,*.hi,.git/**
+set directory=~/.vim/swap//,.,~/tmp,/var/tmp,/tmp
 
 " Searching {{{
 set ignorecase
@@ -27,7 +28,7 @@ endif
 " }}}
 
 " Completion {{{
-set completeopt+=menuone,preview,noinsert
+set completeopt+=menuone,preview
 " }}}
 
 " Display {{{

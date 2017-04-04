@@ -1,4 +1,3 @@
-Plug 'Chiel92/vim-autoformat'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -15,7 +14,7 @@ Plug 'lifepillar/vim-mucomplete'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'marijnh/tern_for_vim', {'for': 'javascript'}
 Plug 'mileszs/ack.vim'
-Plug 'morhetz/gruvbox'
+Plug 'nathanaelkane/vim-indent-guides'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'othree/yajs.vim', {'for': 'javascript'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
