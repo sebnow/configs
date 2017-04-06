@@ -1,4 +1,6 @@
 #!/bin/bash
+export HISTCONTROL=ignoreboth:erasedups
+
 export TERMINAL="urxvtc"
 export EDITOR=vim
 export ALTERNATE_EDITOR=vi
