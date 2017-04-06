@@ -7,3 +7,8 @@ export PATH="$PATH:$HOME/.cabal/bin"
 
 # Use the keychain SSH agent if it's available
 which keychain > /dev/null 2>&1 && eval $(keychain --eval --quiet)
+
+which rg > /dev/null 2>&1
+if [ $? ]; then
+	export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+fi
