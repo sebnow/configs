@@ -2,6 +2,7 @@ Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'danilo-augusto/vim-afterglow'
+Plug 'dhruvasagar/vim-table-mode'
 Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elixir-lang/vim-elixir'
