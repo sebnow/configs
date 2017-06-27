@@ -8,6 +8,7 @@ set wildignore+=*.o,*.pyc,*~,*.hi,.git/**
 " Searching {{{
 set ignorecase
 set smartcase
+set infercase
 set incsearch
 " }}}
 
