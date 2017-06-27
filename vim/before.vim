@@ -18,3 +18,9 @@ let g:ctrlp_custom_ignore = {
 "
 let g:airline_powerline_fonts = 1
 " }}}
+
+"
+" {{{ EditorConfig
+"
+"let g:EditorConfig_exclude_patterns = ['fugitive://.*', '*.go']
+" }}}

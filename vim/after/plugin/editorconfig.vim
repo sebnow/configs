@@ -1,1 +1,1 @@
-let g:EditorConfig_exclude_patterns = ['fugitive://.*', '**/*.go']
+"let g:EditorConfig_exclude_patterns = ['fugitive://.*', '**/*.go']
