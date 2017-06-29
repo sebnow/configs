@@ -13,7 +13,6 @@ Plug 'jreybert/vimagit'
 Plug 'lambdatoast/elm.vim'
 Plug 'lifepillar/vim-mucomplete'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'marijnh/tern_for_vim', {'for': 'javascript', 'do': 'npm install'}
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'othree/html5.vim', {'for': 'html'}
