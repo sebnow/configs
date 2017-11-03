@@ -9,6 +9,7 @@ Plug 'elixir-lang/vim-elixir'
 Plug 'fatih/vim-go', {'for': 'go', 'do': ':GoInstallBinaries'}
 Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'jlanzarotta/bufexplorer'
+Plug 'jparise/vim-graphql'
 Plug 'jreybert/vimagit'
 Plug 'lambdatoast/elm.vim'
 Plug 'lifepillar/vim-mucomplete'
