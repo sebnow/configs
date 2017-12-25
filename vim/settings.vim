@@ -11,6 +11,7 @@ set ignorecase
 set smartcase
 set infercase
 set incsearch
+set hlsearch
 " }}}
 
 " Editing {{{
