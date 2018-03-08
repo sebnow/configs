@@ -28,6 +28,7 @@ Plug 'w0rp/ale'
 
 " Autocompletion
 Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
 Plug 'prabirshrestha/asyncomplete-file.vim'
 Plug 'prabirshrestha/asyncomplete-flow.vim'
 Plug 'prabirshrestha/asyncomplete-gocode.vim'

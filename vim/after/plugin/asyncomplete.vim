@@ -11,7 +11,7 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
 au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
 	\ 'name': 'file',
 	\ 'whitelist': ['*'],
-	\ 'priority': 10,
+	\ 'priority': 50,
 	\ 'completor': function('asyncomplete#sources#file#completor')
 	\ }))
 
@@ -19,4 +19,11 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
 	\ 'name': 'gocode',
 	\ 'whitelist': ['go'],
 	\ 'completor': function('asyncomplete#sources#gocode#completor'),
+	\ }))
+
+call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+	\ 'name': 'buffer',
+	\ 'whitelist': ['*'],
+	\ 'priority': 10,
+	\ 'completor': function('asyncomplete#sources#buffer#completor'),
 	\ }))
