@@ -14,6 +14,7 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'jparise/vim-graphql'
 Plug 'jreybert/vimagit'
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'machakann/vim-sandwich'
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'othree/html5.vim', {'for': 'html'}
