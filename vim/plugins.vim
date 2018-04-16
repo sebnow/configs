@@ -35,3 +35,8 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
+
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
