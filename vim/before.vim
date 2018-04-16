@@ -24,3 +24,9 @@ let g:airline_powerline_fonts = 1
 "
 "let g:EditorConfig_exclude_patterns = ['fugitive://.*', '*.go']
 " }}}
+
+"
+" {{{ deoplete
+"
+let g:deoplete#enable_at_startup = 1
+" }}}
