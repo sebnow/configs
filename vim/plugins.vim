@@ -1,5 +1,4 @@
 Plug 'bronson/vim-trailing-whitespace'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
@@ -25,6 +24,8 @@ Plug 'unblevable/quick-scope'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 " Autocompletion
 if has('nvim')

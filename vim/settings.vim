@@ -30,7 +30,8 @@ endif
 " }}}
 
 " Completion {{{
-set completeopt+=menuone,preview
+set completeopt+=menuone
+set completeopt-=preview
 " }}}
 
 " Display {{{
