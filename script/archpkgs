@@ -4,6 +4,7 @@ pkgs=(\
 	arc-icon-theme \
 	base-devel
 	chromium \
+	compton \
 	ctags \
 	efibootmgr \
 	feh \
@@ -24,6 +25,7 @@ pkgs=(\
 	pavucontrol \
 	pulseaudio \
 	pulseaudio-alsa \
+	redshift \
 	rofi \
 	rxvt-unicode \
 	unzip \

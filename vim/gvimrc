@@ -6,4 +6,4 @@ set guioptions-=b
 set guioptions-=T
 set guioptions+=c
 
-set guifont=Iosevka:h14,Inconsolata:h14,Menlo\ Regular:h11,Source\ Code\ Pro\ Medium:h11
+set guifont=Iosevka\ 12,Inconsolata:h14,Menlo\ Regular:h11,Source\ Code\ Pro\ Medium:h11
