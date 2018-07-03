@@ -47,5 +47,13 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 	inst "$SRC/rofi" "$DST/.config/rofi"
 	inst "$SRC/xbindkeysrc" "$DST/.xbindkeysrc"
 	inst "$SRC/xprofile" "$DST/.xprofile"
+
+	# Fonts
+	if [ ! -e "$DST/.fonts/iosevka" ]; then
+		ioveska_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
+		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v1.14.3/01-iosevka-1.14.3.zip"
+		unzip $ioveska_zip -d "$DST/.fonts/iosevka"
+		rm $ioveska_zip
+	fi
 fi
 
