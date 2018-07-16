@@ -22,6 +22,7 @@ Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'racer-rust/vim-racer', {'for': 'rust'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'slashmili/alchemist.vim'
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'unblevable/quick-scope'
 Plug 'vim-airline/vim-airline'
