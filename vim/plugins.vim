@@ -11,6 +11,9 @@ Plug 'haya14busa/is.vim'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'jlanzarotta/bufexplorer'
 Plug 'jparise/vim-graphql'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-peekaboo'
 Plug 'machakann/vim-sandwich'
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -24,8 +27,6 @@ Plug 'unblevable/quick-scope'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
 
 " Autocompletion
 if has('nvim')
