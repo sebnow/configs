@@ -1,4 +1,5 @@
 let g:lightline = {
+	\   'colorscheme': 'afterglow',
 	\   'active': {
 	\     'left':  [ [ ],
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
