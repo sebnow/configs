@@ -44,6 +44,8 @@ set shortmess+=acI
 set ruler
 set scrolloff=1
 set sidescrolloff=5
+set number
+set relativenumber
 
 " Statusline
 set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\ 
