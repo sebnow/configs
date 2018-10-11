@@ -31,6 +31,7 @@ inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 inst "$SRC/vim" "$DST/.config/nvim"
 inst "$SRC/vim" "$DST/.vim"
 inst "$SRC/vim/vimrc" "$DST/.vimrc"
+inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
