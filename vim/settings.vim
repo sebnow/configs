@@ -31,6 +31,7 @@ endif
 
 " Completion {{{
 set completeopt+=menuone
+set completeopt+=noinsert
 set completeopt-=preview
 " }}}
 
