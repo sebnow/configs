@@ -24,3 +24,6 @@ let g:airline_powerline_fonts = 1
 "
 "let g:EditorConfig_exclude_patterns = ['fugitive://.*', '*.go']
 " }}}
+
+let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
