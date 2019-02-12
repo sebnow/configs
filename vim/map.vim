@@ -4,9 +4,16 @@ nnoremap <C-e> 5<C-e>
 nnoremap <C-y> 5<C-y>
 " }}}
 
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-" Or map each action separately
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <leader>or :call LanguageClient#textDocument_rename()<CR>
-nnoremap <silent> <leader>ca :call LanguageClient#textDocument_codeAction()<CR>
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> <leader>or <Plug>(coc-rename)
+vnoremap <silent> <leader>ca <Plug>(coc-codeaction-selected)
+nnoremap <silent> <leader>ca <Plug>(coc-codeaction-selected)
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction

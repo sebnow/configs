@@ -10,7 +10,7 @@ let g:lightline = {
 	\   },
 	\   'inactive': {
 	\     'left':  [ [ ],
-	\                [ 'paste', 'readonly', 'filename', 'modified' ],
+	\                [ 'paste', 'cocstatus', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
 	\     'right': [ [ 'lineinfo' ],
 	\                [ 'linter_errors', 'linter_warnings' ],
@@ -19,7 +19,8 @@ let g:lightline = {
 	\   'separator': { 'left': '', 'right': '' },
 	\   'subseparator': { 'left': '', 'right': '' },
 	\   'component_function': {
-	\     'vcsbranch': 'VCSBranch'
+	\     'vcsbranch': 'VCSBranch',
+	\     'cocstatus': 'coc#status'
 	\   },
 	\ }
 
