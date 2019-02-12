@@ -25,5 +25,15 @@ let g:airline_powerline_fonts = 1
 "let g:EditorConfig_exclude_patterns = ['fugitive://.*', '*.go']
 " }}}
 
-let g:UltiSnipsJumpForwardTrigger = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
+"
+" {{{ UltiSnips
+"
+let g:UltiSnipsJumpForwardTrigger = "<c-k>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-j>"
+" }}}
+
+"
+" {{{ ALE Events
+"
+let g:ale_lint_on_insert_leave = 1
+" }}}
