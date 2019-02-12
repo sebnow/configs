@@ -24,7 +24,6 @@ Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ncm2/ncm2'
 Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-ultisnips'
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'json', 'graphql'] }
@@ -37,3 +36,7 @@ Plug 'slashmili/alchemist.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'w0rp/ale'
+
+if has('patch-8.0.1493')
+	Plug 'ncm2/ncm2-ultisnips'
+endif
