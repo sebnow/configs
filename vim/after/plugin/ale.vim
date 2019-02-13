@@ -5,11 +5,12 @@ let g:ale_virtualtext_cursor = 1
 
 let g:ale_linters = {
 	\ 'javascript' : ['prettier-eslint', 'prettier', 'eslint'],
-	\ 'go': ['revive'],
+	\ 'go': ['revive', 'golint'],
 	\ }
 let g:ale_fixers = {
 	\ 'javascript' : ['prettier-eslint', 'prettier', 'eslint'],
 	\ 'go' : ['goimports', 'gofmt'],
+	\ 'rust': ['rustfmt'],
 	\ }
 
 call ale#linter#Define('go', {
