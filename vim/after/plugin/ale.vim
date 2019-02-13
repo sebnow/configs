@@ -3,6 +3,8 @@ let g:ale_sign_warning = '⚑'
 
 let g:ale_virtualtext_cursor = 1
 
+let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
+
 let g:ale_linters = {
 	\ 'javascript' : ['prettier-eslint', 'prettier', 'eslint'],
 	\ 'go': ['revive', 'golint'],
