@@ -21,7 +21,7 @@ Plug 'machakann/vim-sandwich'
 Plug 'maximbaz/lightline-ale'
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
-Plug 'neoclide/coc.nvim', {'do': 'yarn install'}
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'json', 'graphql'] }
