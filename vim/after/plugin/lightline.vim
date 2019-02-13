@@ -10,10 +10,10 @@ let g:lightline = {
 	\   },
 	\   'inactive': {
 	\     'left':  [ [ ],
-	\                [ 'paste', 'cocstatus', 'readonly', 'filename', 'modified' ],
+	\                [ 'paste', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
 	\     'right': [ [ 'lineinfo' ],
-	\                [ 'linter_errors', 'linter_warnings' ],
+	\                [ 'cocstatus', 'linter_errors', 'linter_warnings' ],
 	\                [ 'filetype' ] ]
 	\   },
 	\   'separator': { 'left': '', 'right': '' },
