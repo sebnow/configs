@@ -3,7 +3,7 @@ let g:ale_sign_warning = '⚑'
 
 let g:ale_linters = {
 	\ 'javascript' : ['prettier-eslint', 'prettier', 'eslint'],
-	\ 'go': ['revive'],
+	\ 'go': ['revive', 'golint'],
 	\ }
 let g:ale_fixers = {
 	\ 'javascript' : ['prettier-eslint', 'prettier', 'eslint'],
