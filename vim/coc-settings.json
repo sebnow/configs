@@ -8,6 +8,12 @@
 			"requireRootPattern": true,
 			"settings": {},
 			"rootPatterns": [".flowconfig"]
+		},
+		"golang": {
+			"command": "gopls",
+			"args": ["serve"],
+			"filetypes": ["go"],
+			"initializationOptions": {}
 		}
 	}
 }
