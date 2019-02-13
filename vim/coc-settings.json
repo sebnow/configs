@@ -1,0 +1,13 @@
+{
+	"languageserver": {
+		"flow": {
+			"command": "flow",
+			"args": ["lsp"],
+			"filetypes": ["javascript"],
+			"initializationOptions": {},
+			"requireRootPattern": true,
+			"settings": {},
+			"rootPatterns": [".flowconfig"]
+		}
+	}
+}
