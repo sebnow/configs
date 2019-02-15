@@ -1,0 +1,21 @@
+{
+	"coc.preferences.diagnostic.displayByAle": true,
+	"coc.preferences.formatOnSaveFiletypes": ["rust", "go", "javascript"],
+	"languageserver": {
+		"flow": {
+			"command": "flow",
+			"args": ["lsp"],
+			"filetypes": ["javascript"],
+			"initializationOptions": {},
+			"requireRootPattern": true,
+			"settings": {},
+			"rootPatterns": [".flowconfig"]
+		},
+		"golang": {
+			"command": "gopls",
+			"args": ["serve"],
+			"filetypes": ["go"],
+			"initializationOptions": {}
+		}
+	}
+}

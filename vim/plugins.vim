@@ -1,11 +1,9 @@
 "Plug 'unblevable/quick-scope'
 Plug 'ElmCast/elm-vim'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
-Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'dhruvasagar/vim-table-mode'
-Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elixir-lang/vim-elixir'
 Plug 'fatih/vim-go', {'for': 'go', 'do': ':GoInstallBinaries'}
@@ -22,21 +20,13 @@ Plug 'machakann/vim-sandwich'
 Plug 'maximbaz/lightline-ale'
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
-Plug 'ncm2/ncm2'
-Plug 'ncm2/ncm2-path'
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'json', 'graphql'] }
-Plug 'racer-rust/vim-racer', {'for': 'rust'}
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'sirver/ultisnips'
 Plug 'slashmili/alchemist.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'w0rp/ale'
-
-if has('patch-8.0.1493')
-	Plug 'ncm2/ncm2-ultisnips'
-endif

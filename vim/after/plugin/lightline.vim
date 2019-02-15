@@ -13,13 +13,14 @@ let g:lightline = {
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
 	\     'right': [ [ 'lineinfo' ],
-	\                [ 'linter_errors', 'linter_warnings' ],
+	\                [ 'cocstatus', 'linter_errors', 'linter_warnings' ],
 	\                [ 'filetype' ] ]
 	\   },
 	\   'separator': { 'left': '', 'right': '' },
 	\   'subseparator': { 'left': '', 'right': '' },
 	\   'component_function': {
-	\     'vcsbranch': 'VCSBranch'
+	\     'vcsbranch': 'VCSBranch',
+	\     'cocstatus': 'coc#status'
 	\   },
 	\ }
 
