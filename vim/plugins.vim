@@ -1,6 +1,7 @@
 "Plug 'unblevable/quick-scope'
 Plug 'ElmCast/elm-vim'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
+Plug 'Shougo/denite.nvim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'dhruvasagar/vim-table-mode'
@@ -11,7 +12,6 @@ Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'
 Plug 'itchyny/lightline.vim'
-Plug 'jlanzarotta/bufexplorer'
 Plug 'jparise/vim-graphql'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
