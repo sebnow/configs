@@ -47,6 +47,7 @@ set scrolloff=1
 set sidescrolloff=5
 set number
 set relativenumber
+set noshowmode
 
 " Statusline
 set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&encoding}:%{&fileformat}]%(\ %w%)\ %y\ 
