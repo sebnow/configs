@@ -1,6 +1,8 @@
 {
-	"coc.preferences.diagnostic.displayByAle": true,
-	"coc.preferences.formatOnSaveFiletypes": ["rust", "go", "javascript"],
+	"coc.preferences.formatOnSaveFiletypes": ["rust", "javascript"],
+	"diagnostic.displayByAle": true,
+	"suggest.minTriggerInputLength": 3,
+	"codeLens.enable": true,
 	"languageserver": {
 		"flow": {
 			"command": "flow",
