@@ -16,7 +16,10 @@ let g:go_fmt_experimental = 1
 let g:go_fmt_command = "goimports"
 
 augroup gomap
-	au FileType go nmap <buffer> <localleader>ir :GoRename<CR>
-	au FileType go nmap <buffer> <localleader>rt :GoTest<CR>
-	au FileType go nmap <buffer> <localleader>rl :GoMetaLinter<CR>
+	" Rename Object
+	au FileType go nmap <buffer> <localleader>ro :GoRename<CR>
+	" Test Project
+	au FileType go nmap <buffer> <localleader>tp :GoTest<CR>
+	" Lint Project
+	au FileType go nmap <buffer> <localleader>lp :GoMetaLinter<CR>
 augroup END
