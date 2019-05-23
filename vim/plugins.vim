@@ -22,6 +22,7 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'json', 'graphql'] }
+Plug 'raghur/fruzzy', { 'do': { -> fruzzy#install() } }
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'sirver/ultisnips'
 Plug 'slashmili/alchemist.vim'
