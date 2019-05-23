@@ -17,7 +17,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-peekaboo'
 Plug 'machakann/vim-sandwich'
-Plug 'maximbaz/lightline-ale'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
 Plug 'mileszs/ack.vim'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -30,4 +29,3 @@ Plug 'sirver/ultisnips'
 Plug 'slashmili/alchemist.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
-Plug 'w0rp/ale'
