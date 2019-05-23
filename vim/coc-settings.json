@@ -3,6 +3,7 @@
 	"diagnostic.displayByAle": true,
 	"suggest.minTriggerInputLength": 3,
 	"codeLens.enable": true,
+	"rust.clippy_preference": "on",
 	"languageserver": {
 		"flow": {
 			"command": "flow",
