@@ -22,7 +22,6 @@ Plug 'othree/html5.vim', {'for': 'html'}
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'json', 'graphql'] }
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
-Plug 'sirver/ultisnips'
 Plug 'slashmili/alchemist.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
