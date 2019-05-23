@@ -1,6 +1,12 @@
 {
-	"coc.preferences.diagnostic.displayByAle": true,
-	"coc.preferences.formatOnSaveFiletypes": ["rust", "go", "javascript"],
+	"coc.preferences.formatOnSaveFiletypes": ["javascript", "json"],
+	"suggest.echodocSupport": true,
+	"suggest.minTriggerInputLength": 3,
+	"codeLens.enable": true,
+	"diagnostic.errorSign": "•",
+	"diagnostic.warningSign": "•",
+	"diagnostic.infoSign": "•",
+	"rust.clippy_preference": "on",
 	"languageserver": {
 		"flow": {
 			"command": "flow",
