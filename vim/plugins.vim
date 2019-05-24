@@ -1,4 +1,3 @@
-"Plug 'unblevable/quick-scope'
 Plug 'ElmCast/elm-vim'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
 Plug 'bronson/vim-trailing-whitespace'
