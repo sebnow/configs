@@ -7,6 +7,10 @@
 	"diagnostic.warningSign": "•",
 	"diagnostic.infoSign": "•",
 	"rust.clippy_preference": "on",
+	"list.insertMappings": {
+		"<C-v>": "action:vsplit",
+		"<C-s>": "action:split"
+	},
 	"languageserver": {
 		"flow": {
 			"command": "flow",
