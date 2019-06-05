@@ -37,3 +37,6 @@ let g:UltiSnipsJumpBackwardTrigger = "<c-j>"
 "
 let g:ale_lint_on_insert_leave = 1
 " }}}
+
+
+let g:terraform_fmt_on_save=1

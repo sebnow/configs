@@ -26,6 +26,11 @@
 			"args": ["serve"],
 			"filetypes": ["go"],
 			"initializationOptions": {}
+		},
+		"terraform": {
+			"command": "terraform-lsp",
+			"args": [],
+			"filetypes": ["terraform"]
 		}
 	}
 }
