@@ -5,7 +5,7 @@ _gitbranch() {
 
 SEP=""
 PS1=""
-PS1="$PS1\[\e[100;30m\] \u@\h \[\e[42;90m\]${SEP}"
+PS1="$PS1\[\e[100;34m\] \u@\h \[\e[42;90m\]${SEP}"
 PS1="$PS1\[\e[42;30m\] \w"
 PS1="$PS1\$(_gitbranch '   %s') \[\e[0;32m\]${SEP}"
 PS1="$PS1\[\e[0m\]\n $ "

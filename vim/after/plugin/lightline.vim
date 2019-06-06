@@ -1,5 +1,13 @@
+function! s:colorscheme()
+    try
+        return g:colors_name
+    catch /^Vim:E121/
+        return 'default'
+    endtry
+endfunction
+
 let g:lightline = {
-	\   'colorscheme': 'afterglow',
+	\   'colorscheme': s:colorscheme(),
 	\   'active': {
 	\     'left':  [ [ ],
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
@@ -13,7 +21,7 @@ let g:lightline = {
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
 	\     'right': [ [ 'lineinfo' ],
-	\                [ 'cocstatus', 'linter_errors', 'linter_warnings' ],
+	\                [ 'cocstatus' ],
 	\                [ 'filetype' ] ]
 	\   },
 	\   'separator': { 'left': '', 'right': '' },
@@ -22,16 +30,6 @@ let g:lightline = {
 	\     'vcsbranch': 'VCSBranch',
 	\     'cocstatus': 'coc#status'
 	\   },
-	\ }
-
-let g:lightline.component_expand = {
-	\   'linter_warnings': 'lightline#ale#warnings',
-	\   'linter_errors': 'lightline#ale#errors',
-	\ }
-
-let g:lightline.component_type = {
-	\   'linter_warnings': 'warning',
-	\   'linter_errors': 'error',
 	\ }
 
 function! VCSBranch()
