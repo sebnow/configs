@@ -14,6 +14,7 @@ abspath() {
 inst() {
 	src="$1"; shift;
 	dst="$1"; shift;
+	[ -d "$(dirname $dst)" ] || mkdir -p "$(dirname $dst)"
 	[ -e "$dst" ] || ln -s "$src" "$dst"
 }
 
@@ -32,6 +33,7 @@ inst "$SRC/vim" "$DST/.config/nvim"
 inst "$SRC/vim" "$DST/.vim"
 inst "$SRC/vim/vimrc" "$DST/.vimrc"
 inst "$SRC/tmux.conf" "$DST/.tmux.conf"
+inst "$SRC/alacritty/alacritty.yml" "$DST/.config/alacritty/alacritty.yml"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
