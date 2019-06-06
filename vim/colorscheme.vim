@@ -2,6 +2,6 @@ if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax off
 	syntax on
 	set bg=dark
-	colorscheme afterglow
-	hi Normal ctermbg=none
+
+	colorscheme nord
 endif

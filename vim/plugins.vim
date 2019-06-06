@@ -1,5 +1,6 @@
 Plug 'ElmCast/elm-vim'
 Plug 'IN3D/vim-raml', {'for': 'raml'}
+Plug 'arcticicestudio/nord-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'dhruvasagar/vim-table-mode'
