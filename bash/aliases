@@ -4,3 +4,5 @@ if [[ $(uname -s) = "Darwin" ]]; then
 else
 	alias ls='ls --color=auto'
 fi
+
+type -f exa >/dev/null 2>&1 && alias ls='exa'
