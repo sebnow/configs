@@ -7,7 +7,6 @@ Plug 'dhruvasagar/vim-table-mode'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elixir-lang/vim-elixir'
 Plug 'fatih/vim-go', {'for': 'go', 'do': ':GoInstallBinaries'}
-Plug 'flowtype/vim-flow', {'for': 'javascript'}
 Plug 'hashivim/vim-terraform'
 Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'
