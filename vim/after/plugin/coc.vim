@@ -1,10 +1,11 @@
 let g:coc_global_extensions = [
-			\ 'coc-rls',
-			\ 'coc-json',
-			\ 'coc-snippets',
-			\ 'coc-prettier',
+			\ 'coc-diagnostic',
 			\ 'coc-eslint',
+			\ 'coc-json',
 			\ 'coc-lists',
+			\ 'coc-prettier',
+			\ 'coc-rls',
+			\ 'coc-snippets',
 			\ 'coc-yank'
 			\ ]
 

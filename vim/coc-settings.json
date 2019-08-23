@@ -32,5 +32,10 @@
 			"args": [],
 			"filetypes": ["terraform"]
 		}
+	},
+	"diagnostic-languageserver.filetypes": {
+		"markdown": ["write-good", "markdownlint"],
+		"sh": "shellcheck",
+		"php": "phpcs"
 	}
 }
