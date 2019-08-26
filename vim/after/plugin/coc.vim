@@ -12,6 +12,11 @@ let g:coc_global_extensions = [
 			\ ]
 
 nnoremap <silent> K :call CocAction('doHover')<CR>
+inoremap <silent><expr> <TAB>
+			\ pumvisible() ? "\<C-n>" :
+			\ <SID>check_back_space() ? "\<TAB>" :
+			\ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " Navigation maps
 nmap <silent> gd <Plug>(coc-definition)
@@ -37,3 +42,8 @@ nnoremap <silent><leader>* :exe 'CocList -I --normal --input='.expand('<cword>')
 
 " Snippets
 imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
