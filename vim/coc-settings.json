@@ -11,6 +11,11 @@
 		"<C-v>": "action:vsplit",
 		"<C-s>": "action:split"
 	},
+	"list.normalMappings": {
+		"d": "action:delete"
+	},
+	"list.source.files.args": ["--hidden", "--files"],
+	"list.source.files.excludePatterns": ["**/.git/**"],
 	"languageserver": {
 		"flow": {
 			"command": "flow",
