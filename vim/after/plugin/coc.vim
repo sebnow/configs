@@ -4,8 +4,10 @@ let g:coc_global_extensions = [
 			\ 'coc-json',
 			\ 'coc-lists',
 			\ 'coc-prettier',
+			\ 'coc-project',
 			\ 'coc-rls',
 			\ 'coc-snippets',
+			\ 'coc-yaml',
 			\ 'coc-yank'
 			\ ]
 
