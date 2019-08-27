@@ -59,3 +59,5 @@ if has("folding")
 	set foldlevel=1
 endif
 " }}}
+
+let g:markdown_fenced_languages = ['html', 'rust', 'go', 'python', 'bash=sh', 'javascript']

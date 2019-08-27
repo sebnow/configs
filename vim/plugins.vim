@@ -12,3 +12,5 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
