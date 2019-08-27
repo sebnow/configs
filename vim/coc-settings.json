@@ -1,8 +1,10 @@
 {
 	"coc.preferences.formatOnSaveFiletypes": ["javascript", "json"],
+	"coc.preferences.currentFunctionSymbolAutoUpdate": true,
 	"suggest.echodocSupport": true,
 	"suggest.minTriggerInputLength": 3,
 	"codeLens.enable": true,
+	"diagnostic.checkCurrentLine": true,
 	"diagnostic.errorSign": "•",
 	"diagnostic.warningSign": "•",
 	"diagnostic.infoSign": "•",

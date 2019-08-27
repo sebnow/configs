@@ -12,15 +12,15 @@ let g:lightline = {
 	\     'left':  [ [ ],
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
-	\     'right': [ [ 'lineinfo' ],
-	\                [ 'linter_errors', 'linter_warnings' ],
+	\     'right': [ [ 'currentfunction', 'lineinfo' ],
+	\                [ 'cocstatus', 'linter_errors', 'linter_warnings' ],
 	\                [ 'filetype' ] ]
 	\   },
 	\   'inactive': {
 	\     'left':  [ [ ],
 	\                [ 'paste', 'readonly', 'filename', 'modified' ],
 	\                [ 'vcsbranch' ] ],
-	\     'right': [ [ 'lineinfo' ],
+	\     'right': [ [ 'currentfunction', 'lineinfo' ],
 	\                [ 'cocstatus' ],
 	\                [ 'filetype' ] ]
 	\   },
@@ -28,10 +28,15 @@ let g:lightline = {
 	\   'subseparator': { 'left': '', 'right': '' },
 	\   'component_function': {
 	\     'vcsbranch': 'VCSBranch',
-	\     'cocstatus': 'coc#status'
+	\     'cocstatus': 'coc#status',
+	\     'currentfunction': 'CocCurrentFunction'
 	\   },
 	\ }
 
 function! VCSBranch()
 	return " " . fugitive#head()
+endfunction
+
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
 endfunction
