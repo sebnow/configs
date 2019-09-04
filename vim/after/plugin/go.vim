@@ -1,6 +1,7 @@
 let g:go_doc_keywordprg_enabled = 0
 let g:go_def_mapping_enabled = 0
 let g:go_metalinter_autosave = 0
+let g:go_metalinter_command = "golangci-lint"
 let g:go_template_use_pkg = 1
 
 let g:go_highlight_format_strings = 1
