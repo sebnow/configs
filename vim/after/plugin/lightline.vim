@@ -1,7 +1,7 @@
 function! s:colorscheme()
     try
         return g:colors_name
-    catch /^E121/
+    catch
         return 'default'
     endtry
 endfunction
