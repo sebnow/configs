@@ -3,5 +3,7 @@ if has("syntax") && (&t_Co > 2 || has("gui_running"))
 	syntax on
 	set bg=dark
 
-	colorscheme nord
+	set termguicolors
+	let ayucolor="mirage"
+	colorscheme ayu
 endif

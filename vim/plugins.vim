@@ -1,4 +1,4 @@
-Plug 'arcticicestudio/nord-vim'
+Plug 'ayu-theme/ayu-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', {'tag': '*', 'for': 'go', 'do': ':GoInstallBinaries'}
