@@ -8,7 +8,9 @@ let g:coc_global_extensions = [
 			\ 'coc-rls',
 			\ 'coc-snippets',
 			\ 'coc-yaml',
-			\ 'coc-yank'
+			\ 'coc-yank',
+			\ 'coc-git',
+			\ 'coc-go',
 			\ ]
 
 nnoremap <silent> K :call CocAction('doHover')<CR>
