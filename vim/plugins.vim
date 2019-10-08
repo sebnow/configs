@@ -2,9 +2,11 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', {'tag': '*', 'for': 'go', 'do': ':GoInstallBinaries'}
+Plug 'hashivim/vim-terraform', {'for': 'terraform'}
 Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'
 Plug 'itchyny/lightline.vim'
+Plug 'jparise/vim-graphql'
 Plug 'machakann/vim-sandwich'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
 Plug 'mileszs/ack.vim'
