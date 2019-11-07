@@ -22,7 +22,9 @@ augroup gomap
 	" Rename Object
 	au FileType go nmap <buffer> <localleader>ro :GoRename<CR>
 	" Test Project
-	au FileType go nmap <buffer> <localleader>tp :GoTest<CR>
+	au FileType go nmap <buffer> <localleader>tp :GoTest ./...<CR>
+	" Test Module (package)
+	au FileType go nmap <buffer> <localleader>tm :GoTest<CR>
 	" Lint Project
 	au FileType go nmap <buffer> <localleader>lp :GoMetaLinter<CR>
 augroup END
