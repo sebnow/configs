@@ -11,11 +11,14 @@
 	whitespace = fix
 [branch "master"]
 	mergeoptions = --no-ff
+	rebase = true
 [branch "develop"]
 	mergeoptions = --no-ff
 [alias]
 	root = !readlink -f ./$(git rev-parse --show-cdup)
 	st = status --short
+	squash = rebase -i --autosquash @{u}
+	pr = !hub pull-request
 [push]
 	default = simple
 [log]
