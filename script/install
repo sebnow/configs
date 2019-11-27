@@ -34,6 +34,7 @@ inst "$SRC/vim" "$DST/.vim"
 inst "$SRC/vim/vimrc" "$DST/.vimrc"
 inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 inst "$SRC/alacritty/alacritty.yml" "$DST/.config/alacritty/alacritty.yml"
+inst "$SRC/starship.toml" "$DST/.config/starship.toml"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
