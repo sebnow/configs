@@ -8,6 +8,7 @@ Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'
 Plug 'itchyny/lightline.vim'
 Plug 'jparise/vim-graphql'
+Plug 'liuchengxu/vim-clap'
 Plug 'machakann/vim-sandwich'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
 Plug 'mileszs/ack.vim'

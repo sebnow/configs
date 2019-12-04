@@ -19,8 +19,6 @@ let g:go_highlight_variable_declarations = 1
 let g:go_fmt_autosave = 0
 
 augroup gomap
-	" Rename Object
-	au FileType go nmap <buffer> <localleader>ro :GoRename<CR>
 	" Test Project
 	au FileType go nmap <buffer> <localleader>tp :GoTest ./...<CR>
 	" Test Module (package)
