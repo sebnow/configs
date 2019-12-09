@@ -1,1 +1,25 @@
 add_newline = false
+
+[aws]
+displayed_items = "profile"
+
+[cmd_duration]
+style = "dimmed yellow"
+
+[directory]
+style = "fg:green"
+
+[nodejs]
+disabled = true
+
+[golang]
+disabled = true
+
+[python]
+disabled = true
+
+[ruby]
+disabled = true
+
+[rust]
+disabled = true
