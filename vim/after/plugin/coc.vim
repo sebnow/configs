@@ -5,6 +5,8 @@ endif
 let g:coc_global_extensions = [
 			\ 'coc-diagnostic',
 			\ 'coc-eslint',
+			\ 'coc-git',
+			\ 'coc-go',
 			\ 'coc-json',
 			\ 'coc-lists',
 			\ 'coc-prettier',
@@ -13,8 +15,6 @@ let g:coc_global_extensions = [
 			\ 'coc-snippets',
 			\ 'coc-yaml',
 			\ 'coc-yank',
-			\ 'coc-git',
-			\ 'coc-go',
 			\ ]
 
 nnoremap <silent> K :call CocAction('doHover')<CR>
