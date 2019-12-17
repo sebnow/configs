@@ -57,3 +57,7 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+
+augroup cocgo
+	autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+augroup END
