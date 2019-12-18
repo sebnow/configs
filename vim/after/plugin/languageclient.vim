@@ -1,3 +1,11 @@
+if !exists('g:LanguageClient_serverCommands')
+	finish
+endif
+
+
+" Avoid flickering caused by column shifting. This can be removed after
+set signcolumn=yes
+
 let g:LanguageClient_settingsPath = fnamemodify($MYVIMRC, ':p:h/settings.json')
 let g:LanguageClient_loadSettings = 1
 let g:LanguageClient_serverCommands = {
@@ -5,32 +13,32 @@ let g:LanguageClient_serverCommands = {
     \ 'go': ['gopls'],
     \ }
 
-let g:LanguageClient_diagnosticsDisplay = {
-    \ 1: {
-		\"name": "Error",
-		\"texthl": "WarningMsg",
-		\"signText": "E",
-		\"signTexthl": "WarningMsg",
-		\},
-    \2: {
-		\"name": "Warning",
-		\"texthl": "WarningMsg",
-		\"signText": "W",
-		\"signTexthl": "WarningMsg",
-		\},
-    \3: {
-		\"name": "Info",
-		\"texthl": "Guide",
-		\"signText": "I",
-		\"signTexthl": "Guide",
-		\},
-    \4: {
-		\"name": "Hint",
-		\"texthl": "Comment",
-		\"signText": "H",
-		\"signTexthl": "Comment",
-		\},
-    \}
+"let g:LanguageClient_diagnosticsDisplay = {
+"    \ 1: {
+"		\"name": "Error",
+"		\"texthl": "WarningMsg",
+"		\"signText": "E",
+"		\"signTexthl": "WarningMsg",
+"		\},
+"    \2: {
+"		\"name": "Warning",
+"		\"texthl": "WarningMsg",
+"		\"signText": "W",
+"		\"signTexthl": "WarningMsg",
+"		\},
+"    \3: {
+"		\"name": "Info",
+"		\"texthl": "Guide",
+"		\"signText": "I",
+"		\"signTexthl": "Guide",
+"		\},
+"    \4: {
+"		\"name": "Hint",
+"		\"texthl": "Comment",
+"		\"signText": "H",
+"		\"signTexthl": "Comment",
+"		\},
+"    \}
 
 function s:shortcuts()
   nnoremap gd :call LanguageClient#textDocument_definition()<CR>
@@ -51,3 +59,12 @@ augroup LanguageClient
   autocmd BufWritePre *.rs,*.go call LanguageClient#textDocument_formatting()
 augroup END
 
+
+" Deoplete Integration {{{
+if exists('g:loaded_deoplete')
+	call deoplete#custom#option('ignore_sources', {
+		\ 'go': ['around', 'buffer'],
+		\ 'rust': ['around', 'buffer'],
+		\ })
+endif
+" }}}

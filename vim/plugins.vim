@@ -1,5 +1,4 @@
 Plug 'Yggdroot/indentLine'
-Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next',  'do': 'bash install.sh' }
 Plug 'ayu-theme/ayu-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
@@ -17,3 +16,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
+
+if has('nvim')
+	Plug 'neovim/nvim-lsp'
+endif
