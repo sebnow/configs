@@ -3,6 +3,7 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', {'tag': '*', 'for': 'go', 'do': ':GoInstallBinaries'}
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 Plug 'hashivim/vim-terraform', {'for': 'terraform'}
 Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'
