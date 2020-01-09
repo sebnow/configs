@@ -2,7 +2,7 @@ Plug 'Yggdroot/indentLine'
 Plug 'ayu-theme/ayu-vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'fatih/vim-go', {'tag': '*', 'for': 'go', 'do': ':GoInstallBinaries'}
+Plug 'fatih/vim-go', {'for': 'go', 'do': ':GoInstallBinaries'}
 Plug 'hashivim/vim-terraform', {'for': 'terraform'}
 Plug 'haya14busa/is.vim'
 Plug 'honza/vim-snippets'

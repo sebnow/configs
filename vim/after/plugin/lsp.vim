@@ -19,12 +19,11 @@ function s:setup()
 	nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
 	nnoremap <silent> gI <cmd>lua vim.lsp.buf.implementation()<CR>
 	nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
-
-
 endfunction()
 
 augroup lspomnifunc!
+	autocmd!
 	autocmd Filetype rust,go call s:setup()
-	autocmd BufWritePre *.rs,*.go :lua vim.lsp.buf.formatting()
+	autocmd BufWritePre *.rs :lua vim.lsp.buf.formatting()
 augroup END
 
