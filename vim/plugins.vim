@@ -12,7 +12,6 @@ Plug 'jparise/vim-graphql'
 Plug 'liuchengxu/vim-clap'
 Plug 'machakann/vim-sandwich'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
-Plug 'mileszs/ack.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
