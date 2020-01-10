@@ -6,7 +6,7 @@ endif
 
 runtime settings.vim
 runtime map.vim
-runtime lsp.vim
+runtime vv.vim
 
 " Plugins!
 call plug#begin('~/.vim/plugged')

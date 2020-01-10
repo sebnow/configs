@@ -3,6 +3,8 @@ if !exists("g:pandoc#syntax#codeblocks#embeds#langs")
 endif
 
 call extend(g:pandoc#syntax#codeblocks#embeds#langs, [
+	\ 'go',
 	\ 'graphql',
 	\ 'javascript',
+	\ 'rust',
 	\ ])
