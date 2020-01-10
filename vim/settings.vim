@@ -37,7 +37,6 @@ set completeopt-=preview
 
 " Display {{{
 set title
-set termencoding=utf-8
 set encoding=utf-8
 set showmatch
 set laststatus=2
