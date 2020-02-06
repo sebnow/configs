@@ -13,6 +13,7 @@ Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'machakann/vim-sandwich'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'pangloss/vim-javascript', {'for': 'javascript'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'vim-pandoc/vim-pandoc'
