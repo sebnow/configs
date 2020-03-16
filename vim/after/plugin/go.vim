@@ -26,3 +26,7 @@ augroup gomap
 	" Lint Project
 	au FileType go nmap <buffer> <localleader>lp :GoMetaLinter<CR>
 augroup END
+
+augroup go
+	autocmd BufWritePre *.go :GoImports
+augroup END
