@@ -51,7 +51,8 @@
 		"gitcommit": ["write-good"],
 		"markdown": ["write-good", "markdownlint"],
 		"sh": "shellcheck",
-		"php": "phpcs"
+		"php": "phpcs",
+		"go": ["golanci-lint"]
 	},
 	"suggest.completionItemKindLabels": {
 		"keyword": "\uf1de",
