@@ -47,6 +47,8 @@
 		}
 	},
 	"diagnostic-languageserver.filetypes": {
+		"pandoc": ["write-good"],
+		"gitcommit": ["write-good"],
 		"markdown": ["write-good", "markdownlint"],
 		"sh": "shellcheck",
 		"php": "phpcs"
