@@ -31,3 +31,7 @@ augroup golang
 
 	au BufWritePre *.go :GoImports
 augroup END
+
+augroup go
+	autocmd BufWritePre *.go :GoImports
+augroup END
