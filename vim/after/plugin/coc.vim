@@ -11,7 +11,7 @@ let g:coc_global_extensions = [
 			\ 'coc-lists',
 			\ 'coc-prettier',
 			\ 'coc-project',
-			\ 'coc-rls',
+			\ 'coc-rust-analyzer',
 			\ 'coc-snippets',
 			\ 'coc-yaml',
 			\ 'coc-yank',

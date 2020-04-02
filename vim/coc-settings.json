@@ -1,5 +1,5 @@
 {
-	"coc.preferences.formatOnSaveFiletypes": ["javascript", "json", "rust"],
+	"coc.preferences.formatOnSaveFiletypes": ["javascript", "json"],
 	"coc.preferences.currentFunctionSymbolAutoUpdate": true,
 	"suggest.echodocSupport": true,
 	"suggest.minTriggerInputLength": 3,
