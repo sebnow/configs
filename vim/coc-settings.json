@@ -5,6 +5,7 @@
 	"suggest.minTriggerInputLength": 3,
 	"codeLens.enable": true,
 	"diagnostic.checkCurrentLine": true,
+	"git.enableGutters": false,
 	"diagnostic.errorSign": "•",
 	"diagnostic.warningSign": "•",
 	"diagnostic.infoSign": "•",
