@@ -2,11 +2,13 @@ if !has('nvim')
 	finish
 endif
 
-
 lua <<EOF
-local nvim_lsp = require('nvim_lsp');
-nvim_lsp.rls.setup({})
-nvim_lsp.gopls.setup({})
+local nvim_lsp = require('nvim_lsp')
+local compl = require('completion')
+
+nvim_lsp.rls.setup({on_attach=compl.on_attach})
+nvim_lsp.gopls.setup({on_attach=compl.on_attach})
+nvim_lsp.flow.setup{}
 EOF
 
 function s:setup()
