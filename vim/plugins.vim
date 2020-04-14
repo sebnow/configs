@@ -12,7 +12,9 @@ Plug 'jparise/vim-graphql'
 Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'machakann/vim-sandwich'
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
+Plug 'ncm2/ncm2'
 Plug 'pangloss/vim-javascript', {'for': 'javascript'}
+Plug 'roxma/nvim-yarp'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'vim-pandoc/vim-pandoc'
@@ -20,5 +22,4 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 
 if has('nvim')
 	Plug 'neovim/nvim-lsp'
-	Plug 'haorenW1025/completion-nvim'
 endif

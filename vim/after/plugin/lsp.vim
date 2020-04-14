@@ -4,11 +4,11 @@ endif
 
 lua <<EOF
 local nvim_lsp = require('nvim_lsp')
-local compl = require('completion')
+local ncm2 = require('ncm2')
 
-nvim_lsp.rls.setup({on_attach=compl.on_attach})
-nvim_lsp.gopls.setup({on_attach=compl.on_attach})
-nvim_lsp.flow.setup{}
+nvim_lsp.rls.setup({on_attach=ncm2.register_lsp_source})
+nvim_lsp.gopls.setup({on_attach=ncm2.register_lsp_source})
+nvim_lsp.flow.setup({on_attach=ncm2.register_lsp_source})
 EOF
 
 function s:setup()
