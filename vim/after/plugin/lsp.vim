@@ -26,7 +26,7 @@ endfunction()
 
 augroup lspomnifunc!
 	autocmd!
-	autocmd Filetype rust,go call s:setup()
+	autocmd Filetype rust,go,javascript call s:setup()
 	autocmd BufWritePre *.rs :lua vim.lsp.buf.formatting()
 augroup END
 
