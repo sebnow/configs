@@ -22,4 +22,5 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 
 if has('nvim')
 	Plug 'neovim/nvim-lsp'
+	Plug 'haorenW1025/diagnostic-nvim'
 endif

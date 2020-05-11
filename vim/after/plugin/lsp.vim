@@ -4,15 +4,15 @@ endif
 
 lua <<EOF
 local nvim_lsp = require('nvim_lsp')
+local diagnostic = require('diagnostic')
 local ncm2 = require('ncm2')
 
-nvim_lsp.rls.setup({on_attach=ncm2.register_lsp_source})
-nvim_lsp.gopls.setup({on_attach=ncm2.register_lsp_source})
-nvim_lsp.flow.setup({on_attach=ncm2.register_lsp_source})
+nvim_lsp.rls.setup({on_init=ncm2.register_lsp_source, on_attach=diagnostic.on_attach})
+nvim_lsp.gopls.setup({on_init=ncm2.register_lsp_source, on_attach=diagnostic.on_attach})
+nvim_lsp.flow.setup({on_init=ncm2.register_lsp_source, on_attach=diagnostic.on_attach})
 EOF
 
 function s:setup()
-	echo "Setting up LSP"
 	setl omnifunc=v:lua.vim.lsp.omnifunc
 
 	nnoremap <silent> <leader>fb <cmd>lua vim.lsp.buf.formatting()<CR>
