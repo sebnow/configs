@@ -1,4 +1,5 @@
-/zsh/local
 /bash/local*
 /emacs.d/custom-local.el
+/fish/fishd.*
+/zsh/local
 
