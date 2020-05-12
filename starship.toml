@@ -8,6 +8,7 @@ style = "dimmed yellow"
 
 [directory]
 style = "fg:green"
+truncate_to_repo = false
 
 [nodejs]
 disabled = true
