@@ -18,6 +18,6 @@ endfunction()
 
 augroup lspomnifunc!
 	au!
-	au Filetype rust,go,javascript call s:setup()
-	au BufWritePre *.rs :lua vim.lsp.buf.formatting()
+	au Filetype rust,go,javascript,tf call s:setup()
+	au BufWritePre *.rs,*.tf :lua vim.lsp.buf.formatting()
 augroup END
