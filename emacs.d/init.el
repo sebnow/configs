@@ -7,6 +7,8 @@
 (show-paren-mode 1)
 (column-number-mode 1)
 
+(global-set-key (kbd "C-c a") 'org-agenda)
+
 (require 'package)
 (add-to-list 'package-archives
 			 '("melpa" . "https://melpa.org/packages/") t)
@@ -28,6 +30,13 @@
 
 (use-package ayu-theme
   :config (load-theme 'ayu-dark t))
+
+;;; org-mode
+(use-package org)
+(add-to-list 'org-modules 'org-habit t)
+(eval-after-load 'org
+	'(org-load-modules-maybe t))
+(setq org-agenda-files '("~/Documents/Org"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
