@@ -11,7 +11,7 @@
 
 (require 'package)
 (add-to-list 'package-archives
-			 '("melpa" . "https://melpa.org/packages/") t)
+	     '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (package-refresh-contents)
 
@@ -35,8 +35,12 @@
 (use-package org)
 (add-to-list 'org-modules 'org-habit t)
 (eval-after-load 'org
-	'(org-load-modules-maybe t))
-(setq org-agenda-files '("~/Documents/Org"))
+  '(org-load-modules-maybe t))
+(setq org-agenda-files '("~/Documents/Org")
+      org-agenda-start-on-weekday nil
+      org-agenda-start-day "-1d"
+      org-image-actual-width nil
+      org-startup-with-inline-images t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
