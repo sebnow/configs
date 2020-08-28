@@ -1,16 +1,18 @@
+local completion = require('completion')
 local diagnostic = require('diagnostic')
 local nvim_lsp = require('nvim_lsp')
 
 local opts = {
-	on_init = ncm2.register_lsp_source,
-	on_attach = diagnostic.on_attach,
+	on_attach = function()
+		completion.on_attach()
+		diagnostic.on_attach()
+	end
 }
 
 nvim_lsp.rls.setup(opts)
 nvim_lsp.gopls.setup(opts)
 nvim_lsp.flow.setup(opts)
 nvim_lsp.yamlls.setup({
-	on_init = opts.on_init,
 	on_attach = opts.on_attach,
 	settings = {
 		yaml = {
