@@ -39,6 +39,6 @@ if exists('g:nvim_lsp')
 
 	augroup lspmap!
 		au!
-		au Filetype rust,go,javascript,tf call s:setup()
+		au Filetype rust,go,javascript,typescript,tf call s:setup()
 	augroup END
 endif

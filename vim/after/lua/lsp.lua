@@ -12,6 +12,7 @@ local opts = {
 nvim_lsp.rls.setup(opts)
 nvim_lsp.gopls.setup(opts)
 nvim_lsp.flow.setup(opts)
+nvim_lsp.tsserver.setup(opts)
 nvim_lsp.yamlls.setup({
 	on_attach = opts.on_attach,
 	settings = {
