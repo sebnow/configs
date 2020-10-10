@@ -13,8 +13,7 @@ nvim_lsp.rls.setup(opts)
 nvim_lsp.gopls.setup(opts)
 nvim_lsp.flow.setup(opts)
 nvim_lsp.tsserver.setup(opts)
-nvim_lsp.yamlls.setup({
-	on_attach = opts.on_attach,
+nvim_lsp.yamlls.setup(vim.tbl_extend("force", opts, {
 	settings = {
 		yaml = {
 			schemas = {
@@ -22,10 +21,9 @@ nvim_lsp.yamlls.setup({
 			},
 		},
 	},
-})
+}))
 nvim_lsp.jsonls.setup(opts)
-nvim_lsp.terraformls.setup({
-	on_attach = opts.on_attach,
+nvim_lsp.terraformls.setup(vim.tbl_extend("force", opts, {
 	filetypes = {"terraform", "tf"},
 	cmd = {"terraform-ls", "serve"},
-})
+}))
