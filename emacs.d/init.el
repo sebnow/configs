@@ -39,6 +39,7 @@
 (setq org-agenda-files '("~/Documents/Org")
       org-agenda-start-on-weekday nil
       org-agenda-start-day "-1d"
+      org-log-into-drawer "LOGBOOK"
       org-image-actual-width nil
       org-startup-with-inline-images t)
 
