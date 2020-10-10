@@ -11,10 +11,6 @@ runtime vv.vim
 " Plugins!
 call plug#begin('~/.vim/plugged')
 runtime plugins.vim
-""" Naughty plugin config
-" These plugins don't support being configured through
-" runtimepath/after/plugin
-runtime before.vim
 call plug#end()
 
 runtime colorscheme.vim
