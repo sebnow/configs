@@ -14,7 +14,7 @@ set wildmode=list:longest
 set tabstop=4
 set shiftwidth=4
 set textwidth=72
-set noexpandtab
+set expandtab " Modern languages are opinionated and tend to default to spaces
 set formatoptions+=cronql1jp
 set completeopt=menuone,noinsert
 
