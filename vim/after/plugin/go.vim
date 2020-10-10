@@ -16,6 +16,10 @@ let g:go_highlight_variable_declarations = 1
 
 let g:go_fmt_autosave = 0
 
+" Disable the super annoying popup after pressing escape during
+" completion. LSP already shows this information.
+let g:go_echo_go_info = 0
+
 augroup gomap
 	" Test Project
 	au FileType go nmap <buffer> <localleader>tp :GoTest ./...<CR>
