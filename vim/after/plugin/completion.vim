@@ -2,7 +2,6 @@ if !exists('g:loaded_completion')
 	 finish
  endif
 
-let g:completion_confirm_key = "\<C-y>"
 let g:completion_enable_snippet = 'UltiSnips'
 
 set completeopt=menuone,noinsert,noselect
