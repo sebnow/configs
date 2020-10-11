@@ -14,3 +14,4 @@ runtime plugins.vim
 call plug#end()
 
 runtime colorscheme.vim
+lua require('sebnow.init')

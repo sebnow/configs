@@ -11,7 +11,6 @@ nnoremap <silent><localleader>p/ <cmd>lua require('telescope.builtin').live_grep
 nnoremap <silent><localleader>; <cmd>lua require('telescope.builtin').command_history()<CR>
 " }}}
 
-lua require('lsp')
 function s:setup_lsp()
 	setl omnifunc=v:lua.vim.lsp.omnifunc
 
