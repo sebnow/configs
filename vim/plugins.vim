@@ -1,7 +1,6 @@
 Plug 'SirVer/ultisnips'
 Plug 'ayu-theme/ayu-vim'
 Plug 'fatih/vim-go'
-Plug 'gelguy/wilder.nvim'
 Plug 'neovim/nvim-lsp'
 Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-lua/diagnostic-nvim'
