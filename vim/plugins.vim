@@ -9,3 +9,4 @@ Plug 'nvim-lua/plenary.nvim' "Dependency for telescope
 Plug 'nvim-lua/popup.nvim' "Dependency for telescope
 Plug 'nvim-lua/telescope.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'tpope/vim-fugitive'
