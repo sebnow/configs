@@ -1,3 +1,4 @@
+Plug 'SirVer/ultisnips'
 Plug 'ayu-theme/ayu-vim'
 Plug 'fatih/vim-go'
 Plug 'gelguy/wilder.nvim'

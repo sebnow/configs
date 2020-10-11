@@ -1,0 +1,16 @@
+snippet sthandler "Structure and associated handler"
+type ${1:Verb}${2:Cmd} struct {
+	${0}
+}
+
+type $1Handler struct {
+}
+
+func New${1/./\u$0/}Handler() *$1Handler {
+	return &$1Handler{}
+}
+
+func (h $1Handler) $1(ctx context.Context, ${2/./\l$0/} $1$2) error {
+	return nil
+}
+endsnippet
