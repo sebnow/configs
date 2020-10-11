@@ -9,7 +9,7 @@ runtime map.vim
 runtime vv.vim
 
 " Plugins!
-call plug#begin('~/.vim/plugged')
+call plug#begin(stdpath('config').'/plugged')
 runtime plugins.vim
 call plug#end()
 
