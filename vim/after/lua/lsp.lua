@@ -27,3 +27,4 @@ nvim_lsp.terraformls.setup(vim.tbl_extend("force", opts, {
 	filetypes = {"terraform", "tf"},
 	cmd = {"terraform-ls", "serve"},
 }))
+nvim_lsp.sumneko_lua.setup(opts)
