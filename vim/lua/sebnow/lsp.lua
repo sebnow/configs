@@ -9,7 +9,7 @@ local opts = {
 	end
 }
 
-nvim_lsp.rls.setup(opts)
+nvim_lsp.rust_analyzer.setup(opts)
 nvim_lsp.gopls.setup(opts)
 nvim_lsp.flow.setup(opts)
 nvim_lsp.tsserver.setup(opts)
