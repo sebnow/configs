@@ -40,7 +40,7 @@ endfunction()
 
 augroup lspmap!
 	au!
-	au Filetype rust,go,javascript,typescript,tf,yaml,lua call s:setup_lsp()
+	au Filetype rust,go,gomod,javascript,typescript,tf,yaml,lua call s:setup_lsp()
 	au CursorHold,CursorHoldI *.rs :lua require('lsp_extensions').inlay_hints({only_current_line = true})
 augroup END
 
