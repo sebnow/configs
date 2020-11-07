@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 abspath() {
@@ -23,18 +23,19 @@ DST="$HOME"
 
 [ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
 
+inst "$SRC/alacritty/alacritty.yml" "$DST/.config/alacritty/alacritty.yml"
 inst "$SRC/bash" "$DST/.bash"
 inst "$SRC/bashrc" "$DST/.bashrc"
+inst "$SRC/emacs.d" "$DST/.emacs.d"
 inst "$SRC/fish" "$DST/.config/fish"
 inst "$SRC/gitconfig" "$DST/.gitconfig"
 inst "$SRC/gitignore" "$DST/.gitignore"
 inst "$SRC/inputrc" "$DST/.inputrc"
+inst "$SRC/nixpkgs" "$DST/.config/nixpkgs"
+inst "$SRC/starship.toml" "$DST/.config/starship.toml"
+inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 inst "$SRC/vim" "$DST/.config/nvim"
-inst "$SRC/emacs.d" "$DST/.emacs.d"
-inst "$SRC/tmux.conf" "$DST/.tmux.conf"
-inst "$SRC/alacritty/alacritty.yml" "$DST/.config/alacritty/alacritty.yml"
-inst "$SRC/starship.toml" "$DST/.config/starship.toml"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
