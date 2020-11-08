@@ -27,7 +27,6 @@
     nixfmt
     openssh
     ripgrep
-    syncthing
     unzip
   ];
 
@@ -57,4 +56,6 @@
   };
 
   # TODO: programs.keychain
+
+  services.syncthing.enable = true;
 }
