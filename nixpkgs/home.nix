@@ -6,8 +6,16 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  xdg.enable = true;
+  xdg.mime.enable = true;
+  targets.genericLinux.enable = true;
+
   home.username = "sebnow";
   home.homeDirectory = "/home/sebnow";
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    BROWSER = "firefox";
+  };
 
   home.packages = with pkgs; [
     direnv
