@@ -51,5 +51,10 @@
     extraConfig = builtins.readFile ../tmux.conf;
   };
 
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscodium;
+  };
+
   # TODO: programs.keychain
 }
