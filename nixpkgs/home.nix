@@ -15,6 +15,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     BROWSER = "firefox";
+    TERMINAL = "alacritty";
   };
 
   home.packages = with pkgs; [
@@ -30,6 +31,7 @@
     unzip
   ];
 
+  programs.alacritty.enable = true;
   programs.fzf.enable = true;
   programs.jq.enable = true;
   programs.starship.enable = true;
