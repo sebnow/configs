@@ -8,6 +8,7 @@ telescope.setup({
                 ["<C-s>"] = actions.goto_file_selection_split,
                 ["<C-x>"] = false,
             },
-        }
+        },
+        file_sorter = require('telescope.sorters').get_fzy_sorter,
     }
 })
