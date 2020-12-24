@@ -21,7 +21,6 @@ nnoremap <silent><localleader>; <cmd>lua require('telescope.builtin').command_hi
 function s:setup_lsp()
 	setl omnifunc=v:lua.vim.lsp.omnifunc
 
-	nnoremap <buffer><silent> <localleader>do <cmd>lua vim.lsp.util.show_line_diagnostics()<CR>
 	nnoremap <buffer><silent> <localleader>fb <cmd>lua vim.lsp.buf.formatting()<CR>
 	nnoremap <buffer><silent> <localleader>ro <cmd>lua vim.lsp.buf.rename()<CR>
 	nnoremap <buffer><silent> <localleader>ca <cmd>lua vim.lsp.buf.code_action()<CR>
@@ -35,6 +34,11 @@ function s:setup_lsp()
 	nnoremap <buffer><silent> gr <cmd>lua require('telescope.builtin').lsp_references()<CR>
 	nnoremap <buffer><silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 
+	nnoremap <buffer><silent> <localleader>do <cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
+	nnoremap <buffer><silent> <localleader>dl <cmd>lua vim.lsp.diagnostic.set_loclist()<CR>
+	nnoremap <buffer><silent> <localleader>dn <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+	nnoremap <buffer><silent> <localleader>dp <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+
 	inoremap <buffer><silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
 endfunction()
 
@@ -43,9 +47,3 @@ augroup lspmap!
 	au Filetype rust,go,gomod,javascript,typescript,tf,yaml,lua call s:setup_lsp()
 	au CursorHold,CursorHoldI *.rs :lua require('lsp_extensions').inlay_hints({only_current_line = true})
 augroup END
-
-if exists('g:loaded_diagnostic')
-	nnoremap <silent> <leader>dl :OpenDiagnostic<CR>
-	nnoremap <silent> <leader>dn :NextDiagnosticCycle<CR>
-	nnoremap <silent> <leader>dp :PrevDiagnosticCycle<CR>
-endif

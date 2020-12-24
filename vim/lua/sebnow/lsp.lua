@@ -1,19 +1,23 @@
 local completion = require('completion')
-local diagnostic = require('diagnostic')
-local nvim_lsp = require('nvim_lsp')
+local lspconfig = require('lspconfig')
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = false,
+    signs = true,
+    update_in_insert = false,
+})
 
 local opts = {
 	on_attach = function()
 		completion.on_attach()
-		diagnostic.on_attach()
 	end
 }
 
-nvim_lsp.rust_analyzer.setup(opts)
-nvim_lsp.gopls.setup(opts)
-nvim_lsp.flow.setup(opts)
-nvim_lsp.tsserver.setup(opts)
-nvim_lsp.yamlls.setup(vim.tbl_extend("force", opts, {
+lspconfig.rust_analyzer.setup(opts)
+lspconfig.gopls.setup(opts)
+lspconfig.flow.setup(opts)
+lspconfig.tsserver.setup(opts)
+lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
 	settings = {
 		yaml = {
 			schemas = {
@@ -22,9 +26,8 @@ nvim_lsp.yamlls.setup(vim.tbl_extend("force", opts, {
 		},
 	},
 }))
-nvim_lsp.jsonls.setup(opts)
-nvim_lsp.terraformls.setup(vim.tbl_extend("force", opts, {
+lspconfig.jsonls.setup(opts)
+lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
 	filetypes = {"terraform", "tf"},
 	cmd = {"terraform-ls", "serve"},
 }))
-nvim_lsp.sumneko_lua.setup(opts)
