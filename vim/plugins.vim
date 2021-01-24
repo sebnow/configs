@@ -9,6 +9,7 @@ Plug 'nvim-lua/plenary.nvim' "Dependency for telescope
 Plug 'nvim-lua/popup.nvim' "Dependency for telescope
 Plug 'nvim-lua/telescope.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'sbdchd/neoformat'
 Plug 'tpope/vim-fugitive'
 
 " TODO: Check out;
