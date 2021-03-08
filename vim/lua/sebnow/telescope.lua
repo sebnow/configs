@@ -5,7 +5,7 @@ telescope.setup({
     defaults = {
         mappings = {
             i = {
-                ["<C-s>"] = actions.goto_file_selection_split,
+                ["<C-s>"] = actions.select_horizontal,
                 ["<C-x>"] = false,
             },
         },
