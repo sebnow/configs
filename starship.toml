@@ -1,7 +1,6 @@
 add_newline = false
 
 [aws]
-displayed_items = "profile"
 
 [cmd_duration]
 style = "dimmed yellow"
