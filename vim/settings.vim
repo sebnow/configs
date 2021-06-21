@@ -23,6 +23,6 @@ set statusline=%-3.3n\ %f%(\ %r%)%(\ %#WarningMsg#%m%0*%)%=(%l,\ %c)\ %P\ [%{&en
 
 set foldenable
 set foldmethod=marker
-set foldlevel=1
+set foldlevel=99
 
 set guifont=Iosevka\ Nerd\ Font,Iosevka,monospace
