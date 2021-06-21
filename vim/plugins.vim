@@ -1,5 +1,6 @@
 Plug 'LnL7/vim-nix'
 Plug 'SirVer/ultisnips'
+Plug 'aklt/plantuml-syntax'
 Plug 'ayu-theme/ayu-vim'
 Plug 'fatih/vim-go'
 Plug 'neovim/nvim-lspconfig'
