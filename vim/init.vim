@@ -1,17 +1,5 @@
-" Bootstrap vim-plug
-let s:vimdir = fnamemodify($MYVIMRC, ':p:h')
-if empty(glob(s:vimdir.'/autoload/plug.vim'))
-	execute 'silent !curl -fsLo ' s:vimdir . '/autoload/plug.vim --create-dirs' 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-endif
-
+lua require('sebnow.init')
 runtime settings.vim
 runtime map.vim
 runtime vv.vim
-
-" Plugins!
-call plug#begin(stdpath('config').'/plugged')
-runtime plugins.vim
-call plug#end()
-
 runtime colorscheme.vim
-lua require('sebnow.init')
