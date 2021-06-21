@@ -7,7 +7,7 @@ Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'nvim-lua/plenary.nvim' "Dependency for telescope
 Plug 'nvim-lua/popup.nvim' "Dependency for telescope
-Plug 'nvim-lua/telescope.nvim', { 'commit': '1c80a92d4027c03b65cce1fe27ef664cff77186d' }
+Plug 'nvim-telescope/telescope.nvim', { 'commit': 'feaed4b6e23bd56906089154f293f2b1ecb68c7e' }
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'sbdchd/neoformat'
 Plug 'tpope/vim-fugitive'
