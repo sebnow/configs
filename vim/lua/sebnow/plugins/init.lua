@@ -1,11 +1,10 @@
 local is_fresh_install = false
-local install_path = vim.call('stdpath', 'data') .. '/site/pack/packer/opt/packer.nvim'
+local install_path = vim.call('stdpath', 'data') .. '/site/pack/packer/start/packer.nvim'
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
   is_fresh_install = true
+  vim.cmd('packadd packer.nvim')
 end
-
-vim.cmd('packadd packer.nvim')
 
 local packer = require('packer')
 
@@ -47,5 +46,7 @@ end)
 if is_fresh_install then
     packer.install()
 end
+
+require('sebnow.plugins.which-key')
 
 return M
