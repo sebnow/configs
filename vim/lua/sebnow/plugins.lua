@@ -13,6 +13,7 @@ local M = packer.startup(function()
     use 'aklt/plantuml-syntax'
     use 'ayu-theme/ayu-vim'
     use 'fatih/vim-go'
+    use 'folke/which-key.nvim'
     use 'hashivim/vim-terraform'
     use 'LnL7/vim-nix'
     use 'neovim/nvim-lspconfig'

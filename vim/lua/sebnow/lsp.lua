@@ -9,12 +9,19 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 })
 
 local opts = {
-	on_attach = function()
+	on_attach = function(_client, bufnr)
+        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 		completion.on_attach()
 	end
 }
 
-lspconfig.rust_analyzer.setup(opts)
+lspconfig.rust_analyzer.setup(vim.tbl_extend("force", opts, {
+    on_attach = function(...)
+        opts.on_attach(...)
+        require('lsp_extensions').inlay_hints({only_current_line = true})
+    end
+}))
+
 lspconfig.gopls.setup(opts)
 lspconfig.flow.setup(opts)
 lspconfig.tsserver.setup(opts)

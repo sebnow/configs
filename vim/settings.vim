@@ -26,3 +26,5 @@ set foldmethod=marker
 set foldlevel=99
 
 set guifont=Iosevka\ Nerd\ Font,Iosevka,monospace
+
+set timeoutlen=250
