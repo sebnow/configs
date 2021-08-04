@@ -3,7 +3,6 @@ local snap = require('sebnow.plugins.snap')
 
 wk.register({
     ['<C-p>'] = {snap.find_files, 'Explore files'},
-    K = {'<cmd>lua vim.lsp.buf.hover()<cr>', 'Show info about the symbol under the cursor'},
     g = {
         name = 'navigation',
         D = {'<cmd>lua vim.lsp.buf.declaration()<cr>', 'Go to declaration'},
@@ -33,7 +32,6 @@ wk.register({
     },
     c = {
         name = 'Code Actions',
-        a = {'<cmd>lua vim.lsp.buf.code_action()<cr>', 'Show actions under cursor'},
         l = {'<cmd>lua require("telescope.builtin").lsp_code_actions()<cr>', 'Explore actions'},
     },
     s = {
@@ -43,13 +41,6 @@ wk.register({
     },
     d = {
         name = 'Diagnostics',
-        o = {'<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', 'Show line diagnostics'},
         l = {'<cmd>TroubleToggle<cr>', 'Explore diagnostics'},
-        n = {'<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'Go to next diagnostic'},
-        p = {'<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>', 'Go to previous diagnostic'},
     },
 }, {prefix = '<localleader>'})
-
-wk.register({
-    ['<C-k>'] = {'<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Show signature help'},
-}, {mode = 'i'})
