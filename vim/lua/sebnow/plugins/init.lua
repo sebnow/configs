@@ -6,11 +6,12 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.cmd('packadd packer.nvim')
 end
 
+vim.cmd([[autocmd BufWritePost plugins.lua source <afile> | PackerCompile]])
+
 local packer = require('packer')
 
 local M = packer.startup(function()
     use 'aklt/plantuml-syntax'
-    use 'ayu-theme/ayu-vim'
     use 'fatih/vim-go'
     use 'folke/which-key.nvim'
     use 'hashivim/vim-terraform'
@@ -41,6 +42,14 @@ local M = packer.startup(function()
             'nvim-lua/popup.nvim',
             'nvim-lua/plenary.nvim',
         },
+    }
+
+    use {
+        'Shatur/neovim-ayu',
+        config = function()
+            vim.g.ayu_mirage = true
+            vim.cmd('colorscheme ayu')
+        end
     }
 end)
 
