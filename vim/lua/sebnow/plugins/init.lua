@@ -51,6 +51,13 @@ local M = packer.startup(function()
             vim.cmd('colorscheme ayu')
         end
     }
+
+    use {
+        'folke/trouble.nvim',
+        requires = {
+            'kyazdani42/nvim-web-devicons',
+        },
+    }
 end)
 
 if is_fresh_install then

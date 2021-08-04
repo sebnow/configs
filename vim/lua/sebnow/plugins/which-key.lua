@@ -44,7 +44,7 @@ wk.register({
     d = {
         name = 'Diagnostics',
         o = {'<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', 'Show line diagnostics'},
-        l = {'<cmd>lua vim.lsp.diagnostic.set_loclist()<cr>', 'Explore diagnostics'},
+        l = {'<cmd>TroubleToggle<cr>', 'Explore diagnostics'},
         n = {'<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'Go to next diagnostic'},
         p = {'<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>', 'Go to previous diagnostic'},
     },
