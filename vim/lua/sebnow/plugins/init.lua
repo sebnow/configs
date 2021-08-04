@@ -13,7 +13,6 @@ local packer = require('packer')
 local M = packer.startup(function()
     use 'aklt/plantuml-syntax'
     use 'fatih/vim-go'
-    use 'folke/which-key.nvim'
     use 'hashivim/vim-terraform'
     use 'LnL7/vim-nix'
     use 'neovim/nvim-lspconfig'
@@ -22,7 +21,21 @@ local M = packer.startup(function()
     use 'SirVer/ultisnips'
     use 'tpope/vim-fugitive'
     use 'wbthomason/packer.nvim'
-    use { 'camspiers/snap', rocks = {'fzy'}}
+
+    use {
+        'camspiers/snap',
+        rocks = {'fzy'},
+        config = function()
+            require('sebnow.plugins.snap')
+        end
+    }
+
+    use {
+        'folke/which-key.nvim',
+        config = function()
+            require('sebnow.plugins.which-key')
+        end
+    }
 
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -84,8 +97,5 @@ end)
 if is_fresh_install then
     packer.install()
 end
-
-require('sebnow.plugins.which-key')
-require('sebnow.plugins.snap')
 
 return M
