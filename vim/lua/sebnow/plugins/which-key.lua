@@ -1,10 +1,8 @@
 local wk = require("which-key")
+local snap = require('sebnow.plugins.snap')
 
 wk.register({
-    ['<C-p>'] = {'<cmd>lua require("telescope.builtin").find_files({find_command = {"fd", "--type", "f", "-H", "-E", ".git"}})<cr>', 'Explore files'},
-})
-
-wk.register({
+    ['<C-p>'] = {snap.find_files, 'Explore files'},
     K = {'<cmd>lua vim.lsp.buf.hover()<cr>', 'Show info about the symbol under the cursor'},
     g = {
         name = 'navigation',
@@ -13,21 +11,18 @@ wk.register({
         d = {'<cmd>lua vim.lsp.buf.definition()<cr>', 'Go to definition'},
         r = {'<cmd>lua require("telescope.builtin").lsp_references()<cr>', 'Explore references'},
     },
-}, {buffer = 0})
+})
 
 wk.register({
+    [';'] = {'<cmd>lua require("telescope.builtin").command_history()<cr>', 'Explore command history'},
     b = {
         name = 'buffers',
-        e = {'<cmd>Telescope buffers<cr>', 'Explore buffers' },
+        e = {snap.buffers, 'Explore buffers' },
     },
     p = {
         name = 'project',
-        ['/'] = {'<cmd>lua require("telescope.builtin").live_grep()<cr>', 'Search in project'},
+        ['/'] = {snap.grep, 'Search in project'},
     },
-    [';'] = {'<cmd>lua require("telescope.builtin").command_history()<cr>', 'Explore command history'},
-}, {prefix = '<localleader>'})
-
-wk.register({
     f = {
         name = 'Format',
         b = {'<cmd>lua vim.lsp.buf.formatting()<cr>', 'Format buffer'},
@@ -53,8 +48,8 @@ wk.register({
         n = {'<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'Go to next diagnostic'},
         p = {'<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>', 'Go to previous diagnostic'},
     },
-}, {prefix = '<localleader>', buffer = 0})
+}, {prefix = '<localleader>'})
 
 wk.register({
     ['<C-k>'] = {'<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Show signature help'},
-}, {buffer = 0, mode = 'i'})
+}, {mode = 'i'})

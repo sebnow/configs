@@ -22,6 +22,7 @@ local M = packer.startup(function()
     use 'SirVer/ultisnips'
     use 'tpope/vim-fugitive'
     use 'wbthomason/packer.nvim'
+    use { 'camspiers/snap', rocks = {'fzy'}}
 
     use {
         'nvim-treesitter/nvim-treesitter',
@@ -48,5 +49,6 @@ if is_fresh_install then
 end
 
 require('sebnow.plugins.which-key')
+require('sebnow.plugins.snap')
 
 return M
