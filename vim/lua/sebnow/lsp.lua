@@ -2,6 +2,10 @@ local completion = require('completion')
 local lspconfig = require('lspconfig')
 local lspconfigs = require('lspconfig/configs')
 
+function merge(a, b)
+    return vim.tbl_extend("force", a, b)
+end
+
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
     virtual_text = false,
     signs = true,
@@ -24,7 +28,13 @@ lspconfig.rust_analyzer.setup(vim.tbl_extend("force", opts, {
 
 lspconfig.gopls.setup(opts)
 lspconfig.flow.setup(opts)
-lspconfig.tsserver.setup(opts)
+
+lspconfig.tsserver.setup(merge(opts, {
+    on_attach = function(client)
+        client.resolved_capabilities.document_formatting = false
+    end
+}))
+
 lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
 	settings = {
 		yaml = {

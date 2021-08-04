@@ -19,7 +19,6 @@ local M = packer.startup(function()
     use 'neovim/nvim-lspconfig'
     use 'nvim-lua/completion-nvim'
     use 'nvim-lua/lsp_extensions.nvim'
-    use 'sbdchd/neoformat'
     use 'SirVer/ultisnips'
     use 'tpope/vim-fugitive'
     use 'wbthomason/packer.nvim'
@@ -57,6 +56,17 @@ local M = packer.startup(function()
         requires = {
             'kyazdani42/nvim-web-devicons',
         },
+    }
+
+    use {
+        'jose-elias-alvarez/null-ls.nvim',
+        requires = {
+            'neovim/nvim-lspconfig',
+            'nvim-lua/plenary.nvim',
+        },
+        config = function()
+            require('sebnow.plugins.null-ls')
+        end,
     }
 end)
 
