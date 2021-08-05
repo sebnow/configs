@@ -1,4 +1,3 @@
-local completion = require('completion')
 local lspconfig = require('lspconfig')
 local lspconfigs = require('lspconfig/configs')
 local wk = require("which-key")
@@ -16,7 +15,6 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 local opts = {
 	on_attach = function(_client, bufnr)
         vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-		completion.on_attach()
 	end
 }
 
