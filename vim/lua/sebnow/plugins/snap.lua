@@ -1,12 +1,11 @@
 local snap = require('snap')
+local wk = require("which-key")
 
 -- TODO: The fzy rock doesn't seem to be found, so consumer.fzy doesn't
 -- work
 local fuzzy = snap.get('consumer.fzf')
 
-local M = {}
-
-M.find_files = snap.create(function ()
+local find_files = snap.create(function ()
     local rg = snap.get('producer.ripgrep.file')
     local select = snap.get('select.file')
 
@@ -18,7 +17,7 @@ M.find_files = snap.create(function ()
     }
 end)
 
-M.grep = snap.create(function ()
+local grep = snap.create(function ()
     local select = snap.get('select.vimgrep')
 
     return {
@@ -29,7 +28,7 @@ M.grep = snap.create(function ()
     }
 end)
 
-M.buffers = snap.create(function ()
+local buffers = snap.create(function ()
     local select = snap.get('select.vimgrep')
 
     return {
@@ -40,4 +39,17 @@ M.buffers = snap.create(function ()
     }
 end)
 
-return M
+wk.register({
+    ['<C-p>'] = {find_files, 'Explore files'},
+})
+
+wk.register({
+    b = {
+        name = 'Buffers',
+        e = {buffers, 'Explore buffers' },
+    },
+    p = {
+        name = 'Project',
+        ['/'] = {grep, 'Search in project'},
+    },
+}, {prefix = '<localleader>'})

@@ -1,8 +1,6 @@
 local wk = require("which-key")
-local snap = require('sebnow.plugins.snap')
 
 wk.register({
-    ['<C-p>'] = {snap.find_files, 'Explore files'},
     g = {
         name = 'navigation',
         D = {'<cmd>lua vim.lsp.buf.declaration()<cr>', 'Go to declaration'},
@@ -14,14 +12,6 @@ wk.register({
 
 wk.register({
     [';'] = {'<cmd>lua require("telescope.builtin").command_history()<cr>', 'Explore command history'},
-    b = {
-        name = 'buffers',
-        e = {snap.buffers, 'Explore buffers' },
-    },
-    p = {
-        name = 'project',
-        ['/'] = {snap.grep, 'Search in project'},
-    },
     f = {
         name = 'Format',
         b = {'<cmd>lua vim.lsp.buf.formatting()<cr>', 'Format buffer'},
@@ -44,3 +34,10 @@ wk.register({
         l = {'<cmd>TroubleToggle<cr>', 'Explore diagnostics'},
     },
 }, {prefix = '<localleader>'})
+
+wk.register({
+    f = {
+        name = 'Format',
+        b = {'<cmd>lua vim.lsp.buf.range_formatting()<cr>', 'Format range'},
+    },
+}, {prefix = '<localleader>', mode = 'v'})
