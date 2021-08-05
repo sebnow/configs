@@ -15,12 +15,22 @@ local M = packer.startup(function()
     use 'fatih/vim-go'
     use 'hashivim/vim-terraform'
     use 'LnL7/vim-nix'
-    use 'neovim/nvim-lspconfig'
     use 'nvim-lua/completion-nvim'
     use 'nvim-lua/lsp_extensions.nvim'
     use 'SirVer/ultisnips'
     use 'tpope/vim-fugitive'
     use 'wbthomason/packer.nvim'
+
+    use {
+        'neovim/nvim-lspconfig',
+        requires = {
+            'folke/which-key.nvim',
+            'nvim-lua/completion-nvim',
+        },
+        config = function()
+            require('sebnow.plugins.lsp')
+        end
+    }
 
     use {
         'camspiers/snap',

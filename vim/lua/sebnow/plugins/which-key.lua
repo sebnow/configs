@@ -3,9 +3,6 @@ local wk = require("which-key")
 wk.register({
     g = {
         name = 'navigation',
-        D = {'<cmd>lua vim.lsp.buf.declaration()<cr>', 'Go to declaration'},
-        I = {'<cmd>lua vim.lsp.buf.implementation()<cr>', 'Go to implementation'},
-        d = {'<cmd>lua vim.lsp.buf.definition()<cr>', 'Go to definition'},
         r = {'<cmd>lua require("telescope.builtin").lsp_references()<cr>', 'Explore references'},
     },
 })

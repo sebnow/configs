@@ -1,6 +1,7 @@
 local completion = require('completion')
 local lspconfig = require('lspconfig')
 local lspconfigs = require('lspconfig/configs')
+local wk = require("which-key")
 
 function merge(a, b)
     return vim.tbl_extend("force", a, b)
@@ -64,3 +65,35 @@ end
 lspconfig.golangcilsp.setup(vim.tbl_extend("force", opts, {
 	filetypes = {'go'},
 }))
+
+wk.register({
+    g = {
+        name = 'Navigation',
+        D = {'<cmd>lua vim.lsp.buf.declaration()<cr>', 'Go to declaration'},
+        I = {'<cmd>lua vim.lsp.buf.implementation()<cr>', 'Go to implementation'},
+        d = {'<cmd>lua vim.lsp.buf.definition()<cr>', 'Go to definition'},
+    },
+})
+
+wk.register({
+    f = {
+        name = 'Format',
+        b = {'<cmd>lua vim.lsp.buf.formatting()<cr>', 'Format buffer'},
+    },
+    r = {
+        name = 'Rename',
+        o = {'<cmd>lua vim.lsp.buf.rename()<cr>', 'Rename object'},
+    },
+    s = {
+        name = 'Symbols',
+        w = {'<cmd>lua require("telescope.builtin").lsp_workspace_symbols()<cr>', 'Explore workspace symbols'},
+        d = {'<cmd>lua require("telescope.builtin").lsp_document_symbols()<cr>', 'Explore document symbols'},
+    },
+}, {prefix = '<localleader>'})
+
+wk.register({
+    f = {
+        name = 'Format',
+        b = {'<cmd>lua vim.lsp.buf.range_formatting()<cr>', 'Format range'},
+    },
+}, {prefix = '<localleader>', mode = 'v'})
