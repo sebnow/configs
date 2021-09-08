@@ -16,14 +16,18 @@ local M = packer.startup(function()
     use 'hashivim/vim-terraform'
     use 'LnL7/vim-nix'
     use 'nvim-lua/lsp_extensions.nvim'
-    use 'SirVer/ultisnips'
     use 'tpope/vim-fugitive'
     use 'wbthomason/packer.nvim'
 
     use {
-        'nvim-lua/completion-nvim',
+        "hrsh7th/nvim-cmp",
+        requires = {
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-path',
+        },
         config = function()
-            require('sebnow.plugins.completion')
+            require('sebnow.plugins.cmp')
         end,
     }
 

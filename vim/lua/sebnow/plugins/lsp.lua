@@ -13,9 +13,11 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 })
 
 local opts = {
-	on_attach = function(_client, bufnr)
+    -- TODO: Refactor this so that the completion plugin is decoupled
+    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+    on_attach = function(_client, bufnr)
         vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-	end
+    end
 }
 
 lspconfig.rust_analyzer.setup(vim.tbl_extend("force", opts, {
