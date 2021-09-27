@@ -33,7 +33,8 @@ lspconfig.flow.setup(opts)
 lspconfig.tsserver.setup(merge(opts, {
     on_attach = function(client)
         client.resolved_capabilities.document_formatting = false
-    end
+    end,
+    filetypes = {'typescript', 'typescriptreact', 'typescript.tsx'},
 }))
 
 lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
