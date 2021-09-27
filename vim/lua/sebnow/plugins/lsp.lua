@@ -6,11 +6,16 @@ function merge(a, b)
     return vim.tbl_extend("force", a, b)
 end
 
+local popup_opts = { border = 'rounded', max_width = 80 }
+
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
     virtual_text = false,
     signs = true,
     update_in_insert = false,
 })
+
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, popup_opts)
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, popup_opts)
 
 local opts = {
     -- TODO: Refactor this so that the completion plugin is decoupled
@@ -74,9 +79,19 @@ wk.register({
         I = {'<cmd>lua vim.lsp.buf.implementation()<cr>', 'Go to implementation'},
         d = {'<cmd>lua vim.lsp.buf.definition()<cr>', 'Go to definition'},
     },
+    K = {'<cmd>lua vim.lsp.buf.hover()<cr>', 'Show info about the symbol under the cursor'},
 })
 
 wk.register({
+    c = {
+        name = 'Code Actions',
+        a = {'<cmd>lua vim.lsp.buf.code_action()<cr>', 'Show actions under cursor'},
+    },
+    d = {
+        o = {'<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({focusable=false,border="rounded"})<cr>', 'Show line diagnostics'},
+        n = {'<cmd>lua vim.lsp.diagnostic.goto_next({popup_opts={focusable=false, border="rounded"}})<cr>', 'Go to next diagnostic'},
+        p = {'<cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts={focusable=false, border="rounded"}})<cr>', 'Go to previous diagnostic'},
+    },
     f = {
         name = 'Format',
         b = {'<cmd>lua vim.lsp.buf.formatting()<cr>', 'Format buffer'},
@@ -93,8 +108,16 @@ wk.register({
 }, {prefix = '<localleader>'})
 
 wk.register({
+    c = {
+        name = 'Code Actions',
+        a = {':<C-U>lua vim.lsp.buf.range_code_action()<cr>', 'Show actions for a given range'},
+    },
     f = {
         name = 'Format',
         b = {'<cmd>lua vim.lsp.buf.range_formatting()<cr>', 'Format range'},
     },
 }, {prefix = '<localleader>', mode = 'v'})
+
+wk.register({
+    ['<C-k>'] = {'<cmd>lua vim.lsp.buf.signature_help()<Cr>', 'Show signature help'},
+}, {mode = 'i'})
