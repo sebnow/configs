@@ -102,17 +102,6 @@ local M = packer.startup(function()
             require('sebnow.plugins.null-ls')
         end,
     }
-
-    use {
-        'glepnir/lspsaga.nvim',
-        requires = {
-            'neovim/nvim-lspconfig',
-            'glepnir/lspsaga.nvim', -- For config only
-        },
-        config = function()
-            require('sebnow.plugins.lspsaga')
-        end
-    }
 end)
 
 if is_fresh_install then
