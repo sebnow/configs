@@ -1,2 +1,2 @@
-require('sebnow.plugins')
-require('sebnow.treesitter')
+require("sebnow.plugins")
+require("sebnow.treesitter")
