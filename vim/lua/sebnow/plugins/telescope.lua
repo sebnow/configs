@@ -17,7 +17,12 @@ telescope.setup({
         file_previewer = previewers.vim_buffer_cat.new,
         grep_previewer = previewers.vim_buffer_vimgrep.new,
         qflist_previewer = previewers.vim_buffer_qflist.new,
-    }
+    },
+    pickers = {
+        lsp_code_actions = {
+            theme = 'cursor',
+        },
+    },
 })
 
 wk.register({
@@ -36,7 +41,7 @@ wk.register({
     },
     c = {
         name = 'Code Actions',
-        l = {builtin.lsp_code_actions, 'Explore actions'},
+        a = {builtin.lsp_code_actions, 'Explore actions'},
     },
     l = {builtin.resume, 'Resume previous list'},
     s = {
