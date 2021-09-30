@@ -19,6 +19,9 @@ telescope.setup({
         qflist_previewer = previewers.vim_buffer_qflist.new,
     },
     pickers = {
+        git_branches = {
+            theme = 'dropdown',
+        },
         lsp_code_actions = {
             theme = 'cursor',
         },
@@ -53,4 +56,8 @@ wk.register({
         name = 'Project',
         ['/'] = {builtin.live_grep, 'Search in project'},
     },
+    S = {
+        name = 'Source Control',
+        b = {builtin.git_branches, 'Branches'},
+    }
 }, {prefix = '<localleader>'})
