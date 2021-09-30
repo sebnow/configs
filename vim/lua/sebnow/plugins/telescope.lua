@@ -2,6 +2,7 @@ local wk = require("which-key")
 local actions = require('telescope.actions')
 local previewers = require('telescope.previewers')
 local sorters = require('telescope.sorters')
+local builtin = require('telescope.builtin')
 local telescope = require('telescope')
 
 telescope.setup({
@@ -32,6 +33,7 @@ wk.register({
         name = 'Code Actions',
         l = {'<cmd>lua require("telescope.builtin").lsp_code_actions()<cr>', 'Explore actions'},
     },
+    l = {builtin.resume, 'Resume previous list'},
     s = {
         name = 'Symbols',
         w = {'<cmd>lua require("telescope.builtin").lsp_workspace_symbols()<cr>', 'Explore workspace symbols'},
