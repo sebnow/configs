@@ -57,7 +57,7 @@ local M = packer.startup(function()
 
     use {
         'nvim-telescope/telescope.nvim',
-        commit = '5d37c3ea08f40d8c9d3a9ebcc72bd641d366c110',
+        commit = '440c598de419858a056e7d9d42a0a6829cd5bb05',
         branch = 'master',
         requires = {
             'kyazdani42/nvim-web-devicons',
