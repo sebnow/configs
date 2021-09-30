@@ -42,17 +42,6 @@ local M = packer.startup(function()
     }
 
     use {
-        'camspiers/snap',
-        rocks = {'fzy'},
-        requires = {
-            'folke/which-key.nvim',
-        },
-        config = function()
-            require('sebnow.plugins.snap')
-        end
-    }
-
-    use {
         'folke/which-key.nvim',
         config = function()
             require('sebnow.plugins.which-key')
@@ -72,13 +61,17 @@ local M = packer.startup(function()
 
     use {
         'nvim-telescope/telescope.nvim',
-        commit = 'e7362e9',
+        commit = '5d37c3ea08f40d8c9d3a9ebcc72bd641d366c110',
         branch = 'master',
         requires = {
             'kyazdani42/nvim-web-devicons',
             'nvim-lua/plenary.nvim',
             'nvim-lua/popup.nvim',
+            'folke/which-key.nvim',
         },
+        config = function()
+            require('sebnow.plugins.telescope')
+        end,
     }
 
     use {
