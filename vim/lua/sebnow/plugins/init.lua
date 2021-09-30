@@ -38,17 +38,6 @@ local M = packer.startup(function()
     }
 
     use {
-        'camspiers/snap',
-        rocks = {'fzy'},
-        requires = {
-            'folke/which-key.nvim',
-        },
-        config = function()
-            require('sebnow.plugins.snap')
-        end
-    }
-
-    use {
         'folke/which-key.nvim',
         config = function()
             require('sebnow.plugins.which-key')
