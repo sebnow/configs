@@ -75,6 +75,9 @@ local M = packer.startup(function()
             'nvim-lua/plenary.nvim',
             'nvim-lua/popup.nvim',
         },
+        config = function()
+            require('sebnow.plugins.telescope')
+        end,
     }
 
     use {
