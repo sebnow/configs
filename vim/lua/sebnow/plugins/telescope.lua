@@ -21,22 +21,31 @@ telescope.setup({
 })
 
 wk.register({
+    ['<C-p>'] = {builtin.find_files, 'Find files'},
     g = {
         name = 'navigation',
-        r = {'<cmd>lua require("telescope.builtin").lsp_references()<cr>', 'Explore references'},
+        r = {builtin.lsp_references, 'Explore references'},
     },
 })
 
 wk.register({
-    [';'] = {'<cmd>lua require("telescope.builtin").command_history()<cr>', 'Explore command history'},
+    [';'] = {builtin.command_history, 'Explore command history'},
+    b = {
+        name = 'Buffers',
+        e = {builtin.buffers, 'Explore buffers' },
+    },
     c = {
         name = 'Code Actions',
-        l = {'<cmd>lua require("telescope.builtin").lsp_code_actions()<cr>', 'Explore actions'},
+        l = {builtin.lsp_code_actions, 'Explore actions'},
     },
     l = {builtin.resume, 'Resume previous list'},
     s = {
         name = 'Symbols',
-        w = {'<cmd>lua require("telescope.builtin").lsp_workspace_symbols()<cr>', 'Explore workspace symbols'},
-        d = {'<cmd>lua require("telescope.builtin").lsp_document_symbols()<cr>', 'Explore document symbols'},
+        w = {builtin.lsp_workspace_symbols, 'Explore workspace symbols'},
+        d = {builtin.lsp_document_symbols, 'Explore document symbols'},
+    },
+    p = {
+        name = 'Project',
+        ['/'] = {builtin.live_grep, 'Search in project'},
     },
 }, {prefix = '<localleader>'})
