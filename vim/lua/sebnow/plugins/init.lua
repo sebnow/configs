@@ -74,6 +74,7 @@ local M = packer.startup(function()
             'kyazdani42/nvim-web-devicons',
             'nvim-lua/plenary.nvim',
             'nvim-lua/popup.nvim',
+            'folke/which-key.nvim',
         },
         config = function()
             require('sebnow.plugins.telescope')
