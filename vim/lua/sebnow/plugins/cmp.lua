@@ -4,7 +4,7 @@ cmp.setup({
 	mapping = {
 		["<C-d>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-n>"] = cmp.mapping.complete(),
+		["<C-space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.close(),
 		["<C-y>"] = cmp.mapping.confirm({
 			behavior = cmp.ConfirmBehavior.Replace,
