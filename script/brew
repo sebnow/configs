@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+brew install \
+    fd \
+    fzf \
+    gh \
+    neovim \
+    ripgrep \
+    starship \
+    tmux
