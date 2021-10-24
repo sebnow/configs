@@ -25,6 +25,8 @@ local M = packer.startup(function()
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-path',
+            'SirVer/ultisnips',
+            'quangnguyen30192/cmp-nvim-ultisnips',
         },
         config = function()
             require('sebnow.plugins.cmp')
