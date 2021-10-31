@@ -82,8 +82,7 @@ local M = packer.startup(function()
   use({
     "Shatur/neovim-ayu",
     config = function()
-      vim.g.ayu_mirage = true
-      vim.cmd("colorscheme ayu")
+      vim.cmd("colorscheme ayu-mirage")
     end,
   })
 
