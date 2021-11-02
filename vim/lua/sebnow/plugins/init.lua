@@ -103,6 +103,13 @@ local M = packer.startup(function()
       require("sebnow.plugins.null-ls")
     end,
   })
+
+  use({
+    "lukas-reineke/indent-blankline.nvim",
+    config = function()
+      require("sebnow.plugins.indent-blankline")
+    end,
+  })
 end)
 
 if is_fresh_install then
