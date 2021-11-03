@@ -82,7 +82,7 @@ local M = packer.startup(function()
   use({
     "Shatur/neovim-ayu",
     config = function()
-      vim.cmd("colorscheme ayu-mirage")
+      require("sebnow.plugins.ayu")
     end,
   })
 
