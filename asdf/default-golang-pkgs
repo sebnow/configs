@@ -1,0 +1,3 @@
+github.com/hashicorp/terraform-ls@latest
+github.com/nametake/golangci-lint-langserver@latest
+golang.org/x/tools/gopls@latest
