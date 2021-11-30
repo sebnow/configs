@@ -35,6 +35,7 @@ local M = packer.startup(function()
 
   use({
     "neovim/nvim-lspconfig",
+    commit = "4569e14e59bed1d18a91db76fe3261628f60e3f0",
     requires = {
       "folke/which-key.nvim",
     },

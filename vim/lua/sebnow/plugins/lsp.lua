@@ -57,20 +57,7 @@ lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
   cmd = { "terraform-ls", "serve" },
 }))
 
-if not lspconfig.golangcilsp then
-  lspconfigs.golangcilsp = {
-    default_config = {
-      cmd = { "golangci-lint-langserver" },
-      root_dir = lspconfig.util.root_pattern(".git", "go.mod"),
-      init_options = {
-        command = { "golangci-lint", "run", "--enable-all", "--disable", "lll", "--out-format", "json" },
-      },
-    },
-  }
-end
-lspconfig.golangcilsp.setup(vim.tbl_extend("force", opts, {
-  filetypes = { "go" },
-}))
+require("lspconfig").golangci_lint_ls.setup(opts)
 
 wk.register({
   g = {
