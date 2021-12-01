@@ -1,5 +1,4 @@
 set encoding=utf-8
-set hidden
 set ignorecase
 set incsearch
 set noshowmode
