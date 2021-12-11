@@ -19,6 +19,7 @@ local M = packer.startup(function()
   use("tpope/vim-fugitive")
   use("wbthomason/packer.nvim")
   use("simrat39/rust-tools.nvim")
+  use("stevearc/dressing.nvim")
 
   use({
     "hrsh7th/nvim-cmp",

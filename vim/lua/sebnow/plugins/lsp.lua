@@ -6,16 +6,11 @@ function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
-local popup_opts = { border = "rounded", max_width = 80 }
-
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   virtual_text = false,
   signs = true,
   update_in_insert = false,
 })
-
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, popup_opts)
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, popup_opts)
 
 local opts = {
   -- TODO: Refactor this so that the completion plugin is decoupled
@@ -94,11 +89,11 @@ wk.register({
       "Show line diagnostics",
     },
     n = {
-      '<cmd>lua vim.lsp.diagnostic.goto_next({popup_opts={focusable=false, border="rounded"}})<cr>',
+      "<cmd>lua vim.lsp.diagnostic.goto_next()<cr>",
       "Go to next diagnostic",
     },
     p = {
-      '<cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts={focusable=false, border="rounded"}})<cr>',
+      "<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>",
       "Go to previous diagnostic",
     },
   },
