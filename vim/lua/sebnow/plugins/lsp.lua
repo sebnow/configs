@@ -66,7 +66,7 @@ lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
   cmd = { "terraform-ls", "serve" },
 }))
 
-require("lspconfig").golangci_lint_ls.setup(opts)
+lspconfig.golangci_lint_ls.setup(opts)
 
 wk.register({
   g = {
