@@ -25,12 +25,26 @@ local opts = {
   end,
 }
 
-lspconfig.rust_analyzer.setup(vim.tbl_extend("force", opts, {
-  on_attach = function(...)
-    opts.on_attach(...)
-    require("lsp_extensions").inlay_hints({ only_current_line = true })
-  end,
-}))
+require("rust-tools").setup({
+  server = merge(opts, {
+    root_dir = require("lspconfig.util").root_pattern("Cargo.toml"),
+    settings = {
+      ["rust-analyzer"] = {
+        checkOnSave = {
+          allFeatures = true,
+          overrideCommand = {
+            "cargo",
+            "clippy",
+            "--workspace",
+            "--message-format=json",
+            "--all-targets",
+            "--all-features",
+          },
+        },
+      },
+    },
+  }),
+})
 
 lspconfig.gopls.setup(opts)
 lspconfig.flow.setup(opts)

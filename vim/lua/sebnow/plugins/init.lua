@@ -18,6 +18,7 @@ local M = packer.startup(function()
   use("nvim-lua/lsp_extensions.nvim")
   use("tpope/vim-fugitive")
   use("wbthomason/packer.nvim")
+  use("simrat39/rust-tools.nvim")
 
   use({
     "hrsh7th/nvim-cmp",
@@ -38,6 +39,7 @@ local M = packer.startup(function()
     commit = "4569e14e59bed1d18a91db76fe3261628f60e3f0",
     requires = {
       "folke/which-key.nvim",
+      "simrat39/rust-tools.nvim",
     },
     config = function()
       require("sebnow.plugins.lsp")
