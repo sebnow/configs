@@ -18,7 +18,7 @@
 	root = !readlink -f ./$(git rev-parse --show-cdup)
 	st = status --short
 	squash = rebase -i --autosquash @{u}
-	pr = !hub pull-request
+	pr = !gh pr create
 [push]
 	default = simple
 [log]
