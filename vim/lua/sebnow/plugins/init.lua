@@ -12,7 +12,6 @@ local packer = require("packer")
 
 local M = packer.startup(function()
   use("aklt/plantuml-syntax")
-  use("fatih/vim-go")
   use("folke/lsp-colors.nvim")
   use("hashivim/vim-terraform")
   use("LnL7/vim-nix")
@@ -66,6 +65,16 @@ local M = packer.startup(function()
   use({
     "plasticboy/vim-markdown",
     ft = { "markdown" },
+  })
+
+  use({
+    "ray-x/go.nvim",
+    requires = {
+      "folke/which-key.nvim",
+    },
+    config = function()
+      require("sebnow.plugins.go")
+    end,
   })
 
   use({

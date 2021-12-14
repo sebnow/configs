@@ -1,34 +1,12 @@
-let g:go_doc_keywordprg_enabled = 0
-let g:go_def_mapping_enabled = 0
-let g:go_template_use_pkg = 1
-
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_format_strings = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_function_parameters = 0
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_types = 1
-let g:go_highlight_variable_assignments = 1
-let g:go_highlight_variable_declarations = 1
-
-let g:go_fmt_autosave = 0
-
-" Disable the super annoying popup after pressing escape during
-" completion. LSP already shows this information.
-let g:go_echo_go_info = 0
-
 augroup gomap
 	" Test Project
-	au FileType go nmap <buffer> <localleader>tp :GoTest ./...<CR>
+	au FileType go nmap <buffer> <localleader>tp :GoTest<CR>
 	" Test Module (package)
-	au FileType go nmap <buffer> <localleader>tm :GoTest<CR>
+	au FileType go nmap <buffer> <localleader>tm :GoTestFile<CR>
 	" Lint Project
-	au FileType go nmap <buffer> <localleader>lp :GoMetaLinter<CR>
+	au FileType go nmap <buffer> <localleader>lp :GoLint<CR>
 augroup END
 
 augroup go
-	autocmd BufWritePre *.go :GoImports
+	autocmd BufWritePre *.go :GoImport
 augroup END
