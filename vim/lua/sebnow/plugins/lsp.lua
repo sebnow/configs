@@ -6,12 +6,6 @@ function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  virtual_text = false,
-  signs = true,
-  update_in_insert = false,
-})
-
 local opts = {
   -- TODO: Refactor this so that the completion plugin is decoupled
   capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
@@ -72,7 +66,7 @@ wk.register({
   g = {
     name = "Navigation",
     D = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Go to declaration" },
-    I = { "<cmd>lua vim.lsp.buf.implementation()<cr>", "Go to implementation" },
+    I = { "<cmd>Telescope lsp_implementations<cr>", "Go to implementation" },
     d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Go to definition" },
   },
   K = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Show info about the symbol under the cursor" },
@@ -85,15 +79,15 @@ wk.register({
   },
   d = {
     o = {
-      '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({focusable=false,border="rounded"})<cr>',
+      '<cmd>lua vim.diagnostic.open_float({scope="line",focusable=false,border="rounded"})<cr>',
       "Show line diagnostics",
     },
     n = {
-      "<cmd>lua vim.lsp.diagnostic.goto_next()<cr>",
+      "<cmd>lua vim.diagnostic.goto_next()<cr>",
       "Go to next diagnostic",
     },
     p = {
-      "<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>",
+      "<cmd>lua vim.diagnostic.goto_prev()<cr>",
       "Go to previous diagnostic",
     },
   },
