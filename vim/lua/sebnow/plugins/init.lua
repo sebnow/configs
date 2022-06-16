@@ -56,6 +56,7 @@ local M = packer.startup(function()
 
   use({
     "nvim-treesitter/nvim-treesitter",
+    commit = "78f36bbc58a0e85c83b400e32af8b5d7c55d527b",
     run = ":TSUpdate",
     config = function()
       require("sebnow.plugins.treesitter")
