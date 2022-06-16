@@ -1,2 +1,4 @@
 *.swp
 .envrc
+.tool-versions
+.direnv/
