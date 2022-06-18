@@ -1,7 +1,7 @@
 local cmp = require("cmp")
 
 cmp.setup({
-  mapping = {
+  mapping = cmp.mapping.preset.insert({
     ["<C-d>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-space>"] = cmp.mapping.complete(),
@@ -10,14 +10,14 @@ cmp.setup({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     }),
-  },
-  sources = {
+  }),
+  sources = cmp.config.sources({
     { name = "buffer", keyword_length = 4 },
     { name = "nvim_lsp" },
     { name = "path" },
     { name = "ultisnips" },
     { name = "luasnip" },
-  },
+  }),
   snippet = {
     expand = function(args)
       require("luasnip").lsp_expand(args.body)

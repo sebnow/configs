@@ -37,9 +37,10 @@ local M = packer.startup(function()
 
   use({
     "neovim/nvim-lspconfig",
-    commit = "4569e14e59bed1d18a91db76fe3261628f60e3f0",
+    commit = "b842025722c2b44bdffd055c23e9e78872e89966",
     requires = {
       "folke/which-key.nvim",
+      "hrsh7th/cmp-nvim-lsp",
       "simrat39/rust-tools.nvim",
     },
     config = function()
