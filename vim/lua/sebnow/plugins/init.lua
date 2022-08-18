@@ -27,8 +27,8 @@ local M = packer.startup(function()
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-path",
-      "SirVer/ultisnips",
-      "quangnguyen30192/cmp-nvim-ultisnips",
+      "saadparwaiz1/cmp_luasnip",
+      "L3MON4D3/LuaSnip",
     },
     config = function()
       require("sebnow.plugins.cmp")
@@ -45,6 +45,16 @@ local M = packer.startup(function()
     },
     config = function()
       require("sebnow.plugins.lsp")
+    end,
+  })
+
+  use({
+    "L3MON4D3/LuaSnip",
+    requires = {
+      "rafamadriz/friendly-snippets",
+    },
+    config = function()
+      require("sebnow.plugins.luasnip")
     end,
   })
 

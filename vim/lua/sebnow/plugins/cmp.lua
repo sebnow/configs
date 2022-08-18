@@ -11,11 +11,13 @@ cmp.setup({
       select = true,
     }),
   }),
+  experimental = {
+    ghost_text = true,
+  },
   sources = cmp.config.sources({
     { name = "buffer", keyword_length = 4 },
     { name = "nvim_lsp" },
     { name = "path" },
-    { name = "ultisnips" },
     { name = "luasnip" },
   }),
   snippet = {
