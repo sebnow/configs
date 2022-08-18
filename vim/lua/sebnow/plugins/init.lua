@@ -37,7 +37,7 @@ local M = packer.startup(function()
 
   use({
     "neovim/nvim-lspconfig",
-    commit = "b842025722c2b44bdffd055c23e9e78872e89966",
+    commit = "da7461b596d70fa47b50bf3a7acfaef94c47727d",
     requires = {
       "folke/which-key.nvim",
       "hrsh7th/cmp-nvim-lsp",
@@ -67,7 +67,7 @@ local M = packer.startup(function()
 
   use({
     "nvim-treesitter/nvim-treesitter",
-    commit = "78f36bbc58a0e85c83b400e32af8b5d7c55d527b",
+    commit = "d76b0de6536c2461f97cfeca0550f8cb89793935",
     run = ":TSUpdate",
     config = function()
       require("sebnow.plugins.treesitter")
@@ -91,7 +91,7 @@ local M = packer.startup(function()
 
   use({
     "nvim-telescope/telescope.nvim",
-    commit = "440c598de419858a056e7d9d42a0a6829cd5bb05",
+    commit = "8d13f4ca8a449d9bd687234b4cb7c531c50b0fa4",
     branch = "master",
     requires = {
       "kyazdani42/nvim-web-devicons",
