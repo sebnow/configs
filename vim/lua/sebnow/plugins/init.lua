@@ -91,8 +91,7 @@ local M = packer.startup(function()
 
   use({
     "nvim-telescope/telescope.nvim",
-    commit = "8d13f4ca8a449d9bd687234b4cb7c531c50b0fa4",
-    branch = "master",
+    branch = "0.1.x",
     requires = {
       "kyazdani42/nvim-web-devicons",
       "nvim-lua/plenary.nvim",
