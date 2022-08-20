@@ -6,6 +6,10 @@ function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = "rounded",
+})
+
 local opts = {
   -- TODO: Refactor this so that the completion plugin is decoupled
   capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
