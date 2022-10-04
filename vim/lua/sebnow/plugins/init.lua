@@ -18,6 +18,7 @@ local M = packer.startup(function()
   use("nvim-lua/lsp_extensions.nvim")
   use("tpope/vim-fugitive")
   use("wbthomason/packer.nvim")
+  use("evanleck/vim-svelte")
   use("simrat39/rust-tools.nvim")
   use("stevearc/dressing.nvim")
 
