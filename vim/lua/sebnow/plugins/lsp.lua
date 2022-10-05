@@ -98,7 +98,7 @@ wk.register({
   },
   f = {
     name = "Format",
-    b = { "<cmd>lua vim.lsp.buf.formatting()<cr>", "Format buffer" },
+    b = { "<cmd>lua vim.lsp.buf.format({async=true})<cr>", "Format buffer" },
   },
   r = {
     name = "Rename",
