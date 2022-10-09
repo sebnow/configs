@@ -19,6 +19,9 @@ telescope.setup({
     qflist_previewer = previewers.vim_buffer_qflist.new,
   },
   pickers = {
+    find_files = {
+      find_command = { "fd", "--type", "f", "-E", ".git/", "-E", "node_modules/", "--hidden" },
+    },
     git_branches = {
       theme = "dropdown",
     },
