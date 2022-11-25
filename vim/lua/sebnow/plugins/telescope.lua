@@ -45,10 +45,6 @@ wk.register({
     name = "Buffers",
     e = { builtin.buffers, "Explore buffers" },
   },
-  c = {
-    name = "Code Actions",
-    a = { builtin.lsp_code_actions, "Explore actions" },
-  },
   l = { builtin.resume, "Resume previous list" },
   s = {
     name = "Symbols",
