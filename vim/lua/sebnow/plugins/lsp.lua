@@ -70,9 +70,9 @@ lspconfig.golangci_lint_ls.setup(opts)
 wk.register({
   g = {
     name = "Navigation",
-    D = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Go to declaration" },
-    I = { "<cmd>Telescope lsp_implementations<cr>", "Go to implementation" },
-    d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Go to definition" },
+    D = { vim.lsp.buf.declaration, "Go to declaration" },
+    I = { vim.lsp.buf.implementation, "Go to implementation" },
+    d = { vim.lsp.buf.definition, "Go to definition" },
   },
   K = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Show info about the symbol under the cursor" },
 })
