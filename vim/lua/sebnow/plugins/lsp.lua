@@ -2,6 +2,11 @@ local lspconfig = require("lspconfig")
 local lspconfigs = require("lspconfig/configs")
 local wk = require("which-key")
 
+local floating_preview_opts = {
+  focusable = false,
+  border = "rounded",
+}
+
 function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
@@ -84,15 +89,21 @@ wk.register({
   },
   d = {
     o = {
-      '<cmd>lua vim.diagnostic.open_float({scope="line",focusable=false,border="rounded"})<cr>',
+      function()
+        vim.diagnostic.open_float(floating_preview_opts)
+      end,
       "Show line diagnostics",
     },
     n = {
-      "<cmd>lua vim.diagnostic.goto_next()<cr>",
+      function()
+        vim.diagnostic.goto_next({ float = floating_preview_opts })
+      end,
       "Go to next diagnostic",
     },
     p = {
-      "<cmd>lua vim.diagnostic.goto_prev()<cr>",
+      function()
+        vim.diagnostic.goto_prev({ float = floating_preview_opts })
+      end,
       "Go to previous diagnostic",
     },
     l = { "<cmd>TroubleToggle<cr>", "Explore diagnostics" },
