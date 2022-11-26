@@ -80,7 +80,7 @@ wk.register({
 wk.register({
   c = {
     name = "Code Actions",
-    a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Show actions under cursor" },
+    a = { vim.lsp.buf.code_action, "Show actions under cursor" },
   },
   d = {
     o = {
@@ -95,18 +95,29 @@ wk.register({
       "<cmd>lua vim.diagnostic.goto_prev()<cr>",
       "Go to previous diagnostic",
     },
+    l = { "<cmd>TroubleToggle<cr>", "Explore diagnostics" },
   },
   f = {
     name = "Format",
-    b = { "<cmd>lua vim.lsp.buf.format({async=true})<cr>", "Format buffer" },
+    b = {
+      function()
+        vim.lsp.buf.format({ async = true })
+      end,
+      "Format buffer",
+    },
   },
   r = {
     name = "Rename",
-    o = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename object" },
+    o = { vim.lsp.buf.rename, "Rename object" },
   },
   s = {
     name = "Symbols",
-    w = { '<cmd>lua require("telescope.builtin").lsp_workspace_symbols()<cr>', "Explore workspace symbols" },
+    w = {
+      function()
+        require("telescope.builtin").lsp_workspace_symbols()
+      end,
+      "Explore workspace symbols",
+    },
     d = { '<cmd>lua require("telescope.builtin").lsp_document_symbols()<cr>', "Explore document symbols" },
   },
 }, {
@@ -128,5 +139,5 @@ wk.register({
 })
 
 wk.register({
-  ["<C-k>"] = { "<cmd>lua vim.lsp.buf.signature_help()<Cr>", "Show signature help" },
+  ["<C-k>"] = { vim.lsp.buf.signature_help, "Show signature help" },
 }, { mode = "i" })

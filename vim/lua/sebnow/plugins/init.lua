@@ -60,13 +60,6 @@ local M = packer.startup(function()
   })
 
   use({
-    "folke/which-key.nvim",
-    config = function()
-      require("sebnow.plugins.which-key")
-    end,
-  })
-
-  use({
     "nvim-treesitter/nvim-treesitter",
     commit = "e2efbb6569dbe50e6604cfc2d5d0819eb07d5623",
     run = ":TSUpdate",
