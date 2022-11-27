@@ -2,8 +2,8 @@ local is_fresh_install = false
 local install_path = vim.call("stdpath", "data") .. "/site/pack/packer/start/packer.nvim"
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   is_fresh_install = true
-  vim.api.nvim_command("!git clone https://github.com/wbthomason/packer.nvim.git " .. install_path)
-  vim.api.nvim_command("packadd packer.nvim")
+  vim.cmd({ cmd = "!", args = { "git", "clone", "https://github.com/wbthomason/packer.nvim.git", install_path } })
+  vim.cmd.packadd("packer.nvim")
 end
 
 vim.cmd([[autocmd BufWritePost plugins.lua source <afile> | PackerCompile]])
