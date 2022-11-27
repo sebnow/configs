@@ -15,7 +15,6 @@ local M = packer.startup(function()
   use("folke/lsp-colors.nvim")
   use("hashivim/vim-terraform")
   use("LnL7/vim-nix")
-  use("nvim-lua/lsp_extensions.nvim")
   use("tpope/vim-fugitive")
   use("wbthomason/packer.nvim")
   use("evanleck/vim-svelte")
@@ -43,9 +42,18 @@ local M = packer.startup(function()
       "folke/which-key.nvim",
       "hrsh7th/cmp-nvim-lsp",
       "simrat39/rust-tools.nvim",
+      "lvimuser/lsp-inlayhints.nvim",
     },
     config = function()
       require("sebnow.plugins.lsp")
+    end,
+  })
+
+  -- This will be obsolete once https://github.com/neovim/neovim/issues/18086 is implemented
+  use({
+    "lvimuser/lsp-inlayhints.nvim",
+    config = function()
+      require("lsp-inlayhints").setup()
     end,
   })
 

@@ -18,12 +18,18 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
 local opts = {
   -- TODO: Refactor this so that the completion plugin is decoupled
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
-  on_attach = function(_client, bufnr)
+  on_attach = function(client, bufnr)
+    require("lsp-inlayhints").on_attach(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
   end,
 }
 
 require("rust-tools").setup({
+  tools = {
+    inlay_hints = {
+      auto = false,
+    },
+  },
   server = merge(opts, {
     root_dir = require("lspconfig.util").root_pattern("Cargo.toml"),
     settings = {
