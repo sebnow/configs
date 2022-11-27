@@ -20,7 +20,6 @@ local opts = {
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
   on_attach = function(client, bufnr)
     require("lsp-inlayhints").on_attach(client, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
   end,
 }
 
