@@ -1,5 +1,4 @@
 local lspconfig = require("lspconfig")
-local lspconfigs = require("lspconfig/configs")
 local wk = require("which-key")
 
 local floating_preview_opts = {
@@ -7,7 +6,7 @@ local floating_preview_opts = {
   border = "rounded",
 }
 
-function merge(a, b)
+local function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
@@ -23,7 +22,7 @@ local opts = {
   -- TODO: Refactor this so that the completion plugin is decoupled
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
   on_attach = function(client, bufnr)
-    require("lsp-inlayhints").on_attach(client, bufnr)
+    require("lsp-inlayhints").on_attach(client, bufnr, false)
   end,
 }
 
@@ -81,6 +80,22 @@ lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
 }))
 
 lspconfig.golangci_lint_ls.setup(opts)
+
+lspconfig.sumneko_lua.setup(merge(opts, {
+  settings = {
+    -- This is very neovim specific but I don't currency use Lua for
+    -- anything else.
+    Lua = {
+      diagnostics = {
+        globals = { "vim" },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
+      },
+    },
+  },
+}))
 
 wk.register({
   g = {

@@ -10,7 +10,7 @@ vim.cmd([[autocmd BufWritePost plugins.lua source <afile> | PackerCompile]])
 
 local packer = require("packer")
 
-local M = packer.startup(function()
+local M = packer.startup(function(use)
   use("aklt/plantuml-syntax")
   use("folke/lsp-colors.nvim")
   use("hashivim/vim-terraform")
