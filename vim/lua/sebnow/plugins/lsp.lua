@@ -11,6 +11,10 @@ function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
+require("mason-lspconfig").setup({
+  automatic_installation = true,
+})
+
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = "rounded",
 })
@@ -49,6 +53,7 @@ require("rust-tools").setup({
   }),
 })
 
+lspconfig.pylsp.setup(opts)
 lspconfig.gopls.setup(opts)
 lspconfig.flow.setup(opts)
 lspconfig.svelte.setup(opts)

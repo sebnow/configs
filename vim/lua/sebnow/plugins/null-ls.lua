@@ -8,3 +8,7 @@ nullls.setup({
     nullls.builtins.formatting.terraform_fmt,
   },
 })
+
+require("mason-null-ls").setup({
+  automatic_installation = true,
+})

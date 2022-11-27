@@ -43,9 +43,17 @@ local M = packer.startup(function()
       "hrsh7th/cmp-nvim-lsp",
       "simrat39/rust-tools.nvim",
       "lvimuser/lsp-inlayhints.nvim",
+      "williamboman/mason-lspconfig.nvim",
     },
     config = function()
       require("sebnow.plugins.lsp")
+    end,
+  })
+
+  use({
+    "williamboman/mason.nvim",
+    config = function()
+      require("sebnow.plugins.mason")
     end,
   })
 
@@ -122,6 +130,7 @@ local M = packer.startup(function()
   use({
     "jose-elias-alvarez/null-ls.nvim",
     requires = {
+      "jayp0521/mason-null-ls.nvim",
       "neovim/nvim-lspconfig",
       "nvim-lua/plenary.nvim",
     },
