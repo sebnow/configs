@@ -145,6 +145,21 @@ local M = packer.startup(function(use)
       require("sebnow.plugins.indent-blankline")
     end,
   })
+
+  use({
+    "nvim-lualine/lualine.nvim",
+    requires = {
+      "kyazdani42/nvim-web-devicons",
+      "tpope/vim-fugitive",
+      opt = true,
+    },
+    after = {
+      "neovim-ayu",
+    },
+    config = function()
+      require("sebnow.plugins.lualine")
+    end,
+  })
 end)
 
 if is_fresh_install then
