@@ -11,6 +11,10 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
-require("lazy").setup("sebnow.plugins")
+require("lazy").setup("sebnow.plugins", {
+    install = {
+        colorscheme = {"catpuccin-mocha"},
+    },
+})
 
 require("sebnow.settings")
