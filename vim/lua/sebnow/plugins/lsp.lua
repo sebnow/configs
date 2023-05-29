@@ -1,6 +1,6 @@
 return {
   "neovim/nvim-lspconfig",
-  commit = "da7461b596d70fa47b50bf3a7acfaef94c47727d",
+  commit = "9166622781a39a829878d1fd24c174529d996838",
   dependencies = {
     "folke/which-key.nvim",
     "hrsh7th/cmp-nvim-lsp",
@@ -93,17 +93,26 @@ return {
 
     lspconfig.golangci_lint_ls.setup(opts)
 
-    lspconfig.sumneko_lua.setup(merge(opts, {
+    lspconfig.lua_ls.setup(merge(opts, {
       settings = {
-        -- This is very neovim specific but I don't currency use Lua for
+        -- This is very neovim specific but I don't currently use Lua for
         -- anything else.
         Lua = {
+          runtime = {
+            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+            version = 'LuaJIT',
+          },
           diagnostics = {
-            globals = { "vim" },
+            -- Get the language server to recognize the `vim` global
+            globals = {'vim'},
           },
           workspace = {
+            -- Make the server aware of Neovim runtime files
             library = vim.api.nvim_get_runtime_file("", true),
-            checkThirdParty = false,
+          },
+          -- Do not send telemetry data containing a randomized but unique identifier
+          telemetry = {
+            enable = false,
           },
         },
       },
