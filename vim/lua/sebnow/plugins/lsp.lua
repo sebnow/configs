@@ -68,6 +68,7 @@ return {
     lspconfig.gopls.setup(opts)
     lspconfig.flow.setup(opts)
     lspconfig.svelte.setup(opts)
+    lspconfig.jsonnet_ls.setup(opts)
 
     lspconfig.tsserver.setup(merge(opts, {
       on_attach = function(client)

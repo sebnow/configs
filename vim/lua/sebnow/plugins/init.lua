@@ -1,6 +1,7 @@
 return {
   "aklt/plantuml-syntax",
   "folke/lsp-colors.nvim",
+  "google/vim-jsonnet",
   "hashivim/vim-terraform",
   "LnL7/vim-nix",
   "tpope/vim-fugitive",
@@ -8,6 +9,7 @@ return {
   "evanleck/vim-svelte",
   "simrat39/rust-tools.nvim",
   "stevearc/dressing.nvim",
+  "google/vim-jsonnet",
   { "plasticboy/vim-markdown", ft = { "markdown" } },
   { "folke/trouble.nvim", dependencies = { "kyazdani42/nvim-web-devicons" } },
 }
