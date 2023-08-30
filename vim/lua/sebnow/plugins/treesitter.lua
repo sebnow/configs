@@ -17,6 +17,7 @@ return {
         "json",
         "lua",
         "markdown",
+        "nix",
         "python",
         "rust",
         "svelte",

@@ -64,11 +64,12 @@ return {
       }),
     })
 
-    lspconfig.pylsp.setup(opts)
-    lspconfig.gopls.setup(opts)
     lspconfig.flow.setup(opts)
-    lspconfig.svelte.setup(opts)
+    lspconfig.gopls.setup(opts)
     lspconfig.jsonnet_ls.setup(opts)
+    lspconfig.nixd.setup(opts)
+    lspconfig.pylsp.setup(opts)
+    lspconfig.svelte.setup(opts)
 
     lspconfig.tsserver.setup(merge(opts, {
       on_attach = function(client)

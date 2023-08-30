@@ -3,7 +3,6 @@ return {
   "folke/lsp-colors.nvim",
   "google/vim-jsonnet",
   "hashivim/vim-terraform",
-  "LnL7/vim-nix",
   "tpope/vim-fugitive",
   "wbthomason/packer.nvim",
   "evanleck/vim-svelte",
