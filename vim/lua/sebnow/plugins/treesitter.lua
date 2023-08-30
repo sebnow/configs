@@ -1,11 +1,12 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  commit = "1d670b0c906716b1543270b3b087d44b09f3b523",
+  commit = "920b37260ebc720b0399bd12954fd2bf8bd18242",
   build = ":TSUpdate",
   config = function()
     local config = require("nvim-treesitter.configs")
 
     config.setup({
+      auto_install = true,
       ensure_installed = {
         "bash",
         "dockerfile",

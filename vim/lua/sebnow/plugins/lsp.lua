@@ -1,6 +1,6 @@
 return {
   "neovim/nvim-lspconfig",
-  commit = "9166622781a39a829878d1fd24c174529d996838",
+  commit = "a27356f1ef9c11e1f459cc96a3fcac5c265e72d6",
   dependencies = {
     "folke/which-key.nvim",
     "hrsh7th/cmp-nvim-lsp",
