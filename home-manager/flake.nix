@@ -9,20 +9,25 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
-    let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      homeConfigurations."sebnow" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+  outputs = {
+    nixpkgs,
+    home-manager,
+    ...
+  }: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
+    formatter.${system} = pkgs.alejandra;
 
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
-        modules = [ ./home.nix ];
+    homeConfigurations."sebnow" = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
 
-        # Optionally use extraSpecialArgs
-        # to pass through arguments to home.nix
-      };
+      # Specify your home configuration modules here, for example,
+      # the path to your home.nix.
+      modules = [./home.nix];
+
+      # Optionally use extraSpecialArgs
+      # to pass through arguments to home.nix
     };
+  };
 }
