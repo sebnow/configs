@@ -28,18 +28,14 @@ inst "$SRC/asdf/default-npm-packages" "$DST/.default-npm-packages"
 inst "$SRC/asdf/default-python-packages" "$DST/.default-python-packages"
 inst "$SRC/bash" "$DST/.bash"
 inst "$SRC/bashrc" "$DST/.bashrc"
-inst "$SRC/doom" "$DST/.config/doom"
-inst "$SRC/emacs.d" "$DST/.emacs.d"
 inst "$SRC/fish" "$DST/.config/fish"
 inst "$SRC/gitconfig" "$DST/.gitconfig"
 inst "$SRC/gitignore" "$DST/.gitignore"
 inst "$SRC/inputrc" "$DST/.inputrc"
 inst "$SRC/k9s/skin.yml" "$DST/.k9s/skin.yml"
 inst "$SRC/kitty" "$DST/.config/kitty"
-inst "$SRC/nixpkgs" "$DST/.config/nixpkgs"
 inst "$SRC/starship.toml" "$DST/.config/starship.toml"
 inst "$SRC/tmux.conf" "$DST/.tmux.conf"
-inst "$SRC/vim" "$DST/.config/nvim"
 
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
