@@ -26,7 +26,6 @@ DST="$HOME"
 inst "$SRC/inputrc" "$DST/.inputrc"
 inst "$SRC/k9s/skin.yml" "$DST/.k9s/skin.yml"
 inst "$SRC/kitty" "$DST/.config/kitty"
-inst "$SRC/starship.toml" "$DST/.config/starship.toml"
 inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 
 ### Linux only
