@@ -30,6 +30,31 @@ in {
       };
 
       home.sessionVariables.TERMINAL = "kitty";
+
+      # FIXME: Remove once GLX issues are solved on standalone
+      # installations
+      # https://github.com/NixOS/nixpkgs/issues/80936
+      #
+      # Kitty is not able to create a GLFW window.
+      #
+      # This works around the issue by using the executable provided by
+      # the system. That means the only purpose of this module is to
+      # provide the configuration.
+      home.shellAliases.kitty = "/usr/bin/kitty";
+      xdg.dataFile."applications/kitty.desktop" = {
+        text = ''
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=kitty
+          GenericName=Terminal emulator
+          Comment=Fast, feature-rich, GPU based terminal
+          TryExec=/usr/bin/kitty
+          Exec=/usr/bin/kitty
+          Icon=kitty
+          Categories=System;TerminalEmulator;
+        '';
+      };
     })
   ];
 }
