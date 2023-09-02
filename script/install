@@ -32,7 +32,6 @@ inst "$SRC/tmux.conf" "$DST/.tmux.conf"
 if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
 
-	inst "$SRC/autostart" "$DST/.config/autostart"
 	inst "$SRC/xbindkeysrc" "$DST/.xbindkeysrc"
 
 	# Fonts
