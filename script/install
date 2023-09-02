@@ -45,7 +45,6 @@ inst "$SRC/vim" "$DST/.config/nvim"
 if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
 
-	inst "$SRC/Xdefaults" "$DST/.Xdefaults"
 	inst "$SRC/autostart" "$DST/.config/autostart"
 	inst "$SRC/compton.conf" "$DST/.config/compton.conf"
 	inst "$SRC/fontconfig" "$DST/.config/fontconfig"
