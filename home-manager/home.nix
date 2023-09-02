@@ -4,9 +4,10 @@
   ...
 }: {
   imports = [
+    ./modules/home-manager/alacritty
+    ./modules/home-manager/fonts
     ./modules/home-manager/gnome
     ./modules/home-manager/neovim
-    ./modules/home-manager/alacritty
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -29,11 +30,6 @@
   };
 
   fonts.fontconfig.enable = true;
-
-  home.packages = with pkgs; [
-    iosevka
-    (nerdfonts.override {fonts = ["IosevkaTerm"];})
-  ];
 
   programs.bash = {
     enable = true;
