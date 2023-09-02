@@ -8,6 +8,7 @@
     ./modules/home-manager/fonts
     ./modules/home-manager/gnome
     ./modules/home-manager/k9s
+    ./modules/home-manager/kitty
     ./modules/home-manager/neovim
   ];
 
@@ -27,7 +28,6 @@
 
   home.sessionVariables = {
     BROWSER = "firefox";
-    TERMINAL = "kitty";
   };
 
   fonts.fontconfig.enable = true;
@@ -108,30 +108,8 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
   programs.k9s.enable = true;
-
-  #programs.kitty = {
-  #  enable = true;
-  #  theme = "Catppuccin-Mocha";
-  #  font = {
-  #    name = "IosevkaTerm NFM";
-  #    size = 12;
-  #  };
-  #  settings = {
-  #    enabled_layouts = "tall,*";
-  #    scrollback_pager_history_size = 100000;
-
-  #    tab_bar_edge = "top";
-  #    tab_bar_style = "separator";
-  #    tab_separator = "\" | \"";
-  #  };
-
-  #  keybindings = {
-  #    "ctrl+shift+enter" = "new_window_with_cwd";
-  #    "ctrl+shift+z" = "toggle_layout stack";
-  #  };
-  #};
+  programs.kitty.enable = true;
 
   programs.readline = {
     enable = true;

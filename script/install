@@ -23,8 +23,6 @@ DST="$HOME"
 
 [ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
 
-inst "$SRC/kitty" "$DST/.config/kitty"
-
 ### Linux only
 if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
