@@ -6,3 +6,7 @@ else
 fi
 
 type -f exa >/dev/null 2>&1 && alias ls='exa'
+
+if [[ "$TERM" = "xterm-kitty" ]]; then
+    alias ssh='kitty +kitten ssh'
+fi
