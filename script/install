@@ -35,7 +35,6 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 
 	inst "$SRC/autostart" "$DST/.config/autostart"
 	inst "$SRC/i3" "$DST/.config/i3"
-	inst "$SRC/icons" "$DST/.icons"
 	inst "$SRC/mpd" "$DST/.config/mpd"
 	inst "$SRC/polybar" "$DST/.config/polybar"
 	inst "$SRC/rofi" "$DST/.config/rofi"
