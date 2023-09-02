@@ -77,12 +77,13 @@
       squash = "rebase -i --autosquash @{u}";
     };
     ignores = [
+      "*.swp"
       ".envrc"
       ".tool-versions"
       ".direnv/"
     ];
     includes = [
-      {path = ".gitconfig.local";}
+      {path = "config.local";}
     ];
     extraConfig = {
       apply.whitespace = "fix";
