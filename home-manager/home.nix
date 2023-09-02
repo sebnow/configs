@@ -4,6 +4,7 @@
   ...
 }: {
   imports = [
+    ./modules/home-manager/gnome
     ./modules/home-manager/neovim
   ];
 
