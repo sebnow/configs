@@ -6,6 +6,7 @@
   imports = [
     ./modules/home-manager/gnome
     ./modules/home-manager/neovim
+    ./modules/home-manager/alacritty
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -31,7 +32,7 @@
 
   home.packages = with pkgs; [
     iosevka
-    (nerdfonts.override { fonts = [ "IosevkaTerm" ]; })
+    (nerdfonts.override {fonts = ["IosevkaTerm"];})
   ];
 
   programs.bash = {
