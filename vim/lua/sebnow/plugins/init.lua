@@ -6,7 +6,6 @@ return {
   "wbthomason/packer.nvim",
   "simrat39/rust-tools.nvim",
   "stevearc/dressing.nvim",
-  "google/vim-jsonnet",
   { "plasticboy/vim-markdown", ft = { "markdown" } },
   { "folke/trouble.nvim", dependencies = { "kyazdani42/nvim-web-devicons" } },
 }
