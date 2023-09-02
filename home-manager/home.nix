@@ -31,8 +31,7 @@
 
   home.packages = with pkgs; [
     iosevka
-    (iosevka-bin.override {variant = "sgr-iosevka-term";})
-    (iosevka-bin.override {variant = "sgr-iosevka-fixed";})
+    (nerdfonts.override { fonts = [ "IosevkaTerm" ]; })
   ];
 
   programs.bash = {
@@ -115,7 +114,7 @@
   #  enable = true;
   #  theme = "Catppuccin-Mocha";
   #  font = {
-  #    name = "Iosevka Term";
+  #    name = "IosevkaTerm NFM";
   #    size = 12;
   #  };
   #  settings = {

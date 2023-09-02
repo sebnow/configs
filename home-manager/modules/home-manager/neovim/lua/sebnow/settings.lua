@@ -29,7 +29,7 @@ vim.o.foldenable = true
 vim.o.foldmethod = "marker"
 vim.o.foldlevel = 99
 
-vim.o.guifont = "Iosevka Nerd Font:h12,Iosevka:h12,monospace"
+vim.o.guifont = "IosevkaTerm NFM:h12,Iosevka Term:h12,monospace"
 vim.o.timeoutlen = 250
 
 vim.o.cmdheight = 0
