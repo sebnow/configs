@@ -34,7 +34,6 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
 
 	inst "$SRC/autostart" "$DST/.config/autostart"
-	inst "$SRC/rofi" "$DST/.config/rofi"
 	inst "$SRC/xbindkeysrc" "$DST/.xbindkeysrc"
 
 	# Fonts

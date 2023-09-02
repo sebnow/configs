@@ -1,9 +1,0 @@
-rofi.color-enabled: true
-
-!                  bg       border   separator
-rofi.color-window: #151515, #d0d0d0, #d0d0d0
-
-!                  bg       fg       bg-alt   hl-bg    hl-fg
-rofi.color-normal: #151515, #f5f5f5, #32302f, #e5b567, #32302f
-rofi.color-active: #e5b567, #151515, #e5b567, #e5b566, #151515
-rofi.color-urgent: #ac4142, #151515, #ac4142, #ac4142, #151515
