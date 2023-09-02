@@ -59,17 +59,22 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 
 	# Fonts
 	if [ ! -e "$DST/.fonts/iosevka" ]; then
-		ioveska_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
-		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v5.0.0-rc.1/ttf-iosevka-5.0.0-rc.1.zip"
 		mkdir -p "$DST/.fonts"
-		unzip $ioveska_zip -d "$DST/.fonts/iosevka"
-		rm $ioveska_zip
+		version="26.2.2"
 
-		ioveska_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
-		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v5.0.0-rc.1/ttf-iosevka-fixed-5.0.0-rc.1.zip"
-		mkdir -p "$DST/.fonts"
-		unzip $ioveska_zip -d "$DST/.fonts/iosevka"
-		rm $ioveska_zip
+		iosevka_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
+		curl -sLo "$iosevka_zip" "https://github.com/be5invis/Iosevka/releases/download/v26.2.2/ttf-iosevka-${version}.zip"
+		unzip "$iosevka_zip" -d "$DST/.fonts/iosevka"
+		rm $iosevka_zip
+
+		for variant in term fixed; do
+			iosevka_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
+			curl -sLo "$iosevka_zip" "https://github.com/be5invis/Iosevka/releases/download/v26.2.2/ttf-iosevka-${variant}-${version}.zip"
+			unzip "$iosevka_zip" -d "$DST/.fonts/iosevka"
+			rm $iosevka_zip
+		done
+
+		fc-cache -f "$DST/.fonts/iosevka"
 	fi
 fi
 
