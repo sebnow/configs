@@ -3,6 +3,10 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ./modules/home-manager/neovim
+  ];
+
   nixpkgs.config.allowUnfree = true;
 
   home.username = "sebnow";
@@ -16,10 +20,6 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "23.05"; # Please read the comment before changing.
-
-  home.packages = with pkgs; [
-    nixd
-  ];
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -126,14 +126,6 @@
   #    "ctrl+shift+z" = "toggle_layout stack";
   #  };
   #};
-
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    plugins = with pkgs.vimPlugins; [
-      dressing-nvim
-    ];
-  };
 
   #programs.ripgrep.enable = true;
 
