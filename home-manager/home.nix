@@ -22,7 +22,6 @@
   home.stateVersion = "23.05"; # Please read the comment before changing.
 
   home.sessionVariables = {
-    EDITOR = "nvim";
     BROWSER = "firefox";
     TERMINAL = "kitty";
   };
