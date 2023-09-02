@@ -1,5 +1,3 @@
-return {
-    setup = function ()
 vim.diagnostic.config({
   virtual_text = false,
   signs = true,
@@ -17,7 +15,7 @@ vim.o.shiftwidth = 4
 vim.o.expandtab = true -- Modern languages are opinionated and tend to default to spaces
 vim.o.textwidth = 72
 vim.opt.formatoptions:append("cronql1jp")
-vim.opt.completeopt = {"menuone", "noinsert"}
+vim.opt.completeopt = { "menuone", "noinsert" }
 
 vim.o.smartcase = true
 vim.o.incsearch = true
@@ -35,5 +33,3 @@ vim.o.guifont = "Iosevka Nerd Font:h12,Iosevka:h12,monospace"
 vim.o.timeoutlen = 250
 
 vim.o.cmdheight = 0
-end
-}

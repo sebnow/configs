@@ -1,13 +1,4 @@
 return {
-  "nvim-telescope/telescope.nvim",
-  lazy = false,
-  branch = "0.1.x",
-  dependencies = {
-    "kyazdani42/nvim-web-devicons",
-    "nvim-lua/plenary.nvim",
-    "nvim-lua/popup.nvim",
-    "folke/which-key.nvim",
-  },
   config = function()
     local wk = require("which-key")
     local actions = require("telescope.actions")

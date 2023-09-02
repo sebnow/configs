@@ -6,25 +6,6 @@ return {
     local config = require("nvim-treesitter.configs")
 
     config.setup({
-      auto_install = true,
-      ensure_installed = {
-        "bash",
-        "dockerfile",
-        "go",
-        "gomod",
-        "html",
-        "javascript",
-        "json",
-        "lua",
-        "markdown",
-        "nix",
-        "python",
-        "rust",
-        "toml",
-        "typescript",
-        "vim",
-        "yaml",
-      },
       highlight = {
         enable = true,
       },

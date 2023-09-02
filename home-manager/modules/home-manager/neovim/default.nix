@@ -60,17 +60,38 @@
           config = "require('sebnow.plugins.indent-blankline').config()";
         }
         {
+          plugin = null-ls-nvim;
+          type = "lua";
+          config = "require('sebnow.plugins.null-ls').config()";
+        }
+        {
           plugin = nvim-lspconfig;
           type = "lua";
           config = "require('sebnow.plugins.lsp').config()";
         }
-        # FIXME: Not required since Nix handles dependencies. The lua config is
-        # shared between Nix-managed and non-managed, and mason is useful for
-        # the latter. Once this is completly migrated to Nix, mason can be
-        # removed.
-        mason-lspconfig-nvim
-        mason-nvim # Don't load the config since mason is not actually used
-      ];
+        {
+            plugin = nvim-treesitter;
+            type = "lua";
+            config = "require('sebnow.plugins.treesitter').config()";
+        }
+      ] ++ (with pkgs.vimPlugins.nvim-treesitter-parsers; [
+        bash
+        dockerfile
+        go
+        gomod
+        html
+        javascript
+        json
+        lua
+        markdown
+        nix
+        python
+        rust
+        toml
+        typescript
+        vim
+        yaml
+      ]);
       extraLuaConfig = ''
         require('sebnow.settings')
       '';
@@ -87,16 +108,16 @@
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
         python311Packages.python-lsp-server
+        rust-analyzer
+        shellcheck
         stylua
         terraform-ls
-        shellcheck
-        rust-analyzer
       ];
     };
 
-    #xdg.configFile."nvim/lua" = {
-    #  source = ./lua;
-    #  recursive = true;
-    #};
+    xdg.configFile."nvim/lua" = {
+      source = ./lua;
+      recursive = true;
+    };
   };
 }

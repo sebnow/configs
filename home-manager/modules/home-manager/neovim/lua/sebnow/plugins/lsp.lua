@@ -1,13 +1,4 @@
 return {
-  "neovim/nvim-lspconfig",
-  commit = "a27356f1ef9c11e1f459cc96a3fcac5c265e72d6",
-  dependencies = {
-    "folke/which-key.nvim",
-    "hrsh7th/cmp-nvim-lsp",
-    "simrat39/rust-tools.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "lvimuser/lsp-inlayhints.nvim",
-  },
   config = function()
     local lspconfig = require("lspconfig")
     local wk = require("which-key")
@@ -20,10 +11,6 @@ return {
     local function merge(a, b)
       return vim.tbl_extend("force", a, b)
     end
-
-    require("mason-lspconfig").setup({
-      automatic_installation = true,
-    })
 
     vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
       border = "rounded",
@@ -109,6 +96,7 @@ return {
           workspace = {
             -- Make the server aware of Neovim runtime files
             library = vim.api.nvim_get_runtime_file("", true),
+            checkThirdParty = false,
           },
           -- Do not send telemetry data containing a randomized but unique identifier
           telemetry = {
