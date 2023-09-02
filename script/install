@@ -23,7 +23,6 @@ DST="$HOME"
 
 [ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
 
-inst "$SRC/fish" "$DST/.config/fish"
 inst "$SRC/gitconfig" "$DST/.gitconfig"
 inst "$SRC/gitignore" "$DST/.gitignore"
 inst "$SRC/inputrc" "$DST/.inputrc"
