@@ -28,6 +28,10 @@
 
   fonts.fontconfig.enable = true;
 
+  home.packages = with pkgs; [
+    iosevka
+  ];
+
   programs.bash = {
     enable = true;
     historyControl = ["ignorespace" "ignoredups" "erasedups"];
