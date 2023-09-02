@@ -20,7 +20,6 @@ return {
         "nix",
         "python",
         "rust",
-        "svelte",
         "toml",
         "typescript",
         "vim",

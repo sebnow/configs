@@ -4,7 +4,6 @@ return {
   "hashivim/vim-terraform",
   "tpope/vim-fugitive",
   "wbthomason/packer.nvim",
-  "evanleck/vim-svelte",
   "simrat39/rust-tools.nvim",
   "stevearc/dressing.nvim",
   "google/vim-jsonnet",
