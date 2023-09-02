@@ -60,7 +60,14 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 	# Fonts
 	if [ ! -e "$DST/.fonts/iosevka" ]; then
 		ioveska_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
-		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v1.14.3/01-iosevka-1.14.3.zip"
+		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v5.0.0-rc.1/ttf-iosevka-5.0.0-rc.1.zip"
+		mkdir -p "$DST/.fonts"
+		unzip $ioveska_zip -d "$DST/.fonts/iosevka"
+		rm $ioveska_zip
+
+		ioveska_zip=$(mktemp /tmp/ioveska.XXXXXX.zip)
+		curl -sLo $ioveska_zip "https://github.com/be5invis/Iosevka/releases/download/v5.0.0-rc.1/ttf-iosevka-fixed-5.0.0-rc.1.zip"
+		mkdir -p "$DST/.fonts"
 		unzip $ioveska_zip -d "$DST/.fonts/iosevka"
 		rm $ioveska_zip
 	fi
