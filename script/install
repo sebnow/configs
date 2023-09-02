@@ -34,7 +34,6 @@ if [ "$OSTYPE" == "linux-gnu" ]; then
 	[ ! -d "$DST/.config/share" ] && mkdir -p "$DST/.config/share"
 
 	inst "$SRC/autostart" "$DST/.config/autostart"
-	inst "$SRC/compton.conf" "$DST/.config/compton.conf"
 	inst "$SRC/fontconfig" "$DST/.config/fontconfig"
 	inst "$SRC/i3" "$DST/.config/i3"
 	inst "$SRC/icons" "$DST/.icons"
