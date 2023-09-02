@@ -65,7 +65,6 @@ return {
     })
 
     lspconfig.bashls.setup(opts)
-    lspconfig.flow.setup(opts)
     lspconfig.gopls.setup(opts)
     lspconfig.jsonnet_ls.setup(opts)
     lspconfig.nixd.setup(opts)
