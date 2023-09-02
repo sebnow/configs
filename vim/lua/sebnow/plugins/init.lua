@@ -1,6 +1,5 @@
 return {
   "aklt/plantuml-syntax",
-  "folke/lsp-colors.nvim",
   "google/vim-jsonnet",
   "hashivim/vim-terraform",
   "tpope/vim-fugitive",
