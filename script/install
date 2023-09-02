@@ -23,7 +23,6 @@ DST="$HOME"
 
 [ ! -d "$DST/.config" ] && mkdir -p "$DST/.config"
 
-inst "$SRC/k9s/skin.yml" "$DST/.k9s/skin.yml"
 inst "$SRC/kitty" "$DST/.config/kitty"
 
 ### Linux only

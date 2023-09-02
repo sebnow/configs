@@ -7,6 +7,7 @@
     ./modules/home-manager/alacritty
     ./modules/home-manager/fonts
     ./modules/home-manager/gnome
+    ./modules/home-manager/k9s
     ./modules/home-manager/neovim
   ];
 
@@ -107,6 +108,8 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  programs.k9s.enable = true;
 
   #programs.kitty = {
   #  enable = true;
