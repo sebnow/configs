@@ -130,6 +130,14 @@
   #  };
   #};
 
+  programs.readline = {
+    enable = true;
+    extraConfig = ''
+      set editing-mode vi
+      set keymap vi
+    '';
+  };
+
   #programs.ripgrep.enable = true;
 
   programs.starship = {
