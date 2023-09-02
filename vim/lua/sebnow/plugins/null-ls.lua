@@ -12,7 +12,6 @@ return {
       sources = {
         nullls.builtins.formatting.prettier,
         nullls.builtins.formatting.stylua,
-        nullls.builtins.formatting.terraform_fmt,
       },
     })
 
