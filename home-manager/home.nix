@@ -31,6 +31,8 @@
 
   home.packages = with pkgs; [
     iosevka
+    (iosevka-bin.override {variant = "sgr-iosevka-term";})
+    (iosevka-bin.override {variant = "sgr-iosevka-fixed";})
   ];
 
   programs.bash = {
