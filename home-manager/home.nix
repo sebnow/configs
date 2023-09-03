@@ -68,6 +68,8 @@
     git = true;
   };
 
+  programs.firefox.enable = true;
+
   programs.fzf = {
     enable = true;
     defaultCommand = "rg --files --hidden --follow --glob \"!.git/*\"";
