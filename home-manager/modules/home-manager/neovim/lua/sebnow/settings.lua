@@ -18,6 +18,7 @@ vim.opt.formatoptions:append("cronql1jp")
 vim.opt.completeopt = { "menuone", "noinsert" }
 
 vim.o.smartcase = true
+vim.o.ignorecase = true
 vim.o.incsearch = true
 
 vim.o.scrolloff = 2
