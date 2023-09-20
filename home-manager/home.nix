@@ -19,6 +19,7 @@
     fd
     jq
     restic
+    obsidian
   ];
 
   # This value determines the Home Manager release that your configuration is
