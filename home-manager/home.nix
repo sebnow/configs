@@ -12,8 +12,6 @@
     ./modules/home-manager/neovim
   ];
 
-  nixpkgs.config.allowUnfree = true;
-
   home.username = "sebnow";
   home.homeDirectory = "/home/sebnow";
   home.packages = with pkgs; [
