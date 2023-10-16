@@ -21,6 +21,7 @@ in {
           tab_bar_edge = "top";
           tab_bar_style = "separator";
           tab_separator = "\" | \"";
+          linux_display_server = "x11";
         };
 
         keybindings = {
