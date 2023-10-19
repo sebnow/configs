@@ -34,3 +34,5 @@ vim.o.guifont = "IosevkaTerm NFM:h12,Iosevka Term:h12,monospace"
 vim.o.timeoutlen = 250
 
 vim.o.cmdheight = 0
+
+vim.g.netrw_banner = 0
