@@ -20,20 +20,40 @@
         ]
         ++ (with pkgs.vimPlugins.nvim-treesitter-parsers; [
           bash
+          comment
+          css
+          diff
           dockerfile
+          gitcommit
+          gitignore
           go
           gomod
+          gosum
+          gowork
+          haskell
           html
+          http
+          ini
           javascript
           json
           lua
+          luadoc
           markdown
+          markdown_inline
           nix
+          promql
           python
+          regex
           rust
+          sql
+          starlark
+          terraform
           toml
+          tsx
           typescript
           vim
+          vimdoc
+          xml
           yaml
         ]);
       extraLuaConfig = "require('sebnow.language')";
