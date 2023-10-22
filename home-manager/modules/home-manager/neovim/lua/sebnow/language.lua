@@ -20,6 +20,8 @@ require("nvim-treesitter.configs").setup({
   },
 })
 
+require("Comment").setup()
+
 require("go").setup({
   lsp_inlay_hints = { enable = false },
 })

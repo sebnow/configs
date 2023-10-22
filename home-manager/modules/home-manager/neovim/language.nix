@@ -8,6 +8,7 @@
       plugins = with pkgs.vimPlugins;
         [
           cmp-nvim-lsp
+          comment-nvim
           go-nvim
           lsp-inlayhints-nvim # TODO :Review - may not be required
           null-ls-nvim
