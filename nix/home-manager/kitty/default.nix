@@ -30,6 +30,10 @@ in {
         };
       };
 
+      programs.bash.initExtra = lib.mkIf cfg.shellIntegration.enableBashIntegration ''
+        [[ "$TERM" = "xterm-kitty" ]] && alias ssh='kitty +kitten ssh'
+      '';
+
       home.sessionVariables.TERMINAL = "kitty";
 
       # FIXME: Remove once GLX issues are solved on standalone

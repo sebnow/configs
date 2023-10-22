@@ -4,47 +4,15 @@
   ...
 }: {
   imports = [
-    ./modules/home-manager/alacritty
-    ./modules/home-manager/fonts
-    ./modules/home-manager/gnome
-    ./modules/home-manager/k9s
-    ./modules/home-manager/kitty
-    ./modules/home-manager/neovim
+    ./neovim
   ];
 
-  home.username = "sebnow";
-  home.homeDirectory = "/home/sebnow";
-  home.packages = with pkgs; [
-    bottom
-    fd
-    jq
-    restic
-    obsidian
-  ];
-
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "23.05"; # Please read the comment before changing.
-
-  home.sessionVariables = {
-    BROWSER = "firefox";
-  };
-
-  fonts.fontconfig.enable = true;
+  programs.home-manager.enable = true;
 
   programs.bash = {
     enable = true;
     historyControl = ["ignorespace" "ignoredups" "erasedups"];
-    bashrcExtra = ''
-      [[ "$TERM" = "xterm-kitty" ]] && alias ssh='kitty +kitten ssh'
-    '';
   };
-  # TODO: Direnv
 
   programs.bat = {
     enable = true;
@@ -61,22 +29,43 @@
     };
   };
 
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
-
   programs.eza = {
     enable = true;
     enableAliases = true;
     git = true;
   };
 
-  programs.firefox.enable = true;
-
   programs.fzf = {
     enable = true;
     defaultCommand = "rg --files --hidden --follow --glob \"!.git/*\"";
+  };
+
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+    settings = {
+      add_newline = false;
+      aws = {};
+      cmd_duration.style = "dimmed yellow";
+      directory = {
+        style = "fg:green";
+        truncate_to_repo = false;
+      };
+      golang.disabled = true;
+      nodejs.disabled = true;
+      package.disabled = true;
+      python.disabled = true;
+      ruby.disabled = true;
+      rust.disabled = true;
+    };
+  };
+
+  programs.readline = {
+    enable = true;
+    extraConfig = ''
+      set editing-mode vi
+      set keymap vi
+    '';
   };
 
   programs.git = {
@@ -107,49 +96,6 @@
       };
       push.default = "simple";
       log.decorate = "short";
-    };
-    delta = {
-      enable = true;
-      options = {
-        line-numbers = true;
-        syntax-theme = "Catppuccin-mocha";
-      };
-    };
-    # TODO
-  };
-
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
-  programs.k9s.enable = true;
-  programs.kitty.enable = true;
-
-  programs.readline = {
-    enable = true;
-    extraConfig = ''
-      set editing-mode vi
-      set keymap vi
-    '';
-  };
-
-  #programs.ripgrep.enable = true;
-
-  programs.starship = {
-    enable = true;
-    enableBashIntegration = true;
-    settings = {
-      add_newline = false;
-      aws = {};
-      cmd_duration.style = "dimmed yellow";
-      directory = {
-        style = "fg:green";
-        truncate_to_repo = false;
-      };
-      golang.disabled = true;
-      nodejs.disabled = true;
-      package.disabled = true;
-      python.disabled = true;
-      ruby.disabled = true;
-      rust.disabled = true;
     };
   };
 
