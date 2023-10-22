@@ -22,15 +22,32 @@ require("nvim-treesitter.configs").setup({
 
 require("Comment").setup()
 
-require("go").setup({
-  lsp_inlay_hints = { enable = false },
+require("conform").setup({
+  formatters_by_ft = {
+    lua = { "stylua" },
+    javascript = { { "prettierd", "prettier" } },
+    nix = { { "nixfmt", "alejandra" } },
+  },
+  formatters = {
+    nixfmt = {
+      command = "nix",
+      args = { "fmt", "$FILENAME" },
+      stdin = false,
+      condition = function(ctx)
+        return vim.fs.find({ "flake.nix" }, { upward = true, path = ctx.dirname })[1]
+      end,
+    },
+  },
+  format_on_save = {
+    timeout_ms = 500,
+    lsp_fallback = true,
+  },
 })
 
-require("null-ls").setup({
-  sources = {
-    require("null-ls").builtins.formatting.prettier,
-    require("null-ls").builtins.formatting.stylua,
-  },
+vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+
+require("go").setup({
+  lsp_inlay_hints = { enable = false },
 })
 
 local floating_preview_opts = {
@@ -178,7 +195,7 @@ wk.register({
     name = "Format",
     b = {
       function()
-        vim.lsp.buf.format({ async = true })
+        require("conform").format({ lsp_fallback = true })
       end,
       "Format buffer",
     },
@@ -208,7 +225,12 @@ wk.register({
   },
   f = {
     name = "Format",
-    b = { "<cmd>lua vim.lsp.buf.range_formatting()<cr>", "Format range" },
+    b = {
+      function()
+        require("conform").format({ lsp_fallback = true })
+      end,
+      "Format range",
+    },
   },
 }, {
   prefix = "<localleader>",

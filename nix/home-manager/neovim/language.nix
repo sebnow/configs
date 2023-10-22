@@ -2,16 +2,30 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  conform-nvim = pkgs.vimUtils.buildVimPlugin {
+    name = "conform-nvim";
+    src = pkgs.fetchFromGitHub {
+      owner = "stevearc";
+      repo = "conform.nvim";
+      rev = "7f5ff6d253ae3543f186787bccafdc411d3f4b0a";
+      sha256 = "sha256-2wyqTITzYpMb6io08CQOnYzhMYWi4nPvXaFM8md+WcU=";
+    };
+    buildInputs = [
+      pkgs.git
+    ];
+    buildPhase = "true";
+  };
+in {
   config = {
     programs.neovim = {
       plugins = with pkgs.vimPlugins;
         [
           cmp-nvim-lsp
           comment-nvim
+          conform-nvim
           go-nvim
           lsp-inlayhints-nvim # TODO :Review - may not be required
-          null-ls-nvim
           nvim-lspconfig
           nvim-treesitter
           nvim-treesitter-context
