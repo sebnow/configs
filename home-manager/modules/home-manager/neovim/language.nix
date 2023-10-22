@@ -13,6 +13,7 @@
           null-ls-nvim
           nvim-lspconfig
           nvim-treesitter
+          nvim-treesitter-context
           rust-tools-nvim # TODO: Review - may not be required
           vim-markdown
           vim-terraform
