@@ -15,6 +15,9 @@ require("nvim-treesitter.configs").setup({
     enable = true,
     disable = { "yaml" },
   },
+  matchup = {
+    enable = true,
+  },
 })
 
 require("go").setup({

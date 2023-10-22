@@ -16,6 +16,7 @@
           nvim-treesitter-context
           rust-tools-nvim # TODO: Review - may not be required
           vim-markdown
+          vim-matchup
           vim-terraform
           which-key-nvim
         ]
