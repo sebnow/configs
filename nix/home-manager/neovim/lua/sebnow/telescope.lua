@@ -40,34 +40,12 @@ telescope.setup({
   },
 })
 
-wk.register({
-  ["<C-p>"] = { builtin.find_files, "Find files" },
-  g = {
-    name = "navigation",
-    r = { builtin.lsp_references, "Explore references" },
-  },
-})
-
-wk.register({
-  [";"] = { builtin.command_history, "Explore command history" },
-  b = {
-    name = "Buffers",
-    e = { builtin.buffers, "Explore buffers" },
-  },
-  l = { builtin.resume, "Resume previous list" },
-  s = {
-    name = "Symbols",
-    w = { builtin.lsp_workspace_symbols, "Explore workspace symbols" },
-    d = { builtin.lsp_document_symbols, "Explore document symbols" },
-  },
-  p = {
-    name = "Project",
-    ["/"] = { builtin.live_grep, "Search in project" },
-  },
-  S = {
-    name = "Source Control",
-    b = { builtin.git_branches, "Branches" },
-  },
-}, {
-  prefix = "<localleader>",
-})
+vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Find files" })
+vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Explore references" })
+vim.keymap.set("n", "<localleader>;", builtin.command_history, { desc = "Explore command history" })
+vim.keymap.set("n", "<localleader>be", builtin.buffers, { desc = "Explore buffers" })
+vim.keymap.set("n", "<localleader>l", builtin.resume, { desc = "Resume previous list" })
+vim.keymap.set("n", "<localleader>sw", builtin.lsp_workspace_symbols, { desc = "Explore workspace symbols" })
+vim.keymap.set("n", "<localleader>sd", builtin.lsp_document_symbols, { desc = "Explore document symbols" })
+vim.keymap.set("n", "<localleader>p/", builtin.live_grep, { desc = "Search in project" })
+vim.keymap.set("n", "<localleader>Sb", builtin.git_branches, { desc = "Branches" })

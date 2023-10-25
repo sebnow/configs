@@ -155,88 +155,49 @@ lspconfig.lua_ls.setup(merge(opts, {
 -- This will be obsolete once https://github.com/neovim/neovim/issues/18086 is implemented
 require("lsp-inlayhints").setup()
 
-wk.register({
-  g = {
-    name = "Navigation",
-    D = { vim.lsp.buf.declaration, "Go to declaration" },
-    I = { vim.lsp.buf.implementation, "Go to implementation" },
-    d = { vim.lsp.buf.definition, "Go to definition" },
-  },
-  K = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Show info about the symbol under the cursor" },
-})
+vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { desc = "Go to definition" })
+vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show info about the symbol under the cursor" })
+vim.keymap.set("n", "<localleader>ca", vim.lsp.buf.code_action, { desc = "Show actions under cursor" })
 
-wk.register({
-  c = {
-    name = "Code Actions",
-    a = { vim.lsp.buf.code_action, "Show actions under cursor" },
-  },
-  d = {
-    o = {
-      function()
-        vim.diagnostic.open_float(floating_preview_opts)
-      end,
-      "Show line diagnostics",
-    },
-    n = {
-      function()
-        vim.diagnostic.goto_next({ float = floating_preview_opts })
-      end,
-      "Go to next diagnostic",
-    },
-    p = {
-      function()
-        vim.diagnostic.goto_prev({ float = floating_preview_opts })
-      end,
-      "Go to previous diagnostic",
-    },
-    l = { "<cmd>TroubleToggle<cr>", "Explore diagnostics" },
-  },
-  f = {
-    name = "Format",
-    b = {
-      function()
-        require("conform").format({ lsp_fallback = true })
-      end,
-      "Format buffer",
-    },
-  },
-  r = {
-    name = "Rename",
-    o = { vim.lsp.buf.rename, "Rename object" },
-  },
-  s = {
-    name = "Symbols",
-    w = {
-      function()
-        require("telescope.builtin").lsp_workspace_symbols()
-      end,
-      "Explore workspace symbols",
-    },
-    d = { '<cmd>lua require("telescope.builtin").lsp_document_symbols()<cr>', "Explore document symbols" },
-  },
-}, {
-  prefix = "<localleader>",
-})
+vim.keymap.set("n", "<localleader>do", function()
+  vim.diagnostic.open_float(floating_preview_opts)
+end, { desc = "Show line diagnostics" })
 
-wk.register({
-  c = {
-    name = "Code Actions",
-    a = { ":<C-U>lua vim.lsp.buf.range_code_action()<cr>", "Show actions for a given range" },
-  },
-  f = {
-    name = "Format",
-    b = {
-      function()
-        require("conform").format({ lsp_fallback = true })
-      end,
-      "Format range",
-    },
-  },
-}, {
-  prefix = "<localleader>",
-  mode = "v",
-})
+vim.keymap.set("n", "<localleader>dn", function()
+  vim.diagnostic.goto_next({ float = floating_preview_opts })
+end, { desc = "Go to next diagnostic" })
 
-wk.register({
-  ["<C-k>"] = { vim.lsp.buf.signature_help, "Show signature help" },
-}, { mode = "i" })
+vim.keymap.set("n", "<localleader>dp", function()
+  vim.diagnostic.goto_prev({ float = floating_preview_opts })
+end, { desc = "Go to previous diagnostic" })
+
+vim.keymap.set("n", "<localleader>dl", "<cmd>TroubleToggle<cr>", { desc = "Explore diagnostics" })
+
+vim.keymap.set("n", "<localleader>fb", function()
+  require("conform").format({ lsp_fallback = true })
+end, { desc = "Format buffer" })
+
+vim.keymap.set("v", "<localleader>fb", function()
+  local start_row, _ = unpack(vim.api.nvim_buf_get_mark(0, "<"))
+  local end_row, _ = unpack(vim.api.nvim_buf_get_mark(0, ">"))
+  require("conform").format({
+    lsp_fallback = true,
+    range = {
+      ["start"] = { start_row, 0 },
+      ["end"] = { end_row, 0 },
+    },
+  })
+end, { desc = "Format range" })
+
+vim.keymap.set("n", "<localleader>ro", vim.lsp.buf.rename, { desc = "Rename object" })
+vim.keymap.set("n", "<localleader>sw", function()
+  require("telescope.builtin").lsp_workspace_symbols()
+end, { desc = "Explore workspace symbols" })
+
+vim.keymap.set("n", "<localleader>sd", function()
+  require("telescope.builtin").lsp_document_symbols()
+end, { desc = "Explore document symbols" })
+
+vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Show signature help" })

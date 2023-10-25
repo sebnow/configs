@@ -11,6 +11,7 @@
         lualine-nvim
         nvim-web-devicons
         trouble-nvim
+        which-key-nvim
       ];
       extraLuaConfig = "require('sebnow.ui')";
     };

@@ -33,7 +33,6 @@ in {
           vim-markdown
           vim-matchup
           vim-terraform
-          which-key-nvim
         ]
         ++ (with pkgs.vimPlugins.nvim-treesitter-parsers; [
           bash
