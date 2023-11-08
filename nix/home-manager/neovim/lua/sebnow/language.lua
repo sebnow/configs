@@ -156,7 +156,7 @@ lspconfig.lua_ls.setup(merge(opts, {
 require("lsp-inlayhints").setup()
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { desc = "Go to definition" })
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show info about the symbol under the cursor" })
 vim.keymap.set("n", "<localleader>ca", vim.lsp.buf.code_action, { desc = "Show actions under cursor" })
