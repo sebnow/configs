@@ -19,59 +19,20 @@
 in {
   config = {
     programs.neovim = {
-      plugins = with pkgs.vimPlugins;
-        [
-          cmp-nvim-lsp
-          comment-nvim
-          conform-nvim
-          go-nvim
-          lsp-inlayhints-nvim # TODO :Review - may not be required
-          nvim-lspconfig
-          nvim-treesitter
-          nvim-treesitter-context
-          rust-tools-nvim # TODO: Review - may not be required
-          vim-markdown
-          vim-matchup
-          vim-terraform
-        ]
-        ++ (with pkgs.vimPlugins.nvim-treesitter-parsers; [
-          bash
-          comment
-          css
-          diff
-          dockerfile
-          gitcommit
-          gitignore
-          go
-          gomod
-          gosum
-          gowork
-          haskell
-          html
-          http
-          ini
-          javascript
-          json
-          lua
-          luadoc
-          markdown
-          markdown_inline
-          nix
-          promql
-          python
-          regex
-          rust
-          sql
-          starlark
-          terraform
-          toml
-          tsx
-          typescript
-          vim
-          vimdoc
-          xml
-          yaml
-        ]);
+      plugins = with pkgs.vimPlugins; [
+        cmp-nvim-lsp
+        comment-nvim
+        conform-nvim
+        go-nvim
+        lsp-inlayhints-nvim # TODO :Review - may not be required
+        nvim-lspconfig
+        nvim-treesitter.withAllGrammars
+        nvim-treesitter-context
+        rust-tools-nvim # TODO: Review - may not be required
+        vim-markdown
+        vim-matchup
+        vim-terraform
+      ];
       extraLuaConfig = "require('sebnow.language')";
       extraPackages = with pkgs; [
         golangci-lint-langserver
