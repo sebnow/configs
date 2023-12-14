@@ -20,11 +20,10 @@ cmp.setup({
     { name = "buffer", keyword_length = 4 },
     { name = "nvim_lsp" },
     { name = "path" },
-    { name = "luasnip" },
   }),
   snippet = {
     expand = function(args)
-      require("luasnip").lsp_expand(args.body)
+      vim.snippet.expand(args.body)
     end,
   },
   window = {
