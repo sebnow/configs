@@ -10,6 +10,11 @@ require("lualine").setup({
   extensions = { "fugitive", "quickfix" },
 })
 
+require("oil").setup({
+  default_file_explorer = true,
+})
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
 local wk = require("which-key")
 wk.setup()
 

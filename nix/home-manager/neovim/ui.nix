@@ -10,6 +10,7 @@
         indent-blankline-nvim
         lualine-nvim
         nvim-web-devicons
+        oil-nvim
         trouble-nvim
         which-key-nvim
       ];
