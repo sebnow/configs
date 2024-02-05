@@ -7,8 +7,10 @@
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
         cmp-buffer
+        cmp-copilot
         cmp-nvim-lsp
         cmp-path
+        copilot-vim
         nvim-cmp
       ];
       extraLuaConfig = "require('sebnow.completion')";

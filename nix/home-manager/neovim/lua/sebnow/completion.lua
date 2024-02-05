@@ -1,5 +1,7 @@
 local cmp = require("cmp")
 
+vim.g.copilot_no_tab_map = true
+
 cmp.setup({
   mapping = cmp.mapping.preset.insert({
     ["<C-d>"] = cmp.mapping.scroll_docs(-4),
@@ -15,8 +17,9 @@ cmp.setup({
     ghost_text = true,
   },
   sources = cmp.config.sources({
-    { name = "buffer", keyword_length = 4 },
     { name = "nvim_lsp" },
+    { name = "copilot" },
+    { name = "buffer", keyword_length = 4 },
     { name = "path" },
   }),
   snippet = {
