@@ -74,6 +74,7 @@
     aliases = {
       st = "status --short";
       squash = "rebase -i --autosquash @{u}";
+      pushf = "push --force-with-lease";
     };
     ignores = [
       "*.swp"
