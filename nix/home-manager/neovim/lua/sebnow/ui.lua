@@ -20,7 +20,7 @@ require("lualine").setup({
       end,
     },
   },
-  extensions = { "fugitive", "quickfix" },
+  extensions = { "fugitive", "quickfix", "oil" },
 })
 
 require("oil").setup({
