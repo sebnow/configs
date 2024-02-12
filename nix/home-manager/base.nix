@@ -87,6 +87,7 @@
     ];
     extraConfig = {
       apply.whitespace = "fix";
+      rerere.enable = true;
       branch = {
         master = {
           mergeoptions = "--no-ff";
