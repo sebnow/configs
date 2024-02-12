@@ -19,6 +19,10 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    nixgl = {
+      url = "github:guibou/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}:

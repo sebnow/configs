@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.programs.kitty;
+  kitty = "${pkgs.nixgl.nixGLMesa}/bin/nixGLMesa ${pkgs.kitty}/bin/kitty";
 in {
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
@@ -45,7 +46,7 @@ in {
       # This works around the issue by using the executable provided by
       # the system. That means the only purpose of this module is to
       # provide the configuration.
-      home.shellAliases.kitty = "/usr/bin/kitty";
+      home.shellAliases.kitty = kitty;
       xdg.dataFile."applications/kitty.desktop" = {
         text = ''
           [Desktop Entry]
@@ -54,9 +55,9 @@ in {
           Name=kitty
           GenericName=Terminal emulator
           Comment=Fast, feature-rich, GPU based terminal
-          TryExec=/usr/bin/kitty
-          Exec=/usr/bin/kitty
-          Icon=kitty
+          TryExec=${pkgs.kitty}/bin/kitty
+          Exec=${kitty}
+          Icon=${pkgs.kitty}/share/icons/hicolor/scalable/apps/kitty.svg
           Categories=System;TerminalEmulator;
         '';
       };
