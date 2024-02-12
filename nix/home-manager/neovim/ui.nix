@@ -6,9 +6,9 @@
   config = {
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
-        dressing-nvim
         indent-blankline-nvim
         lualine-nvim
+        noice-nvim
         nvim-web-devicons
         oil-nvim
         trouble-nvim

@@ -1,5 +1,3 @@
-require("dressing").setup()
-
 require("ibl").setup()
 
 require("lualine").setup({
@@ -8,16 +6,16 @@ require("lualine").setup({
     section_separators = "",
   },
   sections = {
-    lualine_a = {
-      "mode",
-      function()
-        local reg = vim.fn.reg_recording()
-        if reg == "" then
-          return ""
-        else
-          return "REC @" .. reg
-        end
-      end,
+    lualine_x = {
+      {
+        require("noice").api.status.message.get_hl,
+        cond = require("noice").api.status.message.has,
+      },
+      {
+        require("noice").api.status.mode.get,
+        cond = require("noice").api.status.mode.has,
+        color = { fg = require("catppuccin.palettes").get_palette().rosewater },
+      },
     },
   },
   extensions = { "fugitive", "quickfix", "oil" },
@@ -27,6 +25,25 @@ require("oil").setup({
   default_file_explorer = true,
 })
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+require("noice").setup({
+  cmdline = { view = "cmdline" },
+  lsp = {
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  presets = {
+    bottom_search = true,
+    command_palette = false,
+    long_message_to_split = true,
+    inc_rename = true,
+    lsp_doc_border = true,
+  },
+})
+require("telescope").load_extension("noice")
 
 local wk = require("which-key")
 wk.setup()
