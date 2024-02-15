@@ -4,6 +4,16 @@
   lib,
   ...
 }: {
+  nixpkgs.config = {
+    allowUnfreePredicate = pkg:
+      builtins.elem (lib.getName pkg) [
+        "obsidian"
+      ];
+    permittedInsecurePackages = [
+      "electron-25.9.0" # Used by Obsidian
+    ];
+  };
+
   imports = [
     ./base.nix
     ./alacritty
@@ -19,8 +29,8 @@
     bottom
     fd
     jq
+    obsidian
     restic
-    #obsidian # TODO: nixpkgs.config.allowUnfree = true;
   ];
 
   # This value determines the Home Manager release that your configuration is
