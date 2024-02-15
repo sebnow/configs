@@ -7,6 +7,7 @@
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
         telescope-nvim
+        telescope-ui-select-nvim
         which-key-nvim
       ];
       extraLuaConfig = "require('sebnow.telescope')";
