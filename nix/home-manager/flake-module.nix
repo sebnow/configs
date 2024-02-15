@@ -14,9 +14,14 @@
       overlays = [inputs.neovim.overlay inputs.nixgl.overlay];
     };
   in {
-    legacyPackages.homeConfigurations."sebnow" = inputs.home-manager.lib.homeManagerConfiguration {
+    legacyPackages.homeConfigurations."sebnow@stribog" = inputs.home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
-      modules = [./sebnow.nix];
+      modules = [
+        ./sebnow.nix
+        ({...}: {
+          targets.genericLinux.enable = true;
+        })
+      ];
     };
   };
 }
