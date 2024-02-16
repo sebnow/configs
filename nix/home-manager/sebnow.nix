@@ -15,12 +15,13 @@
   };
 
   imports = [
-    ./base.nix
     ./alacritty
+    ./base.nix
     ./fonts
     ./gnome
     ./k9s
     ./kitty
+    ./obsidian.nix
   ];
 
   home.username = "sebnow";
@@ -29,7 +30,6 @@
     bottom
     fd
     jq
-    obsidian
     restic
   ];
 
