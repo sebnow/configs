@@ -99,6 +99,7 @@ require("rust-tools").setup({
 lspconfig.bashls.setup(opts)
 lspconfig.gopls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
+lspconfig.marksman.setup(opts)
 lspconfig.nixd.setup(opts)
 lspconfig.pylsp.setup(opts)
 
