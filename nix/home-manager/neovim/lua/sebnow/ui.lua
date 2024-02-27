@@ -1,3 +1,5 @@
+vim.cmd.colorscheme("catppuccin-mocha")
+
 require("ibl").setup()
 
 require("lualine").setup({

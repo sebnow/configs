@@ -6,6 +6,7 @@
   config = {
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
+        catppuccin-nvim
         indent-blankline-nvim
         lualine-nvim
         noice-nvim

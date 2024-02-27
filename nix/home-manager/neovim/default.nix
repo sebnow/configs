@@ -4,7 +4,6 @@
   ...
 }: {
   imports = [
-    ./colors.nix
     ./completion.nix
     ./git.nix
     ./language.nix
