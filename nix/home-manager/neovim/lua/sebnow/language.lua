@@ -1,6 +1,8 @@
 local lspconfig = require("lspconfig")
 local wk = require("which-key")
 
+vim.filetype.add({ extension = { templ = "templ" } })
+
 require("nvim-treesitter.configs").setup({
   ensure_installed = {}, -- Nix manages parsers
   auto_install = false,
@@ -102,6 +104,7 @@ lspconfig.jsonnet_ls.setup(opts)
 lspconfig.marksman.setup(opts)
 lspconfig.nixd.setup(opts)
 lspconfig.pylsp.setup(opts)
+lspconfig.templ.setup(opts)
 
 lspconfig.tsserver.setup(merge(opts, {
   on_attach = function(client)
