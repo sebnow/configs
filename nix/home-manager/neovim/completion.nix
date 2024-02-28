@@ -4,13 +4,15 @@
   ...
 }: {
   config = {
+    # Copilot-lua requires node to be available
+    home.packages = [pkgs.nodejs];
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
         cmp-buffer
-        cmp-copilot
         cmp-nvim-lsp
         cmp-path
-        copilot-vim
+        copilot-cmp
+        copilot-lua
         nvim-cmp
       ];
       extraLuaConfig = "require('sebnow.completion')";

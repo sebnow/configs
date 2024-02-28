@@ -1,4 +1,14 @@
 local cmp = require("cmp")
+require("copilot").setup({
+  suggestion = { enabled = false },
+  panel = { enabled = false },
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+  callback = function()
+    require("copilot_cmp").setup()
+  end,
+})
 
 vim.g.copilot_no_tab_map = true
 
