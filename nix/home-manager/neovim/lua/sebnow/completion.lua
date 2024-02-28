@@ -51,6 +51,7 @@ cmp.setup({
       end,
       ellipsis_char = "…",
       show_labelDetails = true,
+      symbol_map = { Copilot = "" },
     }),
   },
 })
