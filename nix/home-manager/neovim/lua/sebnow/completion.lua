@@ -1,4 +1,6 @@
 local cmp = require("cmp")
+local lspkind = require("lspkind")
+
 require("copilot").setup({
   suggestion = { enabled = false },
   panel = { enabled = false },
@@ -40,5 +42,15 @@ cmp.setup({
   window = {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
+  },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = "symbol_text", -- TODO: Just "symbol" once I learn them
+      maxwidth = function()
+        return math.floor(0.45 * vim.o.columns)
+      end,
+      ellipsis_char = "…",
+      show_labelDetails = true,
+    }),
   },
 })

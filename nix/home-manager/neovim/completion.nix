@@ -13,6 +13,7 @@
         cmp-path
         copilot-cmp
         copilot-lua
+        lspkind-nvim
         nvim-cmp
       ];
       extraLuaConfig = "require('sebnow.completion')";
