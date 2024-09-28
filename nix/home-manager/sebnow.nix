@@ -22,6 +22,7 @@
     ./k9s
     ./kitty
     ./obsidian.nix
+    ./process-compose.nix
   ];
 
   home.username = "sebnow";
