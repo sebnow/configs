@@ -1,17 +1,14 @@
-{
-  self,
-  inputs,
-  ...
-}: {
-  perSystem = {
-    system,
-    config,
-    pkgs,
-    ...
-  }: let
+{inputs, ...}: {
+  perSystem = {system, ...}: let
     pkgs = import inputs.nixpkgs {
       inherit system;
-      overlays = [inputs.neovim.overlay inputs.nixgl.overlay];
+      overlays = [
+        inputs.neovim.overlays.default
+        inputs.nixgl.overlay
+        (final: prev: {
+          camunda-modeler = prev.callPackage ../pkgs/camunda-modeler {};
+        })
+      ];
     };
   in {
     legacyPackages.homeConfigurations."sebnow@stribog" = inputs.home-manager.lib.homeManagerConfiguration {
