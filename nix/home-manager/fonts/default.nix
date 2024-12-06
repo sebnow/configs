@@ -14,7 +14,7 @@ in {
 
       home.packages = with pkgs; [
         iosevka
-        (nerdfonts.override {fonts = ["IosevkaTerm"];})
+        nerd-fonts.iosevka-term
       ];
     })
   ];
