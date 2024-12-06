@@ -14,6 +14,18 @@
     historyControl = ["ignorespace" "ignoredups" "erasedups"];
   };
 
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    history = {
+      ignoreSpace = true;
+      ignoreDups = true;
+    };
+    initExtra = ''
+      bindkey -v
+    '';
+  };
+
   programs.bat = {
     enable = true;
     config.theme = "Catppuccin-mocha";
