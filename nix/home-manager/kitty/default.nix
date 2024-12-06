@@ -10,7 +10,6 @@ in {
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       programs.kitty = {
-        theme = "Catppuccin-Mocha";
         font = {
           name = "IosevkaTerm NFM";
           size = 12;

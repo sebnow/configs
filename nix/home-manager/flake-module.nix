@@ -14,6 +14,7 @@
     legacyPackages.homeConfigurations."sebnow@stribog" = inputs.home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       modules = [
+        inputs.catppuccin.homeManagerModules.catppuccin
         ./sebnow.nix
         ({...}: {
           targets.genericLinux.enable = true;

@@ -19,6 +19,7 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    catppuccin.url = "github:catppuccin/nix";
     nixgl = {
       url = "github:guibou/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";

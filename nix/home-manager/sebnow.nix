@@ -19,7 +19,6 @@
     ./base.nix
     ./fonts
     ./gnome
-    ./k9s
     ./kitty
     ./obsidian.nix
     ./process-compose.nix
@@ -56,4 +55,6 @@
 
   programs.k9s.enable = true;
   programs.kitty.enable = true;
+
+  catppuccin.enable = true;
 }
