@@ -106,7 +106,7 @@ lspconfig.nixd.setup(opts)
 lspconfig.pylsp.setup(opts)
 lspconfig.templ.setup(opts)
 
-lspconfig.tsserver.setup(merge(opts, {
+lspconfig.ts_ls.setup(merge(opts, {
   on_attach = function(client)
     client.resolved_capabilities.document_formatting = false
   end,
