@@ -5,7 +5,7 @@
 }: {
   home.packages =
     if pkgs.stdenv.isLinux
-    then
+    then [
       (pkgs.obsidian.overrideAttrs (prev: rec {
         desktopItem = prev.desktopItem.override {
           # https://pandasauce.org/post/linux-fonts/#application-settings
@@ -13,5 +13,6 @@
         };
         installPhase = builtins.replaceStrings ["${prev.desktopItem}"] ["${desktopItem}"] prev.installPhase;
       }))
+    ]
     else [pkgs.obsidian];
 }
