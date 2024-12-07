@@ -48,18 +48,18 @@ require("telescope").load_extension("noice")
 local wk = require("which-key")
 wk.setup()
 
-wk.register({
-  S = { name = "Source Control" },
-  b = { name = "Buffers" },
-  d = { name = "Diagnostics" },
-  p = { name = "Project" },
-  r = { name = "Rename" },
-  s = { name = "Symbols" },
-}, { prefix = "<localleader>", mode = { "n" } })
+wk.add({
+  { "<localleader>S", group = "Source Control" },
+  { "<localleader>b", group = "Buffers" },
+  { "<localleader>d", group = "Diagnostics" },
+  { "<localleader>p", group = "Project" },
+  { "<localleader>r", group = "Rename" },
+  { "<localleader>s", group = "Symbols" },
+}, { mode = { "n" } })
 
-wk.register({
-  c = { name = "Code Actions" },
-  f = { name = "Format" },
+wk.add({
+  { "<localleader>c", group = "Code Actions" },
+  { "<localleader>f", group = "Format" },
 }, { prefix = "<localleader>", mode = { "n", "v" } })
 
 -- Ripped off from https://www.reddit.com/r/neovim/comments/xy0tu1/comment/irfegvd/
