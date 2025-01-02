@@ -20,7 +20,6 @@
       };
     };
     catppuccin.url = "github:catppuccin/nix";
-    ghostty.url = "github:clo4/ghostty-hm-module";
     nixgl = {
       url = "github:guibou/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";

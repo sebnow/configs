@@ -15,7 +15,6 @@
       inherit pkgs;
       modules = [
         inputs.catppuccin.homeManagerModules.catppuccin
-        inputs.ghostty.homeModules.default
         ./sebnow.nix
         ({...}: {
           targets.genericLinux.enable = true;
