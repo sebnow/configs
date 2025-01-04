@@ -14,7 +14,7 @@ in {
     (lib.mkIf cfg.enable {
       programs.kitty = {
         font = {
-          name = "IosevkaTerm NFM";
+          name = "IosevkaTerm NF";
           size = 12;
         };
         settings = {
