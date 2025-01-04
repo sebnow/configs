@@ -17,6 +17,18 @@ in {
           font-size = 12;
           font-family = "IosevkaTerm NF";
           theme = "catppuccin-${config.catppuccin.flavor}";
+          keybind = pkgs.lib.optionals pkgs.stdenv.isLinux [
+            "ctrl+shift+enter=new_split:right"
+            "ctrl+shift+v=new_split:right"
+            "ctrl+shift+d=new_split:down"
+            "ctrl+shift+z=toggle_split_zoom"
+            "ctrl+shift+[=goto_split:previous"
+            "ctrl+shift+]=goto_split:next"
+            "ctrl+shift+h=goto_split:left"
+            "ctrl+shift+j=goto_split:bottom"
+            "ctrl+shift+k=goto_split:top"
+            "ctrl+shift+l=goto_split:right"
+          ];
         };
       };
 
