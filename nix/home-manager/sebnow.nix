@@ -18,6 +18,7 @@
     ./alacritty
     ./base.nix
     ./fonts
+    ./ghostty
     ./gnome
     ./kitty
     ./obsidian.nix
@@ -55,15 +56,8 @@
 
   programs.k9s.enable = true;
   programs.kitty.enable = true;
-
-  programs.ghostty = {
-    enable = true;
-    settings = {
-      font-size = 14;
-      font-family = "IosevkaTerm Nerd Font";
-      theme = "catppuccin-${config.catppuccin.flavor}";
-    };
-  };
+  programs.ghostty.enable = true;
+  programs.ghostty.isDefault = true;
 
   catppuccin.enable = true;
 }

@@ -7,6 +7,9 @@
   cfg = config.programs.kitty;
   kitty = "${pkgs.nixgl.nixGLMesa}/bin/nixGLMesa ${pkgs.kitty}/bin/kitty";
 in {
+  options.programs.kitty = {
+    isDefault = lib.mkEnableOption "as the default terminal";
+  };
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       programs.kitty = {
@@ -34,17 +37,13 @@ in {
         [[ "$TERM" = "xterm-kitty" ]] && alias ssh='kitty +kitten ssh'
       '';
 
-      home.sessionVariables.TERMINAL = "kitty";
+      home.sessionVariables.TERMINAL = lib.mkIf cfg.isDefault "kitty";
 
       # FIXME: Remove once GLX issues are solved on standalone
       # installations
       # https://github.com/NixOS/nixpkgs/issues/80936
       #
       # Kitty is not able to create a GLFW window.
-      #
-      # This works around the issue by using the executable provided by
-      # the system. That means the only purpose of this module is to
-      # provide the configuration.
       home.shellAliases.kitty = kitty;
       xdg.dataFile."applications/kitty.desktop" = {
         text = ''
