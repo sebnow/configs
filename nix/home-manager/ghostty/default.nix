@@ -19,7 +19,6 @@ in {
           theme = "catppuccin-${config.catppuccin.flavor}";
           keybind = pkgs.lib.optionals pkgs.stdenv.isLinux [
             "ctrl+shift+enter=new_split:right"
-            "ctrl+shift+v=new_split:right"
             "ctrl+shift+d=new_split:down"
             "ctrl+shift+z=toggle_split_zoom"
             "ctrl+shift+[=goto_split:previous"
