@@ -49,7 +49,7 @@ require("conform").setup({
 vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
 require("go").setup({
-  lsp_inlay_hints = { enable = false },
+  lsp_inlay_hints = { enable = true },
 })
 
 local floating_preview_opts = {
@@ -67,15 +67,12 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
 
 local opts = {
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
-  on_attach = function(client, bufnr)
-    require("lsp-inlayhints").on_attach(client, bufnr, false)
-  end,
 }
 
 require("rust-tools").setup({
   tools = {
     inlay_hints = {
-      auto = false,
+      auto = true,
     },
   },
   server = merge(opts, {
@@ -154,6 +151,9 @@ lspconfig.lua_ls.setup(merge(opts, {
         library = vim.api.nvim_get_runtime_file("", true),
         checkThirdParty = false,
       },
+      hint = {
+        enable = true,
+      },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
         enable = false,
@@ -161,9 +161,6 @@ lspconfig.lua_ls.setup(merge(opts, {
     },
   },
 }))
-
--- This will be obsolete once https://github.com/neovim/neovim/issues/18086 is implemented
-require("lsp-inlayhints").setup()
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })

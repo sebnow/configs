@@ -24,7 +24,6 @@ in {
         comment-nvim
         conform-nvim
         go-nvim
-        lsp-inlayhints-nvim # TODO :Review - may not be required
         markview-nvim
         nvim-lspconfig
         nvim-treesitter.withAllGrammars
