@@ -173,11 +173,11 @@ vim.keymap.set("n", "<localleader>do", function()
 end, { desc = "Show line diagnostics" })
 
 vim.keymap.set("n", "<localleader>dn", function()
-  vim.diagnostic.goto_next({ float = floating_preview_opts })
+  vim.diagnostic.jump({ count = 1, float = floating_preview_opts })
 end, { desc = "Go to next diagnostic" })
 
 vim.keymap.set("n", "<localleader>dp", function()
-  vim.diagnostic.goto_prev({ float = floating_preview_opts })
+  vim.diagnostic.jump({ count = -1, float = floating_preview_opts })
 end, { desc = "Go to previous diagnostic" })
 
 vim.keymap.set("n", "<localleader>dl", "<cmd>TroubleToggle<cr>", { desc = "Explore diagnostics" })
