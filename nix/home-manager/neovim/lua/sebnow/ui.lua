@@ -1,3 +1,7 @@
+vim.opt.laststatus = 3
+
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = require("catppuccin.palettes").get_palette().surface1 })
+
 require("ibl").setup()
 
 require("nvim-web-devicons").setup()
