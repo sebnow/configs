@@ -98,6 +98,12 @@ require("rust-tools").setup({
   }),
 })
 
+require("markview").setup({
+  preview = {
+    icon_provider = "devicons",
+  },
+})
+
 lspconfig.bashls.setup(opts)
 lspconfig.gopls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)

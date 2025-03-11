@@ -1,5 +1,7 @@
 require("ibl").setup()
 
+require("nvim-web-devicons").setup()
+
 require("lualine").setup({
   options = {
     component_separators = "|",

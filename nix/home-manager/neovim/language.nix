@@ -25,11 +25,11 @@ in {
         conform-nvim
         go-nvim
         lsp-inlayhints-nvim # TODO :Review - may not be required
+        markview-nvim
         nvim-lspconfig
         nvim-treesitter.withAllGrammars
         nvim-treesitter-context
         rust-tools-nvim # TODO: Review - may not be required
-        vim-markdown
         vim-matchup
         vim-terraform
       ];
