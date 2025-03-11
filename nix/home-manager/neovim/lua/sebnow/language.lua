@@ -61,10 +61,6 @@ local function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = "rounded",
-})
-
 local opts = {
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
 }
@@ -165,7 +161,9 @@ lspconfig.lua_ls.setup(merge(opts, {
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show info about the symbol under the cursor" })
+vim.keymap.set("n", "K", function()
+  require("noice.lsp").hover()
+end, { desc = "Show info about the symbol under the cursor" })
 vim.keymap.set("n", "<localleader>ca", vim.lsp.buf.code_action, { desc = "Show actions under cursor" })
 
 vim.keymap.set("n", "<localleader>do", function()
