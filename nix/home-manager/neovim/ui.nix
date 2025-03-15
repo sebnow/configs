@@ -9,6 +9,7 @@
         catppuccin-nvim
         indent-blankline-nvim
         lualine-nvim
+        neoscroll-nvim
         noice-nvim
         nvim-web-devicons
         oil-nvim

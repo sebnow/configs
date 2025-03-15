@@ -51,6 +51,11 @@ require("noice").setup({
 })
 require("telescope").load_extension("noice")
 
+require("neoscroll").setup({
+  easing = "sine",
+  duration_multiplier = 0.5,
+})
+
 local wk = require("which-key")
 wk.setup()
 
