@@ -29,7 +29,6 @@
         trouble-nvim
         vim-fugitive
         vim-matchup
-        vim-terraform
         which-key-nvim
       ];
       extraPackages = with pkgs; [
@@ -44,7 +43,6 @@
         nodePackages.yaml-language-server
         shellcheck
         stylua
-        terraform-ls
       ];
     };
   };

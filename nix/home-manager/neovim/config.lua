@@ -301,10 +301,6 @@ lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
   },
 }))
 lspconfig.jsonls.setup(opts)
-lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
-  filetypes = { "terraform", "tf" },
-  cmd = { "terraform-ls", "serve" },
-}))
 
 lspconfig.lua_ls.setup(merge(opts, {
   settings = {
