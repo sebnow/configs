@@ -158,25 +158,10 @@ lspconfig.lua_ls.setup(merge(opts, {
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-vim.keymap.set("n", "K", function()
-  require("noice.lsp").hover()
-end, { desc = "Show info about the symbol under the cursor" })
-vim.keymap.set("n", "<localleader>ca", vim.lsp.buf.code_action, { desc = "Show actions under cursor" })
 
 vim.keymap.set("n", "<localleader>do", function()
   vim.diagnostic.open_float(floating_preview_opts)
 end, { desc = "Show line diagnostics" })
-
-vim.keymap.set("n", "<localleader>dn", function()
-  vim.diagnostic.jump({ count = 1, float = floating_preview_opts })
-end, { desc = "Go to next diagnostic" })
-
-vim.keymap.set("n", "<localleader>dp", function()
-  vim.diagnostic.jump({ count = -1, float = floating_preview_opts })
-end, { desc = "Go to previous diagnostic" })
-
-vim.keymap.set("n", "<localleader>dl", "<cmd>TroubleToggle<cr>", { desc = "Explore diagnostics" })
 
 vim.keymap.set("n", "<localleader>fb", function()
   require("conform").format({ lsp_fallback = true })
@@ -194,13 +179,15 @@ vim.keymap.set("v", "<localleader>fb", function()
   })
 end, { desc = "Format range" })
 
-vim.keymap.set("n", "<localleader>ro", vim.lsp.buf.rename, { desc = "Rename object" })
 vim.keymap.set("n", "<localleader>sw", function()
   require("telescope.builtin").lsp_workspace_symbols()
 end, { desc = "Explore workspace symbols" })
 
-vim.keymap.set("n", "<localleader>sd", function()
+-- Override to have Telescope provide the list. Not sure why
+-- `vim.ui.select` doesn't get used by default.
+vim.keymap.set("n", "gO", function()
   require("telescope.builtin").lsp_document_symbols()
 end, { desc = "Explore document symbols" })
-
-vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Show signature help" })
+vim.keymap.set("n", "grr", function()
+  require("telescope.builtin").lsp_references()
+end, { desc = "Explore document symbols" })
