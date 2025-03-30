@@ -20,7 +20,6 @@ in {
   config = {
     programs.neovim = {
       plugins = with pkgs.vimPlugins; [
-        cmp-nvim-lsp
         comment-nvim
         conform-nvim
         go-nvim

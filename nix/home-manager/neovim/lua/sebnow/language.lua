@@ -61,9 +61,7 @@ local function merge(a, b)
   return vim.tbl_extend("force", a, b)
 end
 
-local opts = {
-  capabilities = require("cmp_nvim_lsp").default_capabilities(),
-}
+local opts = {}
 
 require("rust-tools").setup({
   tools = {
