@@ -37,8 +37,6 @@
         jsonnet-language-server
         marksman
         nodePackages.bash-language-server
-        nodePackages.prettier
-        nodePackages.typescript-language-server
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
         shellcheck

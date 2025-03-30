@@ -244,7 +244,6 @@ require("Comment").setup()
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
-    javascript = { { "prettierd", "prettier" } },
     nix = { "nixfmt" },
   },
   formatters = {
@@ -289,12 +288,6 @@ lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },
 })
-lspconfig.ts_ls.setup(merge(opts, {
-  on_attach = function(client)
-    client.resolved_capabilities.document_formatting = false
-  end,
-  filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
-}))
 
 lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
   settings = {
