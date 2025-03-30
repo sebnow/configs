@@ -271,32 +271,6 @@ end
 
 local opts = {}
 
-require("rust-tools").setup({
-  tools = {
-    inlay_hints = {
-      auto = true,
-    },
-  },
-  server = merge(opts, {
-    root_dir = require("lspconfig.util").root_pattern("Cargo.toml"),
-    settings = {
-      ["rust-analyzer"] = {
-        checkOnSave = {
-          allFeatures = true,
-          overrideCommand = {
-            "cargo",
-            "clippy",
-            "--workspace",
-            "--message-format=json",
-            "--all-targets",
-            "--all-features",
-          },
-        },
-      },
-    },
-  }),
-})
-
 require("markview").setup({
   preview = {
     icon_provider = "devicons",

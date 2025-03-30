@@ -24,7 +24,6 @@
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
         oil-nvim
-        rust-tools-nvim # TODO: Review - may not be required
         telescope-nvim
         telescope-ui-select-nvim
         trouble-nvim
@@ -44,7 +43,6 @@
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
         python311Packages.python-lsp-server
-        rust-analyzer
         shellcheck
         stylua
         terraform-ls
