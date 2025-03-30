@@ -2,6 +2,7 @@
 {
   imports = [
     ./lang/golang.nix
+    ./lang/nix.nix
   ];
   config = {
     programs.neovim = {
@@ -37,7 +38,6 @@
         jsonnet-language-server
         lua-language-server
         marksman
-        nixd
         nodePackages.bash-language-server
         nodePackages.prettier
         nodePackages.typescript-language-server

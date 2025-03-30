@@ -211,7 +211,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 local lspconfig = require("lspconfig")
-vim.lsp.enable({ "gopls", "golangci_lint_ls" })
+vim.lsp.enable({ "gopls", "golangci_lint_ls", "nixd" })
 
 vim.filetype.add({ extension = { templ = "templ" } })
 
@@ -240,12 +240,12 @@ require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
     javascript = { { "prettierd", "prettier" } },
-    nix = { { "nixfmt", "alejandra" } },
+    nix = { "nixfmt" },
   },
   formatters = {
     nixfmt = {
-      command = "nix",
-      args = { "fmt", "$FILENAME" },
+      command = "nixfmt",
+      args = { "$FILENAME" },
       stdin = false,
       condition = function(ctx)
         return vim.fs.find({ "flake.nix" }, { upward = true, path = ctx.dirname })[1]
@@ -306,7 +306,6 @@ require("markview").setup({
 lspconfig.bashls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
 lspconfig.marksman.setup(opts)
-lspconfig.nixd.setup(opts)
 lspconfig.pylsp.setup(opts)
 lspconfig.templ.setup(opts)
 require("go").setup({
