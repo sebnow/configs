@@ -280,7 +280,6 @@ require("markview").setup({
 lspconfig.bashls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
 lspconfig.marksman.setup(opts)
-lspconfig.pylsp.setup(opts)
 lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },

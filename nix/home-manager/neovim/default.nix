@@ -42,7 +42,6 @@
         nodePackages.typescript-language-server
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
-        python311Packages.python-lsp-server
         shellcheck
         stylua
         terraform-ls
