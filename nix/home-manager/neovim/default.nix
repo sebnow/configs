@@ -1,8 +1,8 @@
+{ pkgs, ... }:
 {
-  config,
-  pkgs,
-  ...
-}: {
+  imports = [
+    ./lang/golang.nix
+  ];
   config = {
     programs.neovim = {
       enable = true;
@@ -31,12 +31,9 @@
         vim-matchup
         vim-terraform
         which-key-nvim
-        which-key-nvim
       ];
       extraPackages = with pkgs; [
         fd
-        golangci-lint-langserver
-        gopls
         jsonnet-language-server
         lua-language-server
         marksman

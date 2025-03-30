@@ -210,6 +210,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 local lspconfig = require("lspconfig")
+vim.lsp.enable({ "gopls", "golangci_lint_ls" })
 
 vim.filetype.add({ extension = { templ = "templ" } })
 
@@ -258,10 +259,6 @@ require("conform").setup({
 
 vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
-require("go").setup({
-  lsp_inlay_hints = { enable = true },
-})
-
 local floating_preview_opts = {
   focusable = false,
   border = "rounded",
@@ -306,13 +303,14 @@ require("markview").setup({
 })
 
 lspconfig.bashls.setup(opts)
-lspconfig.gopls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
 lspconfig.marksman.setup(opts)
 lspconfig.nixd.setup(opts)
 lspconfig.pylsp.setup(opts)
 lspconfig.templ.setup(opts)
-
+require("go").setup({
+  lsp_inlay_hints = { enable = true },
+})
 lspconfig.ts_ls.setup(merge(opts, {
   on_attach = function(client)
     client.resolved_capabilities.document_formatting = false
@@ -334,8 +332,6 @@ lspconfig.terraformls.setup(vim.tbl_extend("force", opts, {
   filetypes = { "terraform", "tf" },
   cmd = { "terraform-ls", "serve" },
 }))
-
-lspconfig.golangci_lint_ls.setup(opts)
 
 lspconfig.lua_ls.setup(merge(opts, {
   settings = {
