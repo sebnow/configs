@@ -192,7 +192,6 @@ telescope.setup({
 telescope.load_extension("ui-select")
 
 vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Find files" })
-vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Explore references" })
 vim.keymap.set("n", "<localleader>;", builtin.command_history, { desc = "Explore command history" })
 vim.keymap.set("n", "<localleader>be", builtin.buffers, { desc = "Explore buffers" })
 vim.keymap.set("n", "<localleader>l", builtin.resume, { desc = "Resume previous list" })
