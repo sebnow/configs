@@ -6,6 +6,7 @@
     ./lang/lua.nix
     ./lang/markdown.nix
     ./lang/nix.nix
+    ./lang/yaml.nix
   ];
   config = {
     programs.neovim = {
@@ -36,7 +37,6 @@
       ];
       extraPackages = with pkgs; [
         fd
-        nodePackages.yaml-language-server
       ];
     };
   };

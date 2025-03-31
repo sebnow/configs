@@ -218,6 +218,7 @@ vim.lsp.enable({
   "lua_ls",
   "marksman",
   "nixd",
+  "yamlls",
 })
 
 vim.filetype.add({ extension = { templ = "templ" } })
@@ -287,16 +288,6 @@ lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },
 })
-
-lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
-  settings = {
-    yaml = {
-      schemas = {
-        ["https://raw.githubusercontent.com/awslabs/goformation/master/schema/sam.schema.json"] = "/template.yaml",
-      },
-    },
-  },
-}))
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
