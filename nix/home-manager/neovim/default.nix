@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
+    ./lang/bash.nix
     ./lang/golang.nix
     ./lang/lua.nix
     ./lang/markdown.nix
@@ -36,10 +37,8 @@
       extraPackages = with pkgs; [
         fd
         jsonnet-language-server
-        nodePackages.bash-language-server
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
-        shellcheck
       ];
     };
   };

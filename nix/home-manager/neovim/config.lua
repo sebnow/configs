@@ -212,6 +212,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 local lspconfig = require("lspconfig")
 vim.lsp.enable({
+  "bashls",
   "golangci_lint_ls",
   "gopls",
   "lua_ls",
@@ -282,7 +283,6 @@ require("markview").setup({
   },
 })
 
-lspconfig.bashls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
 lspconfig.templ.setup(opts)
 require("go").setup({
