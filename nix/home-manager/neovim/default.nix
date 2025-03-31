@@ -31,7 +31,6 @@
         oil-nvim
         telescope-nvim
         telescope-ui-select-nvim
-        trouble-nvim
         vim-fugitive
         vim-matchup
         which-key-nvim
