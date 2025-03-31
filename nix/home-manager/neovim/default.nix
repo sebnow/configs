@@ -3,6 +3,7 @@
   imports = [
     ./lang/golang.nix
     ./lang/lua.nix
+    ./lang/markdown.nix
     ./lang/nix.nix
   ];
   config = {
@@ -35,7 +36,6 @@
       extraPackages = with pkgs; [
         fd
         jsonnet-language-server
-        marksman
         nodePackages.bash-language-server
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server

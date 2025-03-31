@@ -215,6 +215,7 @@ vim.lsp.enable({
   "golangci_lint_ls",
   "gopls",
   "lua_ls",
+  "marksman",
   "nixd",
 })
 
@@ -283,7 +284,6 @@ require("markview").setup({
 
 lspconfig.bashls.setup(opts)
 lspconfig.jsonnet_ls.setup(opts)
-lspconfig.marksman.setup(opts)
 lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },
