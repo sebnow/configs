@@ -283,7 +283,6 @@ require("markview").setup({
   },
 })
 
-lspconfig.jsonnet_ls.setup(opts)
 lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },
@@ -298,7 +297,6 @@ lspconfig.yamlls.setup(vim.tbl_extend("force", opts, {
     },
   },
 }))
-lspconfig.jsonls.setup(opts)
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })

@@ -36,8 +36,6 @@
       ];
       extraPackages = with pkgs; [
         fd
-        jsonnet-language-server
-        nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
       ];
     };
