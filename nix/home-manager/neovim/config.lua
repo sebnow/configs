@@ -31,6 +31,7 @@ vim.o.timeoutlen = 250
 vim.g.netrw_banner = 0
 vim.o.cmdheight = 0
 vim.opt.laststatus = 3
+vim.o.winborder = "rounded"
 
 vim.diagnostic.config({
   virtual_text = false,
@@ -115,7 +116,7 @@ require("noice").setup({
     command_palette = false,
     long_message_to_split = true,
     inc_rename = true,
-    lsp_doc_border = true,
+    lsp_doc_border = false,
   },
 })
 require("telescope").load_extension("noice")
