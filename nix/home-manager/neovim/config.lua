@@ -211,7 +211,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-local lspconfig = require("lspconfig")
 vim.lsp.enable({
   "bashls",
   "golangci_lint_ls",
@@ -285,7 +284,6 @@ require("markview").setup({
   },
 })
 
-lspconfig.templ.setup(opts)
 require("go").setup({
   lsp_inlay_hints = { enable = true },
 })

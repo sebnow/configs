@@ -24,7 +24,6 @@
         markview-nvim
         neoscroll-nvim
         noice-nvim
-        nvim-lspconfig
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
