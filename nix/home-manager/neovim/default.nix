@@ -18,6 +18,7 @@
         comment-nvim
         conform-nvim
         go-nvim
+        inc-rename-nvim
         indent-blankline-nvim
         lualine-nvim
         markview-nvim
