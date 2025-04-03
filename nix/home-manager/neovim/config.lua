@@ -75,7 +75,14 @@ require("lualine").setup({
       },
     },
   },
-  extensions = { "fugitive", "quickfix", "oil" },
+  extensions = {
+    "quickfix",
+    "oil",
+    {
+      sections = { lualine_a = { "branch" } },
+      filetypes = { "NeogitStatus" },
+    },
+  },
 })
 
 -- Ripped off from https://www.reddit.com/r/neovim/comments/xy0tu1/comment/irfegvd/
@@ -298,3 +305,10 @@ vim.keymap.set("v", "<localleader>fb", function()
     },
   })
 end, { desc = "Format range" })
+
+require("neogit").setup({
+  integrations = {
+    snacks = true,
+    diffview = true,
+  },
+})

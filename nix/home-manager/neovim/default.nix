@@ -18,17 +18,19 @@
         catppuccin-nvim
         comment-nvim
         conform-nvim
+        diffview-nvim
         go-nvim
         inc-rename-nvim
         lualine-nvim
         markview-nvim
+        neogit
         noice-nvim
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
         oil-nvim
+        plenary-nvim # Required for neogit
         snacks-nvim
-        vim-fugitive
         vim-matchup
         which-key-nvim
       ];
