@@ -3,6 +3,7 @@
   imports = [
     ./lang/bash.nix
     ./lang/golang.nix
+    ./lang/javascript.nix
     ./lang/lua.nix
     ./lang/markdown.nix
     ./lang/nix.nix
@@ -36,6 +37,7 @@
       ];
       extraPackages = with pkgs; [
         fd
+        prettierd
         ripgrep
       ];
     };
