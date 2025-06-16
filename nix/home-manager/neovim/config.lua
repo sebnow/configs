@@ -247,6 +247,7 @@ require("conform").setup({
     json = { "prettierd", "prettier" },
     javascript = { "prettierd", "prettier" },
     typescript = { "prettierd", "prettier" },
+    proto = { "buf" },
   },
   formatters = {
     nixfmt = {

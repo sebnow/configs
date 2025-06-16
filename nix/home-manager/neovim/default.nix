@@ -36,6 +36,7 @@
         which-key-nvim
       ];
       extraPackages = with pkgs; [
+        buf
         fd
         prettierd
         ripgrep
