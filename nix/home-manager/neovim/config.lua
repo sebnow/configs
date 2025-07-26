@@ -218,6 +218,7 @@ vim.lsp.enable({
   "marksman",
   "nixd",
   "yamlls",
+  "zls",
 })
 
 vim.filetype.add({ extension = { templ = "templ" } })

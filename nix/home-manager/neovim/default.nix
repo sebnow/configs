@@ -7,6 +7,7 @@
     ./lang/markdown.nix
     ./lang/nix.nix
     ./lang/yaml.nix
+    ./lang/zig.nix
   ];
   config = {
     programs.neovim = {
