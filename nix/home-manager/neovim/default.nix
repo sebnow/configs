@@ -25,12 +25,15 @@
         lualine-nvim
         markview-nvim
         neogit
+        neotest
+        neotest-golang
         noice-nvim
+        nvim-nio # Required for neotest
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
         oil-nvim
-        plenary-nvim # Required for neogit
+        plenary-nvim # Required for neogit, neotest
         snacks-nvim
         vim-matchup
         which-key-nvim

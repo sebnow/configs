@@ -317,3 +317,31 @@ require("neogit").setup({
     diffview = true,
   },
 })
+
+require("neotest").setup({
+  adapters = {
+    require("neotest-golang")({
+      go_test_args = { "-race" },
+    }),
+  },
+})
+
+wk.add({
+  { "<localleader>t", group = "Testing" },
+}, { mode = { "n" } })
+
+vim.keymap.set("n", "<localleader>tr", function()
+  require("neotest").run.run()
+end, { desc = "Run nearest test" })
+
+vim.keymap.set("n", "<localleader>tl", function()
+  require("neotest").run.run_last()
+end, { desc = "Run last test" })
+
+vim.keymap.set("n", "<localleader>tt", function()
+  require("neotest").run.run(vim.fn.expand("%"))
+end, { desc = "Run test file" })
+
+vim.keymap.set("n", "<localleader>tT", function()
+  require("neotest").run.run(vim.uv.cwd())
+end, { desc = "Run all test files" })
