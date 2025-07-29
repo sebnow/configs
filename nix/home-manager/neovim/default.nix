@@ -20,17 +20,14 @@
         conform-nvim
         go-nvim
         inc-rename-nvim
-        indent-blankline-nvim
         lualine-nvim
         markview-nvim
-        neoscroll-nvim
         noice-nvim
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
         oil-nvim
-        telescope-nvim
-        telescope-ui-select-nvim
+        snacks-nvim
         vim-fugitive
         vim-matchup
         which-key-nvim
