@@ -42,6 +42,17 @@ vim.diagnostic.config({
   update_in_insert = false,
 })
 
+require("catppuccin").setup({
+  integrations = {
+    markview = true,
+    noice = true,
+    snacks = {
+      enabled = true,
+      indent_scope_color = "surface0",
+    },
+  },
+})
+
 vim.api.nvim_set_hl(0, "WinSeparator", { fg = require("catppuccin.palettes").get_palette().surface1 })
 
 require("nvim-web-devicons").setup()
