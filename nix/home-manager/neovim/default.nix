@@ -29,8 +29,7 @@
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
         oil-nvim
-        telescope-nvim
-        telescope-ui-select-nvim
+        snacks-nvim
         vim-fugitive
         vim-matchup
         which-key-nvim
