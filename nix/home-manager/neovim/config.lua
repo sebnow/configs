@@ -120,11 +120,6 @@ require("noice").setup({
   },
 })
 
-require("neoscroll").setup({
-  easing = "sine",
-  duration_multiplier = 0.5,
-})
-
 local wk = require("which-key")
 wk.setup()
 
@@ -141,6 +136,13 @@ wk.add({
 }, { prefix = "<localleader>", mode = { "n", "v" } })
 
 require("snacks").setup({
+  scroll = {
+    enabled = true,
+    animate = {
+      easing = "outQuad",
+      duration = { step = 50, total = 125 },
+    },
+  },
   picker = {
     enabled = true,
     ui_select = true,

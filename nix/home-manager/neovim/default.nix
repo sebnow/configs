@@ -23,7 +23,6 @@
         indent-blankline-nvim
         lualine-nvim
         markview-nvim
-        neoscroll-nvim
         noice-nvim
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
