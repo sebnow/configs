@@ -97,6 +97,7 @@
       push.default = "simple";
       log.decorate = "short";
     };
+    delta.enable = true;
   };
 
   programs.tmux = {
