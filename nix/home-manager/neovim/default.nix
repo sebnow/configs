@@ -41,6 +41,9 @@
       extraPackages = with pkgs; [
         buf
         fd
+        gofumpt
+        golines
+        nixfmt
         prettierd
         ripgrep
       ];

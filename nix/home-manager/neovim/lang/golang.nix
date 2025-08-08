@@ -1,9 +1,11 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   config = {
     programs.neovim = {
       extraPackages = with pkgs; [
-        gopls
+        golangci-lint
         golangci-lint-langserver
+        gopls
       ];
     };
     xdg.configFile."nvim/lsp/gopls.lua".source = ./gopls.lua;

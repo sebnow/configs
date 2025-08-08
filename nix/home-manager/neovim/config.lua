@@ -241,15 +241,21 @@ require("nvim-treesitter.configs").setup({
 require("Comment").setup()
 
 require("conform").setup({
+  lsp_format = "fallback",
   formatters_by_ft = {
     lua = { "stylua" },
     nix = { "nixfmt" },
-    json = { "prettierd", "prettier" },
-    javascript = { "prettierd", "prettier" },
-    typescript = { "prettierd", "prettier" },
+    json = { "prettierd", "prettier", stop_after_first = true },
+    javascript = { "prettierd", "prettier", stop_after_first = true },
+    typescript = { "prettierd", "prettier", stop_after_first = true },
     proto = { "buf" },
+    go = { "golines" },
   },
   formatters = {
+    golines = {
+      stdin = true,
+      append_args = { "-m", "120", "--shorten-comments", "--no-reformat-tags", "--base-formatter", "gofumpt" },
+    },
     nixfmt = {
       command = "nixfmt",
       args = { "$FILENAME" },
@@ -296,14 +302,13 @@ vim.keymap.set("n", "<localleader>do", function()
 end, { desc = "Show line diagnostics" })
 
 vim.keymap.set("n", "<localleader>fb", function()
-  require("conform").format({ lsp_fallback = true })
+  require("conform").format()
 end, { desc = "Format buffer" })
 
 vim.keymap.set("v", "<localleader>fb", function()
   local start_row, _ = unpack(vim.api.nvim_buf_get_mark(0, "<"))
   local end_row, _ = unpack(vim.api.nvim_buf_get_mark(0, ">"))
   require("conform").format({
-    lsp_fallback = true,
     range = {
       ["start"] = { start_row, 0 },
       ["end"] = { end_row, 0 },
