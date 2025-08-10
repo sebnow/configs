@@ -47,33 +47,30 @@ in
         #
         # Failed to create EGL display
         home.shellAliases.ghostty = ghostty;
-        xdg.dataFile."applications/ghostty.desktop" = {
-          enable = pkgs.stdenv.isDarwin;
-          text = ''
-            [Desktop Entry]
-            Name=Ghostty
-            Type=Application
-            Comment=A terminal emulator
-            TryExec=${pkgs.ghostty}/bin/ghostty
-            Exec=${ghostty}
-            Icon=com.mitchellh.ghostty
-            Categories=System;TerminalEmulator;
-            Keywords=terminal;tty;pty;
-            StartupNotify=true
-            Terminal=false
-            Actions=new-window;
-            X-GNOME-UsesNotifications=true
-            X-TerminalArgExec=-e
-            X-TerminalArgTitle=--title=
-            X-TerminalArgAppId=--class=
-            X-TerminalArgDir=--working-directory=
-            X-TerminalArgHold=--wait-after-command
+        xdg.dataFile."applications/ghostty.desktop".text = ''
+          [Desktop Entry]
+          Name=Ghostty
+          Type=Application
+          Comment=A terminal emulator
+          TryExec=${pkgs.ghostty}/bin/ghostty
+          Exec=${ghostty}
+          Icon=com.mitchellh.ghostty
+          Categories=System;TerminalEmulator;
+          Keywords=terminal;tty;pty;
+          StartupNotify=true
+          Terminal=false
+          Actions=new-window;
+          X-GNOME-UsesNotifications=true
+          X-TerminalArgExec=-e
+          X-TerminalArgTitle=--title=
+          X-TerminalArgAppId=--class=
+          X-TerminalArgDir=--working-directory=
+          X-TerminalArgHold=--wait-after-command
 
-            [Desktop Action new-window]
-            TryExec=${pkgs.ghostty}/bin/ghostty
-            Exec=${ghostty}
-          '';
-        };
+          [Desktop Action new-window]
+          TryExec=${pkgs.ghostty}/bin/ghostty
+          Exec=${ghostty}
+        '';
       }
     ))
   ];
