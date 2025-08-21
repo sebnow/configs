@@ -7,6 +7,7 @@
     ./lang/lua.nix
     ./lang/markdown.nix
     ./lang/nix.nix
+    ./lang/protobuf.nix
     ./lang/yaml.nix
     ./lang/zig.nix
   ];
@@ -39,7 +40,6 @@
         which-key-nvim
       ];
       extraPackages = with pkgs; [
-        buf
         fd
         gofumpt
         golines

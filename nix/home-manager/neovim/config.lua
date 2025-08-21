@@ -212,6 +212,7 @@ vim.lsp.enable({
   "lua_ls",
   "marksman",
   "nixd",
+  "buf_ls",
   "tsserver",
   "yamlls",
   "zls",
