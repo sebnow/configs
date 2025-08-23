@@ -338,12 +338,6 @@ local floating_preview_opts = {
   border = "rounded",
 }
 
-local function merge(a, b)
-  return vim.tbl_extend("force", a, b)
-end
-
-local opts = {}
-
 require("markview").setup({
   preview = {
     icon_provider = "devicons",
