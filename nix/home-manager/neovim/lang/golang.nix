@@ -2,13 +2,13 @@
 {
   config = {
     programs.neovim = {
-      extraPackages = with pkgs; [
-        golangci-lint
-        golangci-lint-langserver
-        gopls
+      extraPackages = [
+        pkgs.gofumpt
+        pkgs.golangci-lint
+        pkgs.golangci-lint-langserver
+        pkgs.golines
+        pkgs.gopls
       ];
     };
-    xdg.configFile."nvim/lsp/gopls.lua".source = ./gopls.lua;
-    xdg.configFile."nvim/lsp/golangci_lint_ls.lua".source = ./golangci_lint_ls.lua;
   };
 }

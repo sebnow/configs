@@ -1,11 +1,11 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   config = {
     programs.neovim = {
-      extraPackages = with pkgs; [
-        nixd
-        nixfmt-rfc-style
+      extraPackages = [
+        pkgs.nixd
+        pkgs.nixfmt-rfc-style
       ];
     };
-    xdg.configFile."nvim/lsp/nixd.lua".source = ./nixd.lua;
   };
 }

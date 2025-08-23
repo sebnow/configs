@@ -2,11 +2,10 @@
 {
   config = {
     programs.neovim = {
-      extraPackages = with pkgs; [
-        zig
-        zls
+      extraPackages = [
+        pkgs.zig
+        pkgs.zls
       ];
     };
-    xdg.configFile."nvim/lsp/zls.lua".source = ./zls.lua;
   };
 }

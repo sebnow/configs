@@ -1,11 +1,11 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   config = {
     programs.neovim = {
-      extraPackages = with pkgs; [
-        lua-language-server
-        stylua
+      extraPackages = [
+        pkgs.lua-language-server
+        pkgs.stylua
       ];
     };
-    xdg.configFile."nvim/lsp/lua_ls.lua".source = ./lua_ls.lua;
   };
 }

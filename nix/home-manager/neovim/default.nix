@@ -29,6 +29,7 @@
         neotest
         neotest-golang
         noice-nvim
+        nvim-lspconfig
         nvim-nio # Required for neotest
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
@@ -39,13 +40,9 @@
         vim-matchup
         which-key-nvim
       ];
-      extraPackages = with pkgs; [
-        fd
-        gofumpt
-        golines
-        nixfmt
-        prettierd
-        ripgrep
+      extraPackages = [
+        pkgs.fd
+        pkgs.ripgrep
       ];
     };
   };
