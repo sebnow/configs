@@ -174,6 +174,9 @@ require("snacks").setup({
     },
     layout = { preset = "telescope" },
   },
+  toggle = {
+    enabled = true,
+  },
 })
 
 local makePicker = function(source, opts)
@@ -325,11 +328,30 @@ require("conform").setup({
       end,
     },
   },
-  format_on_save = {
-    timeout_ms = 500,
-    lsp_fallback = true,
-  },
+  format_on_save = function()
+    if vim.g.disable_autoformat then
+      return
+    end
+
+    return {
+      timeout_ms = 500,
+      lsp_fallback = true,
+    }
+  end,
 })
+
+require("snacks").toggle
+  .new({
+    id = "Format on Save",
+    name = "Format on Save",
+    get = function()
+      return not vim.g.disable_autoformat
+    end,
+    set = function(_)
+      vim.g.disable_autoformat = not vim.g.disable_autoformat
+    end,
+  })
+  :map("<localleader>ft")
 
 vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
