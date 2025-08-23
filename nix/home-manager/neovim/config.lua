@@ -247,6 +247,19 @@ vim.lsp.config("lua_ls", {
   },
 })
 
+vim.lsp.config("gopls", {
+  settings = {
+    gopls = {
+      hints = {
+        compositeLiteralFields = true,
+        constantValues = true,
+        ignoredError = true,
+        parameterNames = true,
+      },
+    },
+  },
+})
+
 vim.lsp.config("nixd", {
   settings = {
     nixd = {
