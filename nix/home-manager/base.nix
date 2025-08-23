@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     ./neovim
   ];
@@ -18,7 +19,11 @@
 
   programs.bash = {
     enable = true;
-    historyControl = ["ignorespace" "ignoredups" "erasedups"];
+    historyControl = [
+      "ignorespace"
+      "ignoredups"
+      "erasedups"
+    ];
   };
 
   programs.zsh = {
@@ -50,7 +55,7 @@
     enableBashIntegration = true;
     settings = {
       add_newline = false;
-      aws = {};
+      aws = { };
       cmd_duration.style = "dimmed yellow";
       directory = {
         style = "fg:green";
@@ -87,7 +92,7 @@
       ".direnv/"
     ];
     includes = [
-      {path = "config.local";}
+      { path = "config.local"; }
     ];
     extraConfig = {
       apply.whitespace = "fix";
