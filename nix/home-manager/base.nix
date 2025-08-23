@@ -7,6 +7,13 @@
     ./neovim
   ];
 
+  home.sessionVariables = {
+    GOBIN = "${config.home.homeDirectory}/.local/bin";
+    GOPATH = "${config.xdg.dataHome}/go";
+    GOMODCACHE = "${config.xdg.cacheHome}/go/pkg/mod";
+    GOTELEMETRY = "off";
+  };
+
   programs.home-manager.enable = true;
 
   programs.bash = {
