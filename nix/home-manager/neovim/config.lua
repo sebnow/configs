@@ -301,6 +301,14 @@ require("nvim-treesitter.configs").setup({
   },
 })
 
+require("treesitter-context").setup({
+  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+  line_numbers = true,
+  multiline_threshold = 20, -- Maximum number of lines to show for a single context
+  mode = "cursor",
+})
+
 require("Comment").setup()
 
 require("conform").setup({
