@@ -24,6 +24,9 @@
       "ignoredups"
       "erasedups"
     ];
+    bashrcExtra = ''
+      source <(COMPLETE=bash ${pkgs.jujutsu}/bin/jj)
+    '';
   };
 
   programs.zsh = {
@@ -76,6 +79,41 @@
       set editing-mode vi
       set keymap vi
     '';
+  };
+
+  programs.jujutsu = {
+    enable = true;
+    settings = {
+      ui = {
+        diff.formatter = "difft";
+      };
+      snapshot.auto-track = "none()";
+      merge-tools = {
+        difft = {
+          program = "${pkgs.difftastic}/bin/difft";
+          diff-args = [
+            "--color=always"
+            "$left"
+            "$right"
+          ];
+        };
+        mergiraf = {
+          program = "${pkgs.mergiraf}/bin/mergiraf";
+          diff-args = [ ];
+        };
+      };
+      aliases = {
+        ghclone = [
+          "util"
+          "exec"
+          "--"
+          "bash"
+          "-c"
+          "jj git clone git@github.com:$1.git"
+          ""
+        ];
+      };
+    };
   };
 
   programs.git = {
