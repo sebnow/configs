@@ -85,7 +85,7 @@
     enable = true;
     settings = {
       ui = {
-        diff.formatter = "difft";
+        diff-formatter = "difft";
       };
       snapshot.auto-track = "none()";
       merge-tools = {
@@ -93,6 +93,7 @@
           program = "${pkgs.difftastic}/bin/difft";
           diff-args = [
             "--color=always"
+            "--display=inline"
             "$left"
             "$right"
           ];
