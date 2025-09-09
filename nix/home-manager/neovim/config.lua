@@ -383,14 +383,7 @@ vim.keymap.set("n", "<localleader>fb", function()
 end, { desc = "Format buffer" })
 
 vim.keymap.set("v", "<localleader>fb", function()
-  local start_row, _ = unpack(vim.api.nvim_buf_get_mark(0, "<"))
-  local end_row, _ = unpack(vim.api.nvim_buf_get_mark(0, ">"))
-  require("conform").format({
-    range = {
-      ["start"] = { start_row, 0 },
-      ["end"] = { end_row, 0 },
-    },
-  })
+  require("conform").format()
 end, { desc = "Format range" })
 
 require("neogit").setup({
