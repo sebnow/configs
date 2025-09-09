@@ -372,6 +372,7 @@ require("go").setup({
 
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+vim.keymap.set("n", "grc", vim.lsp.codelens.run, { desc = "Run Code Lens" })
 
 vim.keymap.set("n", "<localleader>do", function()
   vim.diagnostic.open_float(floating_preview_opts)
