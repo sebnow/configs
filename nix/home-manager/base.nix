@@ -70,6 +70,7 @@
       python.disabled = true;
       ruby.disabled = true;
       rust.disabled = true;
+      direnv.disabled = false;
     };
   };
 
