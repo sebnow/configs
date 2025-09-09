@@ -88,6 +88,7 @@
       ui = {
         diff-formatter = "difft";
       };
+      git.write-change-id-header = true;
       snapshot.auto-track = "none()";
       merge-tools = {
         difft = {
