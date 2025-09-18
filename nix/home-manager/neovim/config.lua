@@ -312,13 +312,10 @@ require("conform").setup({
     javascript = { "prettierd", "prettier", stop_after_first = true },
     typescript = { "prettierd", "prettier", stop_after_first = true },
     proto = { "buf" },
-    go = { "golines" },
+    go = { "gofumpt" },
+    markdown = { "prettier", "injected" },
   },
   formatters = {
-    golines = {
-      stdin = true,
-      append_args = { "-m", "120", "--shorten-comments", "--no-reformat-tags", "--base-formatter", "gofumpt" },
-    },
     nixfmt = {
       command = "nixfmt",
       args = { "$FILENAME" },
