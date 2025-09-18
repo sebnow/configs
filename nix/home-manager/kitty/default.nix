@@ -3,16 +3,18 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.programs.kitty;
-  kitty = "${pkgs.nixgl.nixGLMesa}/bin/nixGLMesa ${pkgs.kitty}/bin/kitty";
-in {
+in
+{
   options.programs.kitty = {
     isDefault = lib.mkEnableOption "as the default terminal";
   };
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       programs.kitty = {
+        package = config.lib.nixGL.wrap pkgs.kitty;
         font = {
           name = "IosevkaTerm NF";
           size = 12;
@@ -38,27 +40,6 @@ in {
       '';
 
       home.sessionVariables.TERMINAL = lib.mkIf cfg.isDefault "kitty";
-
-      # FIXME: Remove once GLX issues are solved on standalone
-      # installations
-      # https://github.com/NixOS/nixpkgs/issues/80936
-      #
-      # Kitty is not able to create a GLFW window.
-      home.shellAliases.kitty = kitty;
-      xdg.dataFile."applications/kitty.desktop" = {
-        text = ''
-          [Desktop Entry]
-          Version=1.0
-          Type=Application
-          Name=kitty
-          GenericName=Terminal emulator
-          Comment=Fast, feature-rich, GPU based terminal
-          TryExec=${pkgs.kitty}/bin/kitty
-          Exec=${kitty}
-          Icon=${pkgs.kitty}/share/icons/hicolor/scalable/apps/kitty.svg
-          Categories=System;TerminalEmulator;
-        '';
-      };
     })
   ];
 }

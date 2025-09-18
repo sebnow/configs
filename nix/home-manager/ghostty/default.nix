@@ -14,7 +14,7 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       programs.ghostty = {
-        package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
+        package = if pkgs.stdenv.isDarwin then null else (config.lib.nixGL.wrap pkgs.ghostty);
         settings = {
           font-size = if pkgs.stdenv.isDarwin then 14 else 12;
           font-family = "IosevkaTerm NF";
@@ -35,43 +35,5 @@ in
 
       home.sessionVariables.TERMINAL = lib.mkIf cfg.isDefault "ghostty";
     })
-
-    (lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) (
-      let
-        ghostty = "${pkgs.nixgl.nixGLMesa}/bin/nixGLMesa ${pkgs.ghostty}/bin/ghostty";
-      in
-      {
-        # FIXME: Remove once GLX issues are solved on standalone
-        # installations
-        # https://github.com/NixOS/nixpkgs/issues/80936
-        #
-        # Failed to create EGL display
-        home.shellAliases.ghostty = ghostty;
-        xdg.dataFile."applications/ghostty.desktop".text = ''
-          [Desktop Entry]
-          Name=Ghostty
-          Type=Application
-          Comment=A terminal emulator
-          TryExec=${pkgs.ghostty}/bin/ghostty
-          Exec=${ghostty}
-          Icon=com.mitchellh.ghostty
-          Categories=System;TerminalEmulator;
-          Keywords=terminal;tty;pty;
-          StartupNotify=true
-          Terminal=false
-          Actions=new-window;
-          X-GNOME-UsesNotifications=true
-          X-TerminalArgExec=-e
-          X-TerminalArgTitle=--title=
-          X-TerminalArgAppId=--class=
-          X-TerminalArgDir=--working-directory=
-          X-TerminalArgHold=--wait-after-command
-
-          [Desktop Action new-window]
-          TryExec=${pkgs.ghostty}/bin/ghostty
-          Exec=${ghostty}
-        '';
-      }
-    ))
   ];
 }

@@ -24,7 +24,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixgl = {
-      url = "github:guibou/nixGL";
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    ghostty = {
+      url = "github:ghostty-org/ghostty";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hercules-ci-effects = {
