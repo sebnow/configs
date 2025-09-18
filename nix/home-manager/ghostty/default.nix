@@ -34,6 +34,26 @@ in
       };
 
       home.sessionVariables.TERMINAL = lib.mkIf cfg.isDefault "ghostty";
+
+      systemd.user.services."app-com.mitchellh.ghostty" = {
+        Unit = {
+          Description = "Ghostty";
+          After = [
+            "graphical-session.target"
+            "dbus.socket"
+          ];
+          Requires = [ "dbus.socket" ];
+        };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
+        Service = {
+          Type = "notify-reload";
+          ReloadSignal = "SIGUSR2";
+          BusName = "com.mitchellh.ghostty";
+          ExecStart = "${config.lib.nixGL.wrap pkgs.ghostty}/bin/ghostty --gtk-single-instance=true --initial-window=false";
+        };
+      };
     })
   ];
 }
