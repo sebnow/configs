@@ -36,7 +36,7 @@
       ignoreSpace = true;
       ignoreDups = true;
     };
-    initExtra = ''
+    initContent = ''
       bindkey -v
     '';
   };
