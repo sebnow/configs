@@ -3,10 +3,13 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   nixpkgs.config = {
-    allowUnfreePredicate = pkg:
+    allowUnfreePredicate =
+      pkg:
       builtins.elem (lib.getName pkg) [
+        "claude-code"
         "obsidian"
       ];
     permittedInsecurePackages = [
@@ -15,6 +18,7 @@
   };
 
   imports = [
+    ./agents
     ./alacritty
     ./base.nix
     ./fonts
