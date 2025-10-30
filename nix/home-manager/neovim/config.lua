@@ -141,10 +141,12 @@ local wk = require("which-key")
 wk.setup()
 
 wk.add({
+  { "<localleader>D", group = "Debugging" },
   { "<localleader>S", group = "Source Control" },
   { "<localleader>b", group = "Buffers" },
   { "<localleader>d", group = "Diagnostics" },
-  { "<localleader>D", group = "Debugging" },
+  { "<localleader>l", group = "LSP" },
+  { "<localleader>li", group = "Inlay Hint" },
   { "<localleader>p", group = "Project" },
   { "<localleader>s", group = "Symbols" },
 }, { mode = { "n" } })
@@ -221,6 +223,19 @@ vim.lsp.enable({
   "yamlls",
   "zls",
 })
+
+require("snacks").toggle
+  .new({
+    id = "Inlay Hints",
+    name = "Inlay Hints",
+    get = function()
+      return vim.lsp.inlay_hint.is_enabled({ bufnr = 0 })
+    end,
+    set = function(state)
+      vim.lsp.inlay_hint.enable(state)
+    end,
+  })
+  :map("<localleader>lit")
 
 vim.lsp.config("lua_ls", {
   settings = {
