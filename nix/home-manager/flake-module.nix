@@ -8,7 +8,6 @@
         overlays = [
           inputs.neovim.overlays.default
           inputs.nixgl.overlays.default
-          inputs.ghostty.overlays.default
           (final: prev: {
             camunda-modeler = prev.callPackage ../pkgs/camunda-modeler { };
           })
