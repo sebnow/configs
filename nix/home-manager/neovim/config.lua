@@ -141,9 +141,12 @@ local wk = require("which-key")
 wk.setup()
 
 wk.add({
+  { "<localleader>D", group = "Debugging" },
   { "<localleader>S", group = "Source Control" },
   { "<localleader>b", group = "Buffers" },
   { "<localleader>d", group = "Diagnostics" },
+  { "<localleader>l", group = "LSP" },
+  { "<localleader>li", group = "Inlay Hint" },
   { "<localleader>p", group = "Project" },
   { "<localleader>s", group = "Symbols" },
 }, { mode = { "n" } })
@@ -220,6 +223,19 @@ vim.lsp.enable({
   "yamlls",
   "zls",
 })
+
+require("snacks").toggle
+  .new({
+    id = "Inlay Hints",
+    name = "Inlay Hints",
+    get = function()
+      return vim.lsp.inlay_hint.is_enabled({ bufnr = 0 })
+    end,
+    set = function(state)
+      vim.lsp.inlay_hint.enable(state)
+    end,
+  })
+  :map("<localleader>lit")
 
 vim.lsp.config("lua_ls", {
   settings = {
@@ -425,3 +441,85 @@ end, { desc = "Run test file" })
 vim.keymap.set("n", "<localleader>tT", function()
   require("neotest").run.run(vim.uv.cwd())
 end, { desc = "Run all test files" })
+
+require("dap-lldb").setup({
+  codelldb_path = vim.g.codelldb_path,
+})
+
+local dap = require("dap")
+dap.configurations.zig = {
+  {
+    name = "Launch Debugger",
+    type = "lldb",
+    request = "launch",
+    cwd = "${workspaceFolder}",
+    program = function()
+      return require("dap.utils").pick_file({ path = "zig-out/" })
+    end,
+    stopOnEntry = false,
+  },
+}
+
+local dapui = require("dapui")
+dapui.setup()
+
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
+
+vim.keymap.set("n", "<F5>", function()
+  require("dap").continue()
+end, { desc = "Continue" })
+vim.keymap.set("n", "<S-F5>", function()
+  require("dap").terminate()
+end, { desc = "Terminate" })
+vim.keymap.set("n", "<F10>", function()
+  require("dap").step_over()
+end, { desc = "Step over" })
+vim.keymap.set("n", "<F11>", function()
+  require("dap").step_into()
+end, { desc = "Step into" })
+vim.keymap.set("n", "<F12>", function()
+  require("dap").step_out()
+end, { desc = "Step out" })
+vim.keymap.set("n", "<Leader>Db", function()
+  require("dap").toggle_breakpoint()
+end, { desc = "Toggle breakpoint" })
+vim.keymap.set("n", "<Leader>DB", function()
+  require("dap").set_breakpoint()
+end, { desc = "Set breakpoint" })
+vim.keymap.set("n", "<Leader>Dlp", function()
+  require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+end, { desc = "Set log point" })
+vim.keymap.set("n", "<Leader>Dr", function()
+  require("dap").repl.open()
+end, { desc = "Open REPL" })
+vim.keymap.set("n", "<Leader>Dl", function()
+  require("dap").run_last()
+end, { desc = "Run last" })
+vim.keymap.set({ "n", "v" }, "<Leader>Dh", function()
+  require("dap.ui.widgets").hover()
+end, { desc = "Hover" })
+vim.keymap.set({ "n", "v" }, "<Leader>Dp", function()
+  require("dap.ui.widgets").preview()
+end, { desc = "Preview" })
+vim.keymap.set("n", "<Leader>Df", function()
+  local widgets = require("dap.ui.widgets")
+  widgets.centered_float(widgets.frames)
+end, { desc = "Show frames" })
+vim.keymap.set("n", "<Leader>Ds", function()
+  local widgets = require("dap.ui.widgets")
+  widgets.centered_float(widgets.scopes)
+end, { desc = "Show scopes" })
+vim.keymap.set("n", "<Leader>DT", function()
+  require("dapui").toggle()
+end, { desc = "Toggle UI" })

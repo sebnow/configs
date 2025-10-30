@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   imports = [
     ./lang/bash.nix
@@ -15,7 +15,12 @@
     programs.neovim = {
       enable = true;
       defaultEditor = true;
-      extraLuaConfig = builtins.readFile ./config.lua;
+      extraLuaConfig = lib.strings.concatStrings [
+        ''
+          vim.g.codelldb_path = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb";
+        ''
+        (builtins.readFile ./config.lua)
+      ];
       plugins = with pkgs.vimPlugins; [
         catppuccin-nvim
         comment-nvim
@@ -29,8 +34,11 @@
         neotest
         neotest-golang
         noice-nvim
+        nvim-dap
+        nvim-dap-lldb
+        nvim-dap-ui
         nvim-lspconfig
-        nvim-nio # Required for neotest
+        nvim-nio # Required for neotest, nvim-dap-ui
         nvim-treesitter-context
         nvim-treesitter.withAllGrammars
         nvim-web-devicons
@@ -43,6 +51,7 @@
       extraPackages = [
         pkgs.fd
         pkgs.ripgrep
+        pkgs.vscode-extensions.vadimcn.vscode-lldb
       ];
     };
   };
