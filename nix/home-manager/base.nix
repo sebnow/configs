@@ -29,6 +29,11 @@
     '';
   };
 
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -121,11 +126,6 @@
 
   programs.git = {
     enable = true;
-    aliases = {
-      st = "status --short";
-      squash = "rebase -i --autosquash @{u}";
-      pushf = "push --force-with-lease";
-    };
     ignores = [
       "*.swp"
       ".envrc"
@@ -135,7 +135,12 @@
     includes = [
       { path = "config.local"; }
     ];
-    extraConfig = {
+    settings = {
+      alias = {
+        st = "status --short";
+        squash = "rebase -i --autosquash @{u}";
+        pushf = "push --force-with-lease";
+      };
       apply.whitespace = "fix";
       rerere.enable = true;
       branch = {
@@ -150,7 +155,6 @@
       push.default = "simple";
       log.decorate = "short";
     };
-    delta.enable = true;
   };
 
   programs.tmux = {
