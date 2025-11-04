@@ -1,6 +1,11 @@
 { pkgs, ... }:
 let
   instructions = builtins.readFile ./agents.md;
+  agents = {
+    debugger = builtins.readFile ./agent-debugger.md;
+    code-reviewer = builtins.readFile ./agent-code-reviewer.md;
+    qa = builtins.readFile ./agent-qa.md;
+  };
 in
 {
   home.packages = [
@@ -10,10 +15,7 @@ in
   programs.claude-code = {
     enable = true;
     memory.text = instructions;
-    agents = {
-      debugger = builtins.readFile ./agent-debugger.md;
-      code-reviewer = builtins.readFile ./agent-code-reviewer.md;
-    };
+    agents = agents;
     settings = {
       permissions = {
         permissions = {
@@ -26,7 +28,6 @@ in
             "Bash(go list:*)"
             "Bash(jj diff:*)"
             "Bash(jj log:*)"
-            "Bash(jj status:*)"
             "Bash(jj status:*)"
             "Bash(jq)"
             "Bash(ls)"
