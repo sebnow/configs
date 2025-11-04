@@ -25,3 +25,25 @@ Instructions:
 - Do not add superfluous comments.
   Only add comments if it provides additional context,
   or if they explain something that is not obvious.
+- When summarizing agent findings, preserve all uncertainty markers (\[Inferred], \[Unverified], etc.).
+
+# Markdown Guidelines
+
+For Markdown files:
+
+- Do not add emojis unless explicitly asked for
+- Do not enumerate headings
+- Do not make headings bold, or add any other stylized formatting
+
+# Go Guidelines
+
+For Go files:
+
+- Use `go doc` to verify APIs of libraries
+
+# Tool Guidelines
+
+- Use `fd` for searching files
+- Use `rg` for searching file content
+- Use `ast-grep` for searching and modifying code
+- Use `jq` for manipulating JSON
