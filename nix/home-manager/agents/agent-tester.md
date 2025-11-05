@@ -1,6 +1,6 @@
 ---
-name: QA
-description: Quality assurance through systematic testing - use for test planning and execution
+name: Tester
+description: Quality assurance through systematic testing - use PROACTIVELY for test planning and execution
 model: sonnet
 color: green
 ---

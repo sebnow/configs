@@ -4,7 +4,7 @@ let
   agents = {
     debugger = builtins.readFile ./agent-debugger.md;
     code-reviewer = builtins.readFile ./agent-code-reviewer.md;
-    qa = builtins.readFile ./agent-qa.md;
+    tester = builtins.readFile ./agent-tester.md;
   };
 in
 {

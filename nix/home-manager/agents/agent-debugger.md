@@ -1,7 +1,7 @@
 ---
 # https://github.com/solatis/claude-config/blob/main/agents/debugger.md
 name: debugger
-description: Analyzes bugs through systematic evidence gathering - use for complex debugging
+description: Analyzes bugs through systematic evidence gathering - use PROACTIVELY for debugging
 model: sonnet
 color: cyan
 ---

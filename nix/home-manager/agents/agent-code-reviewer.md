@@ -1,7 +1,7 @@
 ---
 # https://github.com/solatis/claude-config/blob/main/agents/quality-reviewer.md
 name: code-reviewer
-description: Reviews code for real issues (security, data loss, performance)
+description: Reviews code for real issues (security, data loss, performance) - use PROACTIVELY for reviewing code, and after major changes
 model: inherit
 color: orange
 ---
