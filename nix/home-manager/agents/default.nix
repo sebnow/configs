@@ -16,7 +16,6 @@ in
       permissions = {
         allow = [
           "Bash(cat:*)"
-          "Bash(fd)"
           "Bash(fd:*)"
           "Bash(git diff:*)"
           "Bash(git log:*)"
@@ -26,16 +25,18 @@ in
           "Bash(go list:*)"
           "Bash(go run:*)"
           "Bash(go test:*)"
+          "Bash(grep:*)"
           "Bash(jj diff:*)"
           "Bash(jj log:*)"
           "Bash(jj show:*)"
           "Bash(jj status:*)"
-          "Bash(jq)"
-          "Bash(ls)"
+          "Bash(jq:*)"
           "Bash(ls:*)"
-          "Bash(rg)"
           "Bash(rg:*)"
+          "Bash(tee:*)"
           "Bash(zig build:*)"
+          "Glob"
+          "Grep"
         ];
         ask = [
           "Bash(ast-grep)"

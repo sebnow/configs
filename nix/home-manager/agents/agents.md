@@ -43,7 +43,4 @@ For Go files:
 
 # Tool Guidelines
 
-- Use `fd` for searching files
-- Use `rg` for searching file content
-- Use `ast-grep` for searching and modifying code
 - Use `jq` for manipulating JSON
