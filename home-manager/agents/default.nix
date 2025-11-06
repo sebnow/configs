@@ -5,6 +5,7 @@ let
     debugger = builtins.readFile ./agent-debugger.md;
     code-reviewer = builtins.readFile ./agent-code-reviewer.md;
     tester = builtins.readFile ./agent-tester.md;
+    coder = builtins.readFile ./agent-coder.md;
   };
 in
 {
