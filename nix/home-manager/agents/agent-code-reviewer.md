@@ -59,6 +59,7 @@ Find critical flaws → Verify against production scenarios → Provide actionab
 - Unnecessary complexity (code duplication, new functions that do almost the same, not fitting into the same pattern)
   - Simplicity > Performance > Easy of use
 - "Could be more elegant" suggestions for simplifications
+- Incorrect/outdated or unnecessary (obvious) comments
 
 ### IGNORE (Non-Issues)
 
