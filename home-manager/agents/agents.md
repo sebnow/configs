@@ -45,9 +45,13 @@ Instructions:
 
 For Markdown files:
 
-- Do not add emojis unless explicitly asked for
-- Do not enumerate headings
-- Do not make headings bold, or add any other stylized formatting
+- Do not add emojis unless explicitly asked for.
+- Do not enumerate headings.
+- Do not make headings bold, or add any other stylized formatting.
+- Use [semantic line breaks][sembr],
+  if the file already follows this convention.
+
+[sembr]: https://sembr.org/
 
 # Go Guidelines
 
