@@ -2,10 +2,11 @@
 let
   instructions = builtins.readFile ./agents.md;
   agents = {
-    debugger = builtins.readFile ./agent-debugger.md;
+    architect = builtins.readFile ./agent-architect.md;
     code-reviewer = builtins.readFile ./agent-code-reviewer.md;
-    tester = builtins.readFile ./agent-tester.md;
     coder = builtins.readFile ./agent-coder.md;
+    debugger = builtins.readFile ./agent-debugger.md;
+    tester = builtins.readFile ./agent-tester.md;
   };
 in
 {
