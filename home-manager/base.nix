@@ -127,6 +127,7 @@
   programs.git = {
     enable = true;
     ignores = [
+      ".claude/"
       "*.swp"
       ".envrc"
       ".tool-versions"
