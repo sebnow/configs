@@ -137,6 +137,8 @@ and document them for future reference.
   Focus on context (including status quo),
   the decision with justification,
   and options considered with their trade-offs.
+  File names should focus on the need rather than the solution.
+  Provide high level guidance rather than prescribing implementation details.
 
 # What to Deliver
 
