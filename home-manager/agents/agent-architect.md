@@ -1,6 +1,6 @@
 ---
 name: architect
-model: sonnet
+model: opus
 color: blue
 description: |
   Use PROACTIVELY before implementation when facing significant architectural decisions that affect the system as a whole.
