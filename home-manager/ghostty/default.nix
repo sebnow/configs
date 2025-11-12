@@ -34,25 +34,18 @@ in
       };
 
       home.sessionVariables.TERMINAL = lib.mkIf cfg.isDefault "ghostty";
-
-      systemd.user.services."app-com.mitchellh.ghostty" = {
-        Unit = {
-          Description = "Ghostty";
-          After = [
-            "graphical-session.target"
-            "dbus.socket"
-          ];
-          Requires = [ "dbus.socket" ];
-        };
-        Install = {
-          WantedBy = [ "graphical-session.target" ];
-        };
-        Service = {
-          Type = "notify-reload";
-          ReloadSignal = "SIGUSR2";
-          BusName = "com.mitchellh.ghostty";
-          ExecStart = "${config.lib.nixGL.wrap pkgs.ghostty}/bin/ghostty --gtk-single-instance=true --initial-window=false";
-        };
+    })
+    (lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+      # Override the systemd service ExecStart to use nixGL-wrapped package
+      xdg.configFile."systemd/user/app-com.mitchellh.ghostty.service" = lib.mkForce {
+        text =
+          let
+            unwrappedGhostty = pkgs.ghostty;
+            wrappedGhostty = config.lib.nixGL.wrap pkgs.ghostty;
+          in
+          builtins.replaceStrings [ "${unwrappedGhostty}/bin/ghostty" ] [ "${wrappedGhostty}/bin/ghostty" ] (
+            builtins.readFile "${unwrappedGhostty}/share/systemd/user/app-com.mitchellh.ghostty.service"
+          );
       };
     })
   ];
