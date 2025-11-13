@@ -69,6 +69,7 @@
       [
         "verification-before-completion"
         "systematic-debugging"
+        "source-control-hygiene"
       ]
   );
 }
