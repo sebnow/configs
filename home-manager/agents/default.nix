@@ -57,4 +57,15 @@
       };
     };
   };
+
+  home.file = builtins.listToAttrs (
+    builtins.map
+      (s: {
+        name = ".claude/skills/${s}/SKILL.md";
+        value = { source = ./. + "/skill-${s}.md"; };
+      })
+      [
+        "verification-before-completion"
+      ]
+  );
 }
