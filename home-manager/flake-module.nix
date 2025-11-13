@@ -28,13 +28,14 @@
               (
                 { ... }:
                 {
-                  nixGL = {
-                    inherit (inputs.nixgl) packages;
-                    defaultWrapper = "mesa";
-                    installScripts = [ "mesa" ];
+                  targets.genericLinux = {
+                    enable = true;
+                    nixGL = {
+                      inherit (inputs.nixgl) packages;
+                      defaultWrapper = "mesa";
+                      installScripts = [ "mesa" ];
+                    };
                   };
-
-                  targets.genericLinux.enable = true;
                 }
               )
             ];
