@@ -62,10 +62,13 @@
     builtins.map
       (s: {
         name = ".claude/skills/${s}/SKILL.md";
-        value = { source = ./. + "/skill-${s}.md"; };
+        value = {
+          source = ./. + "/skill-${s}.md";
+        };
       })
       [
         "verification-before-completion"
+        "systematic-debugging"
       ]
   );
 }
