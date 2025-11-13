@@ -1,7 +1,10 @@
 ---
-#https://github.com/obra/superpowers/blob/main/skills/systematic-debugging/SKILL.md
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes - four-phase framework (root cause investigation, pattern analysis, hypothesis testing, implementation) that ensures understanding before attempting solutions
+description: |
+  REQUIRED for ANY bug, error, test failure, or unexpected behavior.
+  Enforces root cause investigation before fixes through 4-phase framework.
+  Prevents random fix attempts and ensures evidence-based debugging.
+  Auto-invokes on: test failures, errors, crashes, "not working", performance issues.
 ---
 
 # Systematic Debugging
@@ -51,9 +54,66 @@ Use for ANY technical issue:
 
 You MUST complete each phase before proceeding to the next.
 
+## Phase Tracking (REQUIRED)
+
+At the start of EACH phase, you MUST:
+
+1. Use TodoWrite to create phase checkpoint
+2. Mark current phase as "in_progress"
+3. List specific tasks for this phase
+
+Example:
+
+```
+- [in_progress] Phase 1: Root Cause Investigation - Reading error messages
+- [pending] Phase 2: Pattern Analysis
+- [pending] Phase 3: Hypothesis Testing
+- [pending] Phase 4: Implementation
+```
+
+## Phase Transition Protocol
+
+To move from one phase to the next, you MUST:
+
+1. State: "I am completing Phase N because: [completion criteria met]"
+2. Update TodoWrite: Mark phase N as completed
+3. State: "I am beginning Phase N+1"
+4. Update TodoWrite: Mark phase N+1 as in_progress
+
+Do NOT silently move between phases. Each transition must be explicit.
+
+## Tool Usage by Phase
+
+**Phase 1-3 (Investigation):**
+
+- ✓ Read, Grep, Glob, Bash (read-only commands)
+- ✓ Edit/Write ONLY for debug statements (must be reverted)
+- ❌ Edit/Write for fixes (FORBIDDEN)
+
+**Phase 4 (Implementation):**
+
+- ✓ Edit/Write for the ONE root cause fix
+- ❌ Edit/Write for multiple changes (one at a time)
+
+If you catch yourself using Edit/Write in Phase 1-3 for anything other than debug statements, STOP.
+
 ### Phase 1: Root Cause Investigation
 
-**BEFORE attempting ANY fix:**
+**BEFORE attempting ANY fix, you MUST complete ALL steps below.**
+
+**FORBIDDEN until Phase 1 complete:**
+
+- ❌ Proposing any code changes
+- ❌ Suggesting fixes or solutions
+- ❌ Using Edit or Write tools for fixes
+- ❌ Moving to Phase 2
+
+**YOU MAY ONLY:**
+
+- ✓ Add debug statements (temporary, will be removed)
+- ✓ Read files and search code
+- ✓ Run debugging tools
+- ✓ Create temporary test files (will be deleted)
 
 1. **Read Error Messages Carefully**
    - Don't skip past errors or warnings
@@ -91,39 +151,63 @@ You MUST complete each phase before proceeding to the next.
    THEN investigate that specific component
    ```
 
-   **Example (multi-layer system):**
+   **Example: User reports "search returns no results"**
 
-   ```bash
-   # Layer 1: Workflow
-   echo "=== Secrets available in workflow: ==="
-   echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
+   System has multiple layers: Frontend → API → Search Service → Database
 
-   # Layer 2: Build script
-   echo "=== Env vars in build script: ==="
-   env | grep IDENTITY || echo "IDENTITY not in environment"
+   Add instrumentation at EACH boundary:
 
-   # Layer 3: Signing script
-   echo "=== Keychain state: ==="
-   security list-keychains
-   security find-identity -v
+   ```python
+   import logging
 
-   # Layer 4: Actual signing
-   codesign --sign "$IDENTITY" --verbose=4 "$APP"
+   logger = logging.getLogger(__name__)
+
+   # Layer 1: API endpoint receives request
+   @app.route('/search')
+   def search():
+       query = request.args.get('q')
+       logger.debug("[DEBUG:API:entry]", extra={"query": query})
+
+       # Layer 2: Call search service
+       logger.debug("[DEBUG:API:calling_service]", extra={"query": query})
+       results = search_service.find(query)
+       logger.debug("[DEBUG:API:service_returned]", extra={"result_count": len(results)})
+
+       return jsonify(results)
+
+   # Layer 3: Search service processes query
+   def find(query):
+       logger.debug("[DEBUG:SearchService:entry]", extra={"query": query})
+       normalized = normalize_query(query)
+       logger.debug("[DEBUG:SearchService:normalized]", extra={"normalized": normalized})
+
+       # Layer 4: Database query
+       logger.debug("[DEBUG:SearchService:calling_db]", extra={"query": normalized})
+       rows = db.execute("SELECT * FROM items WHERE title LIKE ?", normalized)
+       logger.debug("[DEBUG:SearchService:db_returned]", extra={"row_count": len(rows)})
+       return rows
    ```
 
-   **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
+   **Running this reveals:**
+   - API receives: `query="test"` ✓
+   - Service receives: `query="test"` ✓
+   - After normalization: `normalized=""` ✗ (Empty string!)
+   - Database returns: 0 rows (because searching for empty string)
+
+   **Root cause identified:** `normalize_query()` is incorrectly returning empty string.
+   Now investigate ONLY that function, not the database or API layers.
 
 5. **Trace Data Flow**
 
    **WHEN error is deep in call stack:**
 
-   **REQUIRED SUB-SKILL:** Use superpowers:root-cause-tracing for backward tracing technique
-
-   **Quick version:**
+   Use backward tracing to find the source:
    - Where does bad value originate?
    - What called this with bad value?
    - Keep tracing up until you find the source
    - Fix at source, not at symptom
+
+   Add debug statements at each level of the call stack to trace the data flow.
 
 #### Evidence Gathering Techniques
 
@@ -134,6 +218,7 @@ Add debug statements with a consistent prefix for easy identification and cleanu
 Format: `[DEBUG:location:line] variable_values`
 
 Examples:
+
 ```c
 // C/C++
 fprintf(stderr, "[DEBUG:UserManager::auth:142] user=\"%s\" id=%d result=%d\n", user, id, result);
@@ -141,13 +226,15 @@ fprintf(stderr, "[DEBUG:UserManager::auth:142] user=\"%s\" id=%d result=%d\n", u
 
 ```python
 # Python
-import sys
-print(f"[DEBUG:auth_user:142] user={user!r} id={id} result={result}", file=sys.stderr)
+import logging
+logger = logging.getLogger(__name__)
+logger.debug("[DEBUG:auth_user:142]", extra={"user": user, "id": id, "result": result})
 ```
 
 ```go
 // Go
-log.Printf("[DEBUG:AuthUser:142] user=%q id=%d result=%v\n", user, id, result)
+import "log/slog"
+slog.DebugContext(ctx, "[DEBUG:AuthUser:142]", "user", user, "id", id, "result", result)
 ```
 
 All debug statements must include the "DEBUG:" prefix for easy cleanup.
@@ -167,35 +254,51 @@ Verify tool availability before invoking.
 
 **Investigation Strategies by Issue Type:**
 
-*Memory Issues:*
+_Memory Issues:_
+
 - Log pointer values and dereferenced content
 - Track allocations and deallocations
 - Enable memory sanitizers (AddressSanitizer, Valgrind)
 - Check for use-after-free, double-free, buffer overflows
 
-*Concurrency Issues:*
+_Concurrency Issues:_
+
 - Log thread/goroutine/process IDs with state changes
 - Track lock acquisition and release
 - Enable race detectors (`-fsanitize=thread`, `go test -race`)
 - Look for deadlocks, race conditions, ordering issues
 
-*Performance Issues:*
+_Performance Issues:_
+
 - Add timing measurements around suspect code
 - Use language-specific profilers before adding extensive debug statements
 - Track memory allocations and garbage collection
 - Identify hot paths and algorithmic bottlenecks
 
-*State and Logic Issues:*
+_State and Logic Issues:_
+
 - Log state transitions with old and new values
 - Break complex conditions into parts and log each evaluation
 - Track variable changes through execution flow
 - Verify input validation and boundary conditions
 
-*Integration Issues:*
+_Integration Issues:_
+
 - Log all external interactions (API calls, database queries, file I/O)
 - Verify configuration and connection parameters
 - Check network connectivity and timeouts
 - Test with minimal external dependencies
+
+#### Phase 1 Completion Checklist
+
+You have completed Phase 1 ONLY if you can answer ALL:
+
+- □ **WHAT fails**: Exact component, line number, function name
+- □ **WHEN it fails**: Reproducible steps or conditions
+- □ **WHAT value is wrong**: Actual vs expected value
+- □ **WHERE it originates**: Source of bad data/state (not just where it manifests)
+
+If you cannot answer ALL four, you are STILL IN PHASE 1.
 
 ### Phase 2: Pattern Analysis
 
@@ -270,6 +373,17 @@ If after thorough investigation you cannot identify the root cause:
 Don't continue indefinitely.
 If multiple hypotheses have been tested with evidence and the root cause remains elusive, escalation is appropriate.
 
+## Before Proposing ANY Fix
+
+Ask yourself these questions:
+
+1. Have I completed Phase 1? (Can I answer all 4 checklist items?)
+2. Have I found a working counterexample? (Phase 2)
+3. Have I stated ONE specific hypothesis? (Phase 3)
+4. Have I tested that hypothesis minimally? (Phase 3)
+
+If ANY answer is "no", you are NOT ready to fix. State which phase you're in and continue investigation.
+
 ### Phase 4: Implementation
 
 **Fix the root cause, not the symptom:**
@@ -279,7 +393,7 @@ If multiple hypotheses have been tested with evidence and the root cause remains
    - Automated test if possible
    - One-off test script if no framework
    - MUST have before fixing
-   - **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for writing proper failing tests
+   - Write a test that fails with current code, will pass after fix
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -288,10 +402,14 @@ If multiple hypotheses have been tested with evidence and the root cause remains
    - No bundled refactoring
 
 3. **Clean Up Investigation**
-   - Remove ALL debug statements added during investigation
-   - Delete temporary test files created for debugging
-   - Restore codebase to clean state (only the fix remains)
-   - Use grep/search to find all `[DEBUG:` markers if used
+
+   Before marking Phase 4 complete, you MUST:
+   1. Run: `grep -r "\[DEBUG:" .` → Result must be empty
+   2. Check TodoWrite for any "debug", "temporary", "test_debug" items
+   3. Run: `find . -name "test_debug_*"` → Result must be empty
+   4. Confirm: Only the ONE root cause fix remains in the codebase
+
+   If any check fails, you have not completed cleanup.
 
 4. **Verify Fix**
    - Test passes now?
@@ -343,6 +461,24 @@ If you catch yourself thinking:
 
 **After investigation:** Always clean up debug statements and temporary test files (see Phase 4.3)
 
+## LLM Anti-Pattern Detection
+
+If you output ANY of these phrases, you are violating this skill:
+
+- "Let's try..." → STOP. Have you completed Phase 1?
+- "We could fix this by..." → STOP. Are you in Phase 4?
+- "One approach would be..." → STOP. Have you formed ONE hypothesis?
+- "I think the issue might be..." → STOP. Where's your evidence?
+- "Let's make a few changes..." → STOP. ONE change at a time.
+- "This should work..." → STOP. Have you tested your hypothesis?
+- "I'll implement..." → STOP. Have you answered the 4 Phase 1 checklist items?
+
+When you detect these phrases in your own output, immediately:
+
+1. Stop and acknowledge the violation
+2. State which phase you should be in
+3. Return to that phase and continue properly
+
 ## your human partner's Signals You're Doing It Wrong
 
 **Watch for these redirections:**
@@ -370,12 +506,12 @@ If you catch yourself thinking:
 
 ## Quick Reference
 
-| Phase                 | Key Activities                                                      | Success Criteria            |
-| --------------------- | ------------------------------------------------------------------- | --------------------------- |
-| **1. Root Cause**     | Read errors, reproduce, check changes, gather evidence with tools   | Understand WHAT and WHY     |
-| **2. Pattern**        | Find working examples, compare                                      | Identify differences        |
-| **3. Hypothesis**     | Form theory, test minimally, escalate if needed                     | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, clean up debug code, verify                       | Bug resolved, tests pass    |
+| Phase                 | Key Activities                                                    | Success Criteria            |
+| --------------------- | ----------------------------------------------------------------- | --------------------------- |
+| **1. Root Cause**     | Read errors, reproduce, check changes, gather evidence with tools | Understand WHAT and WHY     |
+| **2. Pattern**        | Find working examples, compare                                    | Identify differences        |
+| **3. Hypothesis**     | Form theory, test minimally, escalate if needed                   | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, clean up debug code, verify                     | Bug resolved, tests pass    |
 
 ## When Process Reveals "No Root Cause"
 
@@ -389,11 +525,6 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 **But:** 95% of "no root cause" cases are incomplete investigation.
 
 ## Integration with Other Skills
-
-**This skill requires using:**
-
-- **root-cause-tracing** - REQUIRED when error is deep in call stack (see Phase 1, Step 5)
-- **test-driven-development** - REQUIRED for creating failing test case (see Phase 4, Step 1)
 
 **Complementary skills:**
 
