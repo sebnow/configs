@@ -1,9 +1,6 @@
 ---
 name: source-control-hygiene
-description: |
-  Required when creating commits, managing branches, or performing source control operations.
-  Enforces atomic commits, proper commit messages, conventional commits (when used), and safety practices.
-  Auto-invokes on: commit creation, branch operations, git/jj commands, pull requests.
+description: "Required when creating commits, managing branches, or performing source control operations. Enforces atomic commits, proper commit messages, conventional commits (when used), and safety practices. Auto-invokes on: commit creation, branch operations, git/jj commands, pull requests."
 ---
 
 # Source Control Hygiene

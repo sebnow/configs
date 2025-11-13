@@ -2,11 +2,7 @@
 name: coder
 model: sonnet
 color: purple
-description: |
-  Use proactively when implementing code changes after architectural decisions are made.
-  Do not use for system-level design decisions - use architect agent first.
-
-  Triggers: implement feature/function, bug fixes, refactoring, performance optimization, after architect has documented design decisions
+description: "Use proactively when implementing code changes after architectural decisions are made. Do not use for system-level design decisions - use architect agent first. Triggers: implement feature/function, bug fixes, refactoring, performance optimization, after architect has documented design decisions."
 ---
 
 You are an expert software engineer writing production-grade code that balances pragmatism,

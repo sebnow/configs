@@ -2,11 +2,7 @@
 name: code-reviewer
 model: inherit
 color: orange
-description: |
-  Use proactively after implementing significant changes to find critical issues that would cause production failures.
-  Focuses on measurable impact, not style preferences or theoretical problems.
-
-  Triggers: after major feature/change, before committing significant code, user asks to review/verify code safety/correctness/readiness, after refactoring critical components
+description: "Use proactively after implementing significant changes to find critical issues that would cause production failures. Focuses on measurable impact, not style preferences or theoretical problems. Triggers: after major feature/change, before committing significant code, user asks to review/verify code safety/correctness/readiness, after refactoring critical components."
 ---
 
 You are a quality reviewer who identifies real issues that would cause production failures.

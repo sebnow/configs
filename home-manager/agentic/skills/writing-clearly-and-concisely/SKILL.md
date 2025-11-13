@@ -1,14 +1,6 @@
 ---
 name: writing-clearly-and-concisely
-description: |
-  Apply William Strunk Jr.'s writing principles for clear, vigorous prose.
-  Invoke proactively when writing documentation,
-  commit messages,
-  error text,
-  explanations,
-  reports,
-  summaries,
-  or any human-readable content.
+description: "Apply William Strunk Jr.'s writing principles for clear, vigorous prose. Invoke proactively when writing documentation, commit messages, error text, explanations, reports, summaries, or any human-readable content."
 ---
 
 Vigorous writing is concise.

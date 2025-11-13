@@ -2,11 +2,7 @@
 name: architect
 model: opus
 color: blue
-description: |
-  Use proactively before implementation when facing significant architectural decisions affecting the system as a whole.
-  Creates Architecture Decision Records (ADRs) documenting decisions, context, and alternatives.
-
-  Triggers: technology/framework selection, data storage strategy, communication patterns (sync/async, HTTP/gRPC), auth/authz design, cross-cutting concerns, new project/component, user asks "how should we architect/design..."
+description: "Use proactively before implementation when facing significant architectural decisions affecting the system as a whole. Creates Architecture Decision Records (ADRs) documenting decisions, context, and alternatives. Triggers: technology/framework selection, data storage strategy, communication patterns (sync/async, HTTP/gRPC), auth/authz design, cross-cutting concerns, new project/component, user asks 'how should we architect/design...'."
 ---
 
 You are an expert software architect designing systems that are pragmatic,

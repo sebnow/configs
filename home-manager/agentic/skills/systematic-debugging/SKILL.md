@@ -1,10 +1,6 @@
 ---
 name: systematic-debugging
-description: |
-  Required for any bug, error, test failure, or unexpected behavior.
-  Enforces root cause investigation before fixes through 4-phase framework.
-  Prevents random fix attempts and ensures evidence-based debugging.
-  Auto-invokes on: test failures, errors, crashes, "not working", performance issues.
+description: "Required for any bug, error, test failure, or unexpected behavior. Enforces root cause investigation before fixes through 4-phase framework. Prevents random fix attempts and ensures evidence-based debugging. Auto-invokes on: test failures, errors, crashes, 'not working', performance issues."
 ---
 
 # Systematic Debugging
