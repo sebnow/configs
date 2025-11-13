@@ -67,9 +67,10 @@
         };
       })
       [
-        "verification-before-completion"
-        "systematic-debugging"
         "source-control-hygiene"
+        "systematic-debugging"
+        "verification-before-completion"
+        "writing-clearly-and-concisely"
       ]
   );
 }
