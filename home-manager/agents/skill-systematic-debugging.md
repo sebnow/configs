@@ -125,6 +125,78 @@ You MUST complete each phase before proceeding to the next.
    - Keep tracing up until you find the source
    - Fix at source, not at symptom
 
+#### Evidence Gathering Techniques
+
+**Debug Statement Injection:**
+
+Add debug statements with a consistent prefix for easy identification and cleanup.
+
+Format: `[DEBUG:location:line] variable_values`
+
+Examples:
+```c
+// C/C++
+fprintf(stderr, "[DEBUG:UserManager::auth:142] user=\"%s\" id=%d result=%d\n", user, id, result);
+```
+
+```python
+# Python
+import sys
+print(f"[DEBUG:auth_user:142] user={user!r} id={id} result={result}", file=sys.stderr)
+```
+
+```go
+// Go
+log.Printf("[DEBUG:AuthUser:142] user=%q id=%d result=%v\n", user, id, result)
+```
+
+All debug statements must include the "DEBUG:" prefix for easy cleanup.
+
+**Language-Specific Debugging Tools:**
+
+Use appropriate tools for the language:
+
+- **Python**: `pdb` (debugger), `cProfile` (profiler), `tracemalloc` (memory), `pytest -vv` (verbose tests)
+- **Go**: `delve` (debugger), `pprof` (profiler), `go test -race` (race detector), `go test -v` (verbose)
+- **C/C++**: `gdb` or `lldb` (debuggers), `valgrind` (memory), `-fsanitize=address,undefined` (sanitizers), `perf` (profiler)
+- **Rust**: `rust-gdb` or `rust-lldb`, `valgrind`, `cargo test -- --nocapture`
+- **JavaScript/Node**: `node --inspect`, Chrome DevTools, `--trace-warnings`
+- **System-level**: `strace` (Linux syscalls), `dtrace` (macOS/BSD), `tcpdump` (network), `lsof` (open files)
+
+Verify tool availability before invoking.
+
+**Investigation Strategies by Issue Type:**
+
+*Memory Issues:*
+- Log pointer values and dereferenced content
+- Track allocations and deallocations
+- Enable memory sanitizers (AddressSanitizer, Valgrind)
+- Check for use-after-free, double-free, buffer overflows
+
+*Concurrency Issues:*
+- Log thread/goroutine/process IDs with state changes
+- Track lock acquisition and release
+- Enable race detectors (`-fsanitize=thread`, `go test -race`)
+- Look for deadlocks, race conditions, ordering issues
+
+*Performance Issues:*
+- Add timing measurements around suspect code
+- Use language-specific profilers before adding extensive debug statements
+- Track memory allocations and garbage collection
+- Identify hot paths and algorithmic bottlenecks
+
+*State and Logic Issues:*
+- Log state transitions with old and new values
+- Break complex conditions into parts and log each evaluation
+- Track variable changes through execution flow
+- Verify input validation and boundary conditions
+
+*Integration Issues:*
+- Log all external interactions (API calls, database queries, file I/O)
+- Verify configuration and connection parameters
+- Check network connectivity and timeouts
+- Test with minimal external dependencies
+
 ### Phase 2: Pattern Analysis
 
 **Find the pattern before fixing:**
@@ -173,6 +245,31 @@ You MUST complete each phase before proceeding to the next.
    - Ask for help
    - Research more
 
+#### Evidence Requirements
+
+Before forming a hypothesis, gather sufficient evidence:
+
+- Add debug statements at key points in the execution path
+- Run tests with multiple inputs, including edge cases
+- Log entry and exit for suspect functions
+- Create isolated test cases for reproduction
+
+The goal is evidence-based investigation, not hitting arbitrary thresholds.
+If you can form a well-supported hypothesis with less evidence, that's acceptable.
+If you need more evidence, gather it.
+
+#### When to Escalate
+
+If after thorough investigation you cannot identify the root cause:
+
+1. Document your investigation process
+2. List hypotheses tested and evidence gathered
+3. Identify what remains unclear
+4. Escalate with your findings
+
+Don't continue indefinitely.
+If multiple hypotheses have been tested with evidence and the root cause remains elusive, escalation is appropriate.
+
 ### Phase 4: Implementation
 
 **Fix the root cause, not the symptom:**
@@ -190,19 +287,25 @@ You MUST complete each phase before proceeding to the next.
    - No "while I'm here" improvements
    - No bundled refactoring
 
-3. **Verify Fix**
+3. **Clean Up Investigation**
+   - Remove ALL debug statements added during investigation
+   - Delete temporary test files created for debugging
+   - Restore codebase to clean state (only the fix remains)
+   - Use grep/search to find all `[DEBUG:` markers if used
+
+4. **Verify Fix**
    - Test passes now?
    - No other tests broken?
    - Issue actually resolved?
 
-4. **If Fix Doesn't Work**
+5. **If Fix Doesn't Work**
    - STOP
    - Count: How many fixes have you tried?
    - If < 3: Return to Phase 1, re-analyze with new information
-   - **If ≥ 3: STOP and question the architecture (step 5 below)**
+   - **If ≥ 3: STOP and question the architecture (step 6 below)**
    - DON'T attempt Fix #4 without architectural discussion
 
-5. **If 3+ Fixes Failed: Question Architecture**
+6. **If 3+ Fixes Failed: Question Architecture**
 
    **Pattern indicating architectural problem:**
    - Each fix reveals new shared state/coupling/problem in different place
@@ -236,7 +339,9 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
+**If 3+ fixes failed:** Question the architecture (see Phase 4.6)
+
+**After investigation:** Always clean up debug statements and temporary test files (see Phase 4.3)
 
 ## your human partner's Signals You're Doing It Wrong
 
@@ -265,12 +370,12 @@ If you catch yourself thinking:
 
 ## Quick Reference
 
-| Phase                 | Key Activities                                         | Success Criteria            |
-| --------------------- | ------------------------------------------------------ | --------------------------- |
-| **1. Root Cause**     | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY     |
-| **2. Pattern**        | Find working examples, compare                         | Identify differences        |
-| **3. Hypothesis**     | Form theory, test minimally                            | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify                               | Bug resolved, tests pass    |
+| Phase                 | Key Activities                                                      | Success Criteria            |
+| --------------------- | ------------------------------------------------------------------- | --------------------------- |
+| **1. Root Cause**     | Read errors, reproduce, check changes, gather evidence with tools   | Understand WHAT and WHY     |
+| **2. Pattern**        | Find working examples, compare                                      | Identify differences        |
+| **3. Hypothesis**     | Form theory, test minimally, escalate if needed                     | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, clean up debug code, verify                       | Bug resolved, tests pass    |
 
 ## When Process Reveals "No Root Cause"
 
