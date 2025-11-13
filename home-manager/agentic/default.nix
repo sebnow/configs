@@ -3,13 +3,7 @@
   programs.claude-code = {
     enable = true;
     memory.source = ./agents.md;
-    agents = {
-      architect = ./agent-architect.md;
-      code-reviewer = ./agent-code-reviewer.md;
-      coder = ./agent-coder.md;
-      debugger = ./agent-debugger.md;
-      tester = ./agent-tester.md;
-    };
+    agentsDir = ./agents;
     settings = {
       permissions = {
         allow = [
@@ -58,19 +52,8 @@
     };
   };
 
-  home.file = builtins.listToAttrs (
-    builtins.map
-      (s: {
-        name = ".claude/skills/${s}/SKILL.md";
-        value = {
-          source = ./. + "/skill-${s}.md";
-        };
-      })
-      [
-        "source-control-hygiene"
-        "systematic-debugging"
-        "verification-before-completion"
-        "writing-clearly-and-concisely"
-      ]
-  );
+  home.file.".claude/skills" = {
+    source = ./skills;
+    recursive = true;
+  };
 }

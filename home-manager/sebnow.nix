@@ -18,7 +18,7 @@
   };
 
   imports = [
-    ./agents
+    ./agentic
     ./alacritty
     ./base.nix
     ./fonts
