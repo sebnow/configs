@@ -2,6 +2,7 @@
 {
   imports = [
     ./lang/bash.nix
+    ./lang/c.nix
     ./lang/golang.nix
     ./lang/javascript.nix
     ./lang/lua.nix

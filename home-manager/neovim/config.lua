@@ -213,12 +213,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 vim.lsp.enable({
   "bashls",
+  "buf_ls",
+  "clangd",
   "golangci_lint_ls",
   "gopls",
   "lua_ls",
   "marksman",
   "nixd",
-  "buf_ls",
   "tsserver",
   "yamlls",
   "zls",
