@@ -1,21 +1,23 @@
 ---
 name: skill-writing
-description: "Use when writing skills, creating SKILL.md files, or refining agent documentation. Required before creating any skill or agent prompt. Enforces TDD approach (test baseline, minimal docs, refactor), persuasion principles, token efficiency, and discoverability. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', agent/skill improvement."
+description: "Required when creating SKILL.md files for Claude Code agents. Specializes prompt-engineering TDD with agent-specific requirements: frontmatter format, persuasion principles, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'."
 ---
 
 # Skill Writing
 
 Skills are reference guides for proven techniques.
-Apply Test-Driven Development to documentation:
+
+This skill specializes prompt-engineering for Claude configurations.
+Apply TDD methodology from @prompt-engineering.md:
 observe failures without the skill,
 write minimal guidance addressing those failures,
 then refactor to close loopholes.
 
-## Before Writing: The RED Phase
+## Before Writing: The Red Phase
 
 You must observe baseline behavior before creating documentation.
 
-State: "Beginning RED phase - observing baseline behavior"
+State: "Beginning Red phase - observing baseline behavior"
 
 Required steps:
 
@@ -23,7 +25,7 @@ Required steps:
 2. Document specific rationalizations or mistakes
 3. Identify concrete symptoms triggering skill activation
 
-You cannot proceed to GREEN phase until you complete all steps.
+You cannot proceed to Green phase until you complete all steps.
 
 Forbidden rationalizations:
 - "This is simple enough to skip testing"
@@ -35,11 +37,11 @@ If you did not watch an agent fail without the skill,
 you do not know if the skill teaches the right thing.
 
 Failure mode:
-Skipping RED creates ineffective skills that waste tokens without changing behavior.
+Skipping Red creates ineffective skills that waste tokens without changing behavior.
 
-## Writing: The GREEN Phase
+## Writing: The Green Phase
 
-State: "Beginning GREEN phase - writing minimal documentation"
+State: "Beginning Green phase - writing minimal documentation"
 
 Create minimal documentation addressing observed failures.
 
@@ -103,9 +105,9 @@ Batch operations must include validation loops before proceeding.
 
 Destructive operations must require explicit user confirmation.
 
-## Refining: The REFACTOR Phase
+## Refining: The Refactor Phase
 
-State: "Beginning REFACTOR phase - testing with fresh instances"
+State: "Beginning Refactor phase - testing with fresh instances"
 
 Test with fresh agent instances.
 Observe where they struggle.
