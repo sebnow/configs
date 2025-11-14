@@ -16,7 +16,7 @@ Core principle: Every commit should tell a clear story and be independently revi
 
 This skill is active during:
 
-1. Before first commit in session - Check conventions
+1. Before first commit in session - Detect VCS and check conventions
 2. Before each commit - Follow pre-commit protocol
 3. After making changes - Plan atomic commits
 4. When considering branch operations - Check safety practices
@@ -28,6 +28,18 @@ Activation trigger phrases:
 - "Let me commit"
 
 When you think any of these phrases, this skill must guide your actions.
+
+## Version Control System Detection
+
+Before committing, detect which VCS the project uses:
+
+Check for jujutsu:
+```bash
+ls -la .jj
+```
+
+If jujutsu is in use, prefer it over git.
+See @jujutsu-practices.md for jj-specific guidance.
 
 ## Detecting Project Conventions (Required)
 
@@ -227,6 +239,9 @@ If you catch yourself saying:
 - "amend this commit" -> Check safety protocol
 - "force push" -> Never without explicit user request
 - "Quick commit" / "WIP commit" -> Not without user request
+- "git commit" when .jj exists -> Use jj commit
+- "jj describe" when creating new change -> Use jj commit -m to advance
+- "jj squash" without -m or -u -> Add -m "message" or -u flag
 
 When detected: Stop, state which requirement you skipped, complete it before proceeding.
 
