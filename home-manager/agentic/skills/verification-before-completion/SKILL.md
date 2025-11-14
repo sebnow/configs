@@ -1,5 +1,4 @@
 ---
-# https://github.com/obra/superpowers/blob/main/skills/verification-before-completion/SKILL.md
 name: verification-before-completion
 description: "Use when claiming work is complete, tests pass, or fixes work. Required before commits and PRs. Enforces running verification commands and confirming output before success claims. Triggers: 'done', 'fixed', 'passing', 'works now', before committing."
 ---
