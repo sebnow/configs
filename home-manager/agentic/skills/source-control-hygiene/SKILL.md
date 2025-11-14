@@ -104,66 +104,12 @@ Don't split: Function definition + usage, test + implementation, config + featur
 
 ## Commit Message Structure
 
-### Format
+See @commit-messages.md for detailed format, examples, and templates.
 
-```
-<subject line>
-
-<body (optional)>
-
-<trailers (optional)>
-```
-
-### Subject Line
-
-Length: Aim for 50 characters, max 72
-
-Mood: Use imperative mood ("Add feature" not "Adds feature" or "Added feature")
-
-Focus: Describe why, not what (the diff shows what changed)
-
-Examples:
-
-Bad (describes what):
-```
-Update user.go, add validation function, change error handling
-```
-
-Good (describes why):
-```
-Prevent invalid email addresses from being stored
-```
-
-Bad (too vague):
-```
-Fix bug
-```
-
-Good (specific):
-```
-Fix race condition in cache invalidation
-```
-
-### Conventional Commits Format
-
-When project uses conventional commits:
-
-```
-<type>(<scope>): <description>
-```
-
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
-Scope: Optional component/module name
-
-Examples: `feat(search): add fuzzy matching`, `fix(auth): prevent token refresh race`, `docs: add installation guide`
-
-### Body (Optional)
-
-Include when: Why isn't obvious, trade-offs exist, context helps maintainers, complex changes
-Skip when: Obvious, simple refactoring/fix
-
-Guidelines: Wrap at 72 chars, blank line after subject, explain why not what, note trade-offs
-Never: Promotional text, emoji (unless project uses), unnecessary metadata
+Key requirements:
+- Subject: 50 chars (max 72), imperative mood, describe why not what
+- Body: Optional, explain context when not obvious
+- Follow project conventions (conventional commits if used)
 
 ## Pre-Commit Protocol (Required)
 
@@ -262,50 +208,13 @@ If check fails: Amend if not pushed (per safety protocol), else create fixup com
 
 ## Safety Practices
 
-### Forbidden Operations
+See @safety-practices.md for forbidden operations, amend protocol, hook handling, and branch operations.
 
-Never do these unless explicitly requested by user:
-
-- Modify source control configuration
-- Force push to main/master branches - Destroys history
-- Skip pre-commit hooks - They protect code quality
-- Amend commits that are already pushed - Rewrites public history
-- Hard reset without user confirmation - Loses work
-- Clean/delete untracked files without user confirmation
-
-### Amend Safety Protocol
-
-Before amending: Check if pushed and if you're author. Only amend if both false and true.
-
-When: Hook modified files, user requests, typo fix before push
-Never: Someone else's commit, already pushed commits
-
-### Pre-Commit Hook Protocol
-
-If hooks modify files: Review changes, re-stage, may amend if not pushed.
-If hooks fail: Read error, fix issue, never use `--no-verify`, ask user if unsure.
-
-### Branch Operations
-
-Branch naming conventions:
-
-```
-# Feature branches
-feature/add-search
-feat/fuzzy-matching
-
-# Bug fix branches
-fix/cache-race-condition
-bugfix/auth-token-refresh
-
-# Personal branches (if applicable)
-username/experiment-name
-```
-
-Never:
-- Work directly on `main`/`master` unless specifically instructed
-- Delete branches that are pushed without confirming
-- Force push to shared branches
+Critical rules:
+- Never force push to main/master
+- Never amend pushed commits
+- Never skip pre-commit hooks
+- Always check if commit is pushed before amending
 
 ## LLM Anti-Pattern Detection
 
@@ -321,39 +230,6 @@ If you catch yourself saying:
 
 When detected: Stop, state which requirement you skipped, complete it before proceeding.
 
-## Commit Message Template
-
-```
-[type(scope): ] <imperative description of why>
-
-[Optional: Context if not obvious]
-```
-
-Include `type(scope):` prefix only if project uses conventional commits.
-
 ## Examples
 
-Good (atomic, clear why):
-```
-feat(auth): add token refresh mechanism
-
-Prevents users from being logged out during active sessions.
-Refresh happens 5 minutes before expiration.
-
----
-
-test(auth): add token refresh integration tests
-
----
-
-fix(auth): handle edge case when refresh fails
-
-Previously crashed on network timeout. Now retries with exponential backoff.
-```
-
-Bad (non-atomic, vague):
-```
-Update auth stuff
-
-Added refresh tokens, fixed some bugs, updated tests, refactored validation
-```
+See @commit-messages.md for good and bad commit message examples.

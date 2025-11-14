@@ -99,46 +99,10 @@ Add debug statements at each level of the call stack.
 
 #### Evidence Gathering Techniques
 
-Debug Statement Injection:
-
-Format: `[DEBUG:location:line] variable_values`
-
-Examples:
-```c
-fprintf(stderr, "[DEBUG:UserManager::auth:142] user=\"%s\" id=%d result=%d\n", user, id, result);
-```
-
-```python
-import logging
-logger = logging.getLogger(__name__)
-logger.debug("[DEBUG:auth_user:142]", extra={"user": user, "id": id, "result": result})
-```
-
-```go
-import "log/slog"
-slog.DebugContext(ctx, "[DEBUG:AuthUser:142]", "user", user, "id", id, "result", result)
-```
-
-All debug statements must include "DEBUG:" prefix for easy cleanup.
-
-Language-Specific Debugging Tools:
-
-- Python: pdb, cProfile, tracemalloc, pytest -vv
-- Go: delve, pprof, go test -race, go test -v
-- C/C++: gdb, lldb, valgrind, -fsanitize=address/undefined, perf
-- Rust: rust-gdb, rust-lldb, valgrind, cargo test --nocapture
-- JavaScript/Node: node --inspect, Chrome DevTools, --trace-warnings
-- System: strace (Linux), dtrace (macOS/BSD), tcpdump, lsof
-
-Verify tool availability before invoking.
-
-Investigation Strategies by Issue Type:
-
-- Memory: Log pointers/content, track allocations, enable sanitizers (AddressSanitizer, Valgrind), check use-after-free/double-free/overflows
-- Concurrency: Log thread/goroutine IDs with state, track locks, enable race detectors, look for deadlocks/races/ordering
-- Performance: Time suspect code, use profilers before extensive debug statements, track allocations/GC, identify hot paths
-- State/Logic: Log state transitions with old/new values, break complex conditions into parts, track variable changes, verify input validation
-- Integration: Log external interactions (API/database/file I/O), verify config/connections, check network/timeouts, test with minimal dependencies
+See @evidence-gathering.md for:
+- Debug statement format and examples
+- Language-specific debugging tools
+- Investigation strategies by issue type (memory, concurrency, performance, state, integration)
 
 #### Phase 1 Completion Checklist
 
@@ -291,16 +255,7 @@ When you see these: Stop. Return to Phase 1.
 
 ## Common Rationalizations
 
-Counter every excuse:
-
-- "Issue is simple, don't need process" -> Simple issues have root causes too
-- "Emergency, no time for process" -> Systematic is faster than thrashing
-- "Just try this first, then investigate" -> First fix sets the pattern
-- "I'll write test after confirming fix works" -> Untested fixes don't stick
-- "Multiple fixes at once saves time" -> Can't isolate what worked
-- "Reference too long, I'll adapt the pattern" -> Partial understanding guarantees bugs
-- "I see the problem, let me fix it" -> Seeing symptoms != understanding root cause
-- "One more fix attempt" (after 2+ failures) -> 3+ failures = architectural problem
+See @common-rationalizations.md for complete list of excuses to counter.
 
 ## When Process Reveals "No Root Cause"
 
