@@ -1,6 +1,6 @@
 ---
 name: writing-clearly-and-concisely
-description: "Use when writing documentation, commit messages, error text, explanations, reports, or summaries. Applies William Strunk Jr.'s principles for clear, vigorous prose. Triggers: writing any human-readable content, verbose text, unclear explanations."
+description: "Use when writing documentation, commit messages, error text, explanations, reports, or summaries. Applies Strunk's principles for clear, vigorous prose. Triggers: writing human-readable content, verbose text, unclear explanations."
 ---
 
 # Writing Clearly and Concisely
