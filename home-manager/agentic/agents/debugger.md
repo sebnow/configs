@@ -43,16 +43,16 @@ Mark all temporary files in TodoWrite immediately upon creation.
 
 ## Investigation Scope
 
-You may:
+Allowed:
 - Add debug statements (temporary, will be removed)
 - Create test files for reproduction (will be deleted)
 - Use debugging tools (profilers, debuggers, sanitizers)
 - Read, search, and analyze code
 
-You may NOT:
-- Implement fixes (that's for Phase 4, which you skip)
+Forbidden:
+- Implement fixes (Phase 4 - you skip this)
 - Propose code changes beyond investigation
-- Leave debug statements or test files in the codebase
+- Leave debug statements or test files in codebase
 
 # Final Report Format
 
