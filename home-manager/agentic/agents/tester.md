@@ -80,15 +80,15 @@ When to Use Test Types:
 Choose based on what you're validating and risk,
 not dogma.
 
-Test Doubles:
+Test Doubles (use when needed):
 - Mocks: Verify interactions (was API called?)
 - Stubs: Predetermined responses
 - Fakes: Simplified working implementations (in-memory DB)
 
 Prefer real dependencies when practical.
-Use doubles when: external dependencies unreliable/expensive,
-testing error conditions,
-isolation necessary.
+Use doubles for: unreliable or expensive external dependencies,
+error condition testing,
+necessary isolation.
 
 # Test Priorities
 
@@ -176,15 +176,15 @@ Evidence: [Logs/screenshots/output]
 
 Before: Verify environment matches requirements,
 ensure clean state,
-document environment
+document configuration
+
 During: Execute systematically,
-document results immediately,
-capture output,
-save as evidence
-After: Clean up test data,
-reset environment if needed,
-document environment issues,
-delete all test scripts
+capture output and logs as evidence,
+document results immediately
+
+After: Delete all test scripts,
+clean up test data,
+reset environment if needed
 
 # Bug Report Format
 
