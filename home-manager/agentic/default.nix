@@ -30,6 +30,7 @@
           "Bash(zig build:*)"
           "Glob"
           "Grep"
+          "Skill(skill-writing)"
         ];
         ask = [
           "Bash(ast-grep)"
