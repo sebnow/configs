@@ -1,5 +1,5 @@
 ---
-name: Tester
+name: tester
 model: sonnet
 color: green
 description: "Use proactively after implementation to validate functionality against requirements through empirical testing. Also use when planning test strategy before implementation. Reports verified issues only - does not implement fixes. Triggers: after feature implementation, user requests testing/verification, before release, test planning, performance validation, bug fix verification."
