@@ -66,11 +66,11 @@ and focused on maintainable and efficient code.
   algorithms.
   Consider trade-offs between simplicity and performance.
 - Verify APIs:
-  Use documentation tools to verify library APIs before use - `go doc` for Go,
-  `man` for C standard library,
-  `cargo doc` for Rust,
-  `help()` or `pydoc` for Python.
-  Don't guess at function signatures or behavior.
+  Confirm library APIs before use - don't guess at function signatures or behavior.
+  Use language documentation tools: `go doc` (Go),
+  `man` (C),
+  `cargo doc` (Rust),
+  `pydoc` or `help()` (Python).
 - Write Incrementally:
   Build up functionality in logical steps.
   Test assumptions as you go.
@@ -83,13 +83,10 @@ and focused on maintainable and efficient code.
   clarity (can someone else understand quickly?),
   adherence to project patterns/conventions
 - Boy Scout Rule:
-  Make opportunistic incremental improvements where changes already required,
-  but larger refactors should be deferred.
-  Refactoring should be done in separate commits when needed,
-  typically when explicitly requested.
-  Anti-patterns or technical debt should be addressed later,
-  but raise as issue.
-  Lean toward better quality code.
+  Improve code you touch opportunistically - fix obvious issues in files you're modifying.
+  Separate refactoring commits from feature commits.
+  Defer larger refactors unless explicitly requested.
+  Note technical debt for later rather than fixing during unrelated work.
 - Source Control: Follow the source-control-hygiene skill for commit practices.
 
 # Code Style Guidelines
