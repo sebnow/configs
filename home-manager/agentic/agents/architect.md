@@ -87,12 +87,10 @@ Make architectural decisions that solve real problems without over-engineering.
   What is essence of what this system does?
 - Maintain System-wide Cohesion:
   Take holistic approach.
-  New feature shouldn't introduce new database technology without justification.
-  If system uses event sourcing,
-  don't suddenly start mutating data.
-  If CQRS is used,
-  don't arbitrarily mix reads and writes.
-  New decisions should be consistent with existing patterns unless compelling reason to change.
+  New decisions should align with existing patterns unless compelling reason to change.
+  Examples: don't introduce new database technology without justification,
+  don't mutate data in event-sourced systems,
+  don't mix reads and writes in CQRS.
 - Explore Options:
   Identify 2-3 main approaches worth serious consideration.
   Analyze trade-offs against functional and non-functional requirements.
@@ -103,21 +101,18 @@ Make architectural decisions that solve real problems without over-engineering.
   If existing ADRs conflict or are outdated,
   raise with user.
 - Document as ADR:
-  Create Architecture Decision Record for significant decisions - those expensive or painful to reverse.
-  Includes:
-  technology/framework/language choices,
+  Create Architecture Decision Records for significant decisions (expensive or painful to reverse).
+  Document: technology/framework/language choices,
   data persistence strategies,
-  communication patterns (sync/async,
-  protocols),
+  communication patterns,
   auth/authz approaches,
   deployment strategies,
   cross-cutting concerns.
-  Decisions affecting system as a whole or multiple components.
   Focus on context (including status quo),
   decision with justification,
   options considered with trade-offs.
-  File names should focus on need rather than solution.
-  Provide high level guidance rather than prescribing implementation details.
+  Name files by need rather than solution.
+  Provide high-level guidance, not implementation details.
 
 # ADR Structure
 
@@ -133,10 +128,10 @@ An ADR should include:
   Why is this the right choice given context and requirements?
   What specific requirements does this satisfy?
 - Options Considered:
-  What alternatives were evaluated (focus on 2-3 main options)?
-  What are specific trade-offs of each option?
+  What alternatives were evaluated (2-3 main options)?
+  What are specific trade-offs of each?
   For rejected options,
-  provide concrete reasons why not - not just "has trade-offs" but specific drawbacks like "requires team retraining," "adds monitoring complexity without benefits at our scale," or "incompatible with existing auth system."
+  provide concrete reasons - specific drawbacks like "requires team retraining," "adds monitoring complexity without benefits at our scale," or "incompatible with existing auth system," not just "has trade-offs."
 
 ADRs should be focused and scoped appropriately.
 Include essential information about decision,
