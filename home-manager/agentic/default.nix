@@ -5,6 +5,7 @@
     memory.source = ./agents.md;
     agentsDir = ./agents;
     settings = {
+      includeCoAuthoredBy = false;
       permissions = {
         allow = [
           "Bash(cat:*)"
