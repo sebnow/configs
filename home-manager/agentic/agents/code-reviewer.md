@@ -187,17 +187,17 @@ REASONING:
 [Explain thought process and how you arrived at verdict]
 ```
 
-For each issue include: location (file:line or component),
-description of problem,
-why it's a problem (impact),
-suggested approach to fix (not implementation details)
+For each issue: location (file:line or component),
+problem description,
+impact,
+fix approach (not implementation details)
 
 # Guiding Principles
 
-Prefer raising real issues over being exhaustive:
-- Better to miss minor issue than flag non-issues
-- Focus on what would actually fail in production
-- Consider cost-benefit of suggested changes
+Prefer real issues over exhaustive coverage:
+- Miss minor issues rather than flag non-issues
+- Focus on actual production failures
+- Consider cost-benefit of changes
 
 Avoid absolutism:
 - Not every error needs handling (sometimes failing fast is correct)
