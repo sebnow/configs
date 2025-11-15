@@ -2,6 +2,46 @@
 
 LLM-specific guidance for using jujutsu when available.
 
+## Commit Workflow (Critical)
+
+**Always use `jj commit -m` to create commits.**
+
+Standard workflow:
+```bash
+# 1. Make changes and track new files
+jj file track <new-files>
+
+# 2. Verify changes
+jj status
+
+# 3. Commit and advance to new empty working commit
+jj commit -m "$(cat <<'EOF'
+Commit message
+EOF
+)"
+
+# 4. Verify @ is empty
+jj status  # Should show "(empty)"
+```
+
+**Critical:** After every commit, @ must be empty.
+Never end on a non-empty working commit - user's changes will auto-commit dangerously.
+
+## Amending Commit Messages
+
+**Use `jj describe` only to amend existing commit messages.**
+
+```bash
+# Fix typo in current commit message
+jj describe -m "Corrected message"
+
+# Fix message in parent commit
+jj describe -r @- -m "Corrected message"
+```
+
+Never use `jj describe` + `jj new` to create commits.
+That pattern is wrong - always use `jj commit -m`.
+
 ## Detecting Jujutsu
 
 Before defaulting to git, check if jujutsu is in use:
@@ -41,8 +81,8 @@ Before committing, check status:
 jj status  # Shows untracked files with "?"
 ```
 
-Files marked with "?" are NOT included in commits.
-You MUST track them first.
+Files marked with "?" are not included in commits.
+You must track them first.
 
 **Pre-commit protocol:**
 1. Check `jj status`
@@ -56,37 +96,18 @@ Never commit without checking status first.
 
 Always use non-interactive flags.
 
-**Creating new changes:**
+**Creating new commits:**
 ```bash
-# Good: Creates message AND advances to new change
+# Always use jj commit -m
 jj commit -m "$(cat <<'EOF'
 Subject line
 
 Body text here.
 EOF
 )"
-
-# Wrong: Only sets message, doesn't advance
-jj describe -m "message"
 ```
 
-**Modifying existing change description:**
-```bash
-# Good: Update description of current change
-jj describe -m "Updated message"
-
-# Also good: Interactive is fine for editing existing
-jj describe
-```
-
-Critical distinction: `jj commit` creates message AND advances to new working change.
-`jj describe` only sets/updates message on current change.
-
-**Creating changes:**
-```bash
-jj new main             # Non-interactive, safe
-jj new -m "WIP feature" # With message immediately
-```
+Never use `jj new` alone - it's only for special cases like creating empty commits on different branches.
 
 ## Commit Message Best Practices
 
@@ -144,35 +165,38 @@ Jujutsu won't guess which bookmark to push (unlike git's current branch).
 
 ## Common Anti-Patterns
 
-**Clobbering commits by not advancing:**
+**Using `jj describe` + `jj new` to create commits (wrong pattern):**
 ```bash
-# Bad: Continues modifying same change, clobbers previous work
-jj describe -m "Fix bug"
-# Make more changes...
-jj describe -m "Fix another bug"  # CLOBBERED previous commit!
-
-# Good: Each change gets its own commit
-jj commit -m "Fix bug"
-# Make more changes (auto-amends new working change)
-jj commit -m "Fix another bug"    # Separate commit
-```
-
-Critical: When creating NEW changes, use `jj commit` to advance.
-Working directory is always @ - if you don't advance, you clobber previous work.
-
-**Using describe when you need to advance:**
-```bash
-# Bad: Only sets message, stays on same change
+# Bad: Wrong pattern for creating commits
 jj describe -m "message"
-# Next changes still modify same commit!
+jj new
 
-# Good: Sets message AND advances to new working change
+# Good: Always use jj commit
 jj commit -m "message"
-# Next changes go into new commit
 ```
 
-`jj describe` is fine for modifying existing change descriptions.
-Use `jj commit` when you need to create a new change and move forward.
+**Ending on non-empty working commit (dangerous):**
+```bash
+# Bad: @ is non-empty after this
+jj describe -m "message"
+# User's next file changes auto-commit without warning!
+
+# Good: @ is empty after jj commit
+jj commit -m "message"
+# User's changes are safe in new working commit
+```
+
+**Using `jj new` when unnecessary:**
+```bash
+# Bad: Creates empty commits
+jj new  # Almost never needed
+
+# Good: Just use jj commit
+jj commit -m "message"
+```
+
+`jj new` is only for special cases (creating empty commits on branches).
+Never use it in normal commit workflows.
 
 **Defaulting to git when jj available:**
 ```bash
@@ -214,23 +238,13 @@ jj git push --bookmark feature-name   # Push to git remotes
 Jujutsu handles git remotes transparently.
 No special setup needed for GitHub/GitLab workflows.
 
-## Advancing vs Modifying
+## Creating vs Amending
 
-Understand when to advance to new change vs modify existing:
+**Creating commits:** Always use `jj commit -m`
+**Amending messages:** Only use `jj describe -m`
 
-**Advance with `jj commit`:**
-- Completed a logical change (feature, bug fix, refactor)
-- Need to start new work
-- Creating atomic commits
-- Following multi-commit workflow
-
-**Modify with `jj describe`:**
-- Fixing typo in commit message
-- Updating description of current work
-- Amending message before advancing
-
-When in doubt, use `jj commit` to advance.
-Prevents clobbering previous commits.
+Never mix these patterns.
+Never use `jj describe` + `jj new` to create commits.
 
 ## When Commands Require User Input
 
