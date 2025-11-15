@@ -67,6 +67,19 @@ Use progressive disclosure:
 keep core guidance in SKILL.md,
 link supporting details in separate files.
 
+### Cross-Referencing
+
+Distinguish between internal and external references:
+
+Internal files (within same skill directory):
+Use @file.md syntax for progressive disclosure.
+Example: `See @examples.md for detailed patterns`
+
+Other skills:
+Use "skill-name skill" or "Follow skill-name" syntax.
+Never use @ syntax for other skills.
+Example: `Follow source-control-hygiene skill for commits`
+
 Degrees of freedom must match task fragility:
 
 - High-fragility tasks require low-freedom guidance (checklists, imperatives)
