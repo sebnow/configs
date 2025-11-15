@@ -74,7 +74,10 @@ Focus on:
 - Strengthening error handling
 - Aligning with domain concepts
 
-Required: Run tests after each refactoring step to ensure they stay green.
+Required:
+- Run tests after each refactoring step to ensure they stay green
+- Run formatter to ensure consistent code style
+- Address any formatting issues before proceeding
 
 ## Phase 5: Code Review - Verify Quality
 
@@ -104,19 +107,36 @@ Required: State specific findings or "No critical issues found" before proceedin
 
 ## Phase 6: Verify - Run Full Test Suite
 
-State: "Running full test suite with race detection"
+State: "Running full test suite with verification checks"
 
-You must verify all tests pass before claiming completion.
+You must verify all checks pass before claiming completion.
 
-Required verification:
+Required verification (run all):
+
+Tests:
 - Run full test suite (not just new tests)
 - Run with race detector (e.g., `go test -race`)
 - Verify tests are deterministic (run multiple times if needed)
 - Confirm no flaky tests
 
+Static Analysis:
+- Run language-specific linter (e.g., `golangci-lint`, `eslint`, `clippy`, `pylint`)
+- Run static type checker if applicable (e.g., `mypy`, `pyright`)
+- Address all errors (warnings acceptable if project allows)
+
+Formatting:
+- Run formatter in check mode (e.g., `gofmt -d`, `prettier --check`, `black --check`)
+- Verify no formatting differences exist
+- If differences found, format code and re-run tests
+
+Build:
+- Run build command if applicable (e.g., `go build`, `cargo build`, `npm run build`)
+- Verify clean build with exit code 0
+- Linter passing does not prove compilation succeeds
+
 Follow verification-before-completion skill:
 Run actual verification commands and confirm output.
-Never claim tests pass without evidence.
+Never claim checks pass without evidence.
 
 ## Quality Gates
 
@@ -124,14 +144,17 @@ You cannot claim work is complete until all gates pass:
 
 1. Tests written before implementation (Red phase completed)
 2. All tests pass consistently
-3. Race detector passes
-4. Code review completed with no critical issues
-5. Full test suite runs successfully
-6. No security vulnerabilities introduced
-7. Error handling verified for all paths
-8. Code follows project conventions
-9. Domain terminology used appropriately
-10. Resources properly managed (cleanup on error paths)
+3. Race detector passes (if applicable)
+4. Linter reports no errors
+5. Static analysis passes (if applicable)
+6. Code is formatted correctly
+7. Build succeeds (if applicable)
+8. Code review completed with no critical issues
+9. No security vulnerabilities introduced
+10. Error handling verified for all paths
+11. Code follows project conventions
+12. Domain terminology used appropriately
+13. Resources properly managed (cleanup on error paths)
 
 State: "All quality gates passed" only after verification.
 
