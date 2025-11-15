@@ -242,6 +242,7 @@ If you catch yourself saying:
 - "git commit" when .jj exists -> Use jj commit
 - "jj describe" when creating new change -> Use jj commit -m to advance
 - "jj squash" without -m or -u -> Add -m "message" or -u flag
+- "jj squash -m" to add forgotten files -> Use -u to preserve parent message
 
 When detected: Stop, state which requirement you skipped, complete it before proceeding.
 

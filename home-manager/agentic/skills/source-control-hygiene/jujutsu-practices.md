@@ -226,6 +226,21 @@ jj squash --into <dest> -u          # Squash @ into dest, keep message
 Always use `-m` (new message) or `-u` (keep existing message).
 Without these flags, commands open interactive editor.
 
+**Critical: Choosing between -m and -u:**
+
+Use `-u` when:
+- Parent commit has correct message
+- Adding forgotten files to existing commit
+- Fixing minor omissions without changing intent
+
+Use `-m` when:
+- Parent message is wrong and needs replacement
+- Combining changes requires new unified message
+
+Common mistake: Using `jj squash -m "add missing file"` when parent has good message.
+This replaces the parent's message instead of preserving it.
+Always check parent message first: `jj log -r @-`
+
 ## Integration with Git Workflows
 
 **Fetch and push:**
