@@ -127,11 +127,12 @@
   programs.git = {
     enable = true;
     ignores = [
-      ".claude/"
       "*.swp"
-      ".envrc"
-      ".tool-versions"
+      ".claude/"
       ".direnv/"
+      ".envrc"
+      ".private/"
+      ".tool-versions"
     ];
     includes = [
       { path = "config.local"; }
