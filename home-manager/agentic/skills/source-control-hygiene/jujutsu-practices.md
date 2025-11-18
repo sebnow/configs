@@ -2,6 +2,33 @@
 
 LLM-specific guidance for using jujutsu when available.
 
+## Understanding Working Copy (Critical)
+
+**The working copy is part of the current commit (@).**
+
+In jujutsu, uncommitted changes are not "staged" - they ARE the current commit until you advance:
+
+```bash
+# Make edits to files
+jj status
+# Shows: Working copy changes:
+#        M file.go
+# These changes are PART of commit @ right now
+
+jj commit -m "message"
+# Now @ is empty and those changes are in @-
+```
+
+**Critical implications:**
+
+1. Any files you edit are immediately part of @ (the current commit)
+2. If @ already has a description, your edits modify that commit
+3. If @ is empty, your edits will become a new commit when you run `jj commit`
+4. Moving away from @ with `jj edit` saves your working copy changes into @
+
+**Never assume working copy changes are separate from commits.**
+They are the same thing until you advance with `jj commit`.
+
 ## Commit Workflow (Critical)
 
 **Always use `jj commit -m` to create commits.**
@@ -26,6 +53,31 @@ jj status  # Should show "(empty)"
 
 **Critical:** After every commit, @ must be empty.
 Never end on a non-empty working commit - user's changes will auto-commit dangerously.
+
+### Empty Commits Are Normal
+
+**Do not panic when you see "(empty)" in jj status or jj log.**
+
+Empty commits are the standard state in jujutsu:
+
+```bash
+jj status
+# Working copy  (@) : abcd1234 (empty) (no description set)
+# This is correct and expected
+```
+
+**When @ is empty:**
+- You are ready to make new changes
+- Next edits will become part of @ (see Understanding Working Copy above)
+- When you `jj commit`, those edits become @- and @ advances to new empty commit
+
+**When @ is NOT empty:**
+- You have uncommitted changes that are part of @
+- You should either `jj commit` to finalize them or continue editing
+- Never leave session with non-empty @ unless intentional
+
+Empty commits are jujutsu's way of saying "ready for new work."
+They are not errors or problems.
 
 ## Amending Commit Messages
 
@@ -145,6 +197,51 @@ Unlike git reflog, operation log is comprehensive and easier to use.
 2. Use `jj op restore <id>` for earlier states
 3. No need for complex git reset/reflog operations
 
+### When NOT to Use op restore (Anti-Pattern)
+
+**Do not panic-restore when you make mistakes.**
+
+`jj op restore` is for recovering from catastrophic errors,
+not for fixing normal workflow mistakes.
+
+**Use `jj undo` instead:**
+```bash
+# Made a mistake
+jj undo  # Reverts last operation
+
+# Made multiple mistakes
+jj undo  # Undo one step at a time
+jj undo  # Each undo goes back one operation
+```
+
+**Only use `jj op restore` when:**
+- Multiple operations need reversal and `jj undo` is too slow
+- You identified a specific good state in `jj op log`
+- You understand what state you're restoring to
+
+**Anti-pattern - panic restoring:**
+```bash
+# Bad: Chain of panic restores
+jj op restore <id1>  # "Maybe this fixes it"
+jj op restore <id2>  # "Wait, that broke more"
+jj op restore <id3>  # "Going back further"
+# Now you're completely lost
+```
+
+**Better pattern - fix forward:**
+```bash
+# Mistake: Squashed wrong commits
+# Don't panic restore
+# Instead: Check what happened
+jj log
+# Fix by editing commits or creating new ones
+# Jujutsu makes most operations reversible without op restore
+```
+
+**Rule:** If you find yourself using `jj op restore` more than once in a session,
+stop and ask the user how to proceed.
+You are likely confused and making it worse.
+
 ## Bookmark Management
 
 **Creating bookmarks:**
@@ -207,6 +304,40 @@ git commit -m "message"
 jj commit -m "message"
 ```
 
+**Squashing into non-HEAD commits without checking:**
+```bash
+# Bad: Blindly squash into past commit
+jj new vlmnlpxn
+jj file track test.go
+jj squash  # Rebases all descendants!
+
+# Good: Check for descendants first
+jj log -r 'descendants(vlmnlpxn) & ~vlmnlpxn'
+# If descendants exist, use fixup commit instead
+jj commit -m "fixup: add test file"
+```
+
+**Panic-restoring operations:**
+```bash
+# Bad: Restoring multiple times
+jj op restore <id1>
+jj op restore <id2>
+jj op restore <id3>
+
+# Good: Use undo or fix forward
+jj undo  # One operation at a time
+```
+
+**Confusing working copy with staging:**
+```bash
+# Bad mental model: "These changes are staged"
+# Working copy changes are NOT staged
+# They ARE the current commit (@)
+
+# Correct understanding:
+# Any edits to files are part of @ until you jj commit
+```
+
 **Interactive operations:**
 ```bash
 # Bad: Waits for user input
@@ -240,6 +371,54 @@ Use `-m` when:
 Common mistake: Using `jj squash -m "add missing file"` when parent has good message.
 This replaces the parent's message instead of preserving it.
 Always check parent message first: `jj log -r @-`
+
+### Squashing Into Non-HEAD Commits (Dangerous)
+
+**Squashing into commits that have descendants will rebase those descendants.**
+
+Before squashing into any commit that is not @-, check for descendants:
+
+```bash
+# Check if commit has descendants
+jj log -r 'descendants(abcd1234) & ~abcd1234'
+# If this shows commits, they will all be rebased
+```
+
+**Safe squash pattern:**
+```bash
+# Only squash @ into @- (immediate parent)
+jj squash -u  # Safe - no descendants to rebase
+```
+
+**Dangerous squash pattern:**
+```bash
+# Currently at commit C
+# History: A <- B <- C (@)
+jj new A  # Jump to commit A
+# Add forgotten file
+jj squash  # Rebases B and C!
+```
+
+**If you must add files to past commits:**
+
+Option 1: Accept that descendants will be rebased
+```bash
+jj new <past-commit>
+# Make changes
+jj squash -u
+# Descendants are now rebased - verify they still look correct
+jj log
+```
+
+Option 2: Create fixup commit instead (safer)
+```bash
+# Stay at current commit
+# Create new commit with the fix
+jj commit -m "fixup: add missing file to commit X"
+# Squash later when safe or leave separate
+```
+
+Never squash into non-HEAD commits unless you understand the rebase implications.
 
 ## Integration with Git Workflows
 
