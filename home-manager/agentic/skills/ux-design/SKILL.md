@@ -88,25 +88,9 @@ Use min-width queries to enhance.
 
 #### Design Tokens (Required)
 
-Define systematic values:
+Follow ui-design skill for systematic design token implementation.
 
-```css
-/* Spacing (8px base) */
---space-1: 0.5rem;
---space-2: 1rem;
---space-3: 1.5rem;
-
-/* Type scale (1.25 ratio) */
---text-xs: 0.64rem;
---text-sm: 0.8rem;
---text-base: 1rem;
---text-lg: 1.25rem;
-
-/* Semantic colors */
---color-primary: /* brand color */;
---color-text: /* high contrast */;
---color-background: /* base */;
-```
+Required token categories: color, spacing, typography, border radius, shadows.
 
 ### Phase 4: Validation
 
