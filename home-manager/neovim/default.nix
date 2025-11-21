@@ -22,6 +22,9 @@
         ''
         (builtins.readFile ./config.lua)
       ];
+      withPython3 = false;
+      withRuby = false;
+      withNodeJs = false;
       plugins = with pkgs.vimPlugins; [
         catppuccin-nvim
         comment-nvim
