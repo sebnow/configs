@@ -17,10 +17,26 @@ Never skip phases or quality gates.
 
 Before writing any code:
 
-1. Clarify ambiguities - ask questions rather than assume
-2. Review project documentation (README, CONTRIBUTING, architecture docs)
-3. Identify what needs testing based on risk and requirements
-4. Use TodoWrite to track all implementation and testing tasks
+1. Verify clean starting state:
+   - Run full test suite to establish baseline
+   - All existing tests must pass before starting work
+   - If any tests fail, you must either fix them first or confirm with user they should be ignored
+   - Never rationalize "pre-existing failures are unrelated" - they block starting new work
+2. Clarify ambiguities - ask questions rather than assume
+3. Review project documentation (README, CONTRIBUTING, architecture docs)
+4. Identify what needs testing based on risk and requirements
+5. Use TodoWrite to track all implementation and testing tasks
+
+You cannot proceed to Phase 2 until baseline test suite is clean.
+
+Forbidden rationalizations:
+- "The test failure is pre-existing and unrelated to my changes"
+- "I'll fix the failing tests later"
+- "The failing tests are someone else's problem"
+- "I can work around the failing tests"
+
+A failing test suite means the project is in an unknown state.
+You must establish a clean baseline before adding new code.
 
 ## Phase 2: Red - Write Failing Tests
 

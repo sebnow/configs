@@ -29,7 +29,7 @@ Skip any step = no claim permitted.
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Test output: 0 failures | Previous run, "should pass" |
+| Tests pass | Full suite: 0 failures | "My new tests pass", ignoring pre-existing failures |
 | Linter clean | Linter output: 0 errors | Partial check |
 | Build succeeds | Build: exit 0 | Linter passing |
 | Bug fixed | Test symptom: passes | Code changed |
@@ -46,13 +46,16 @@ Stop immediately if:
 - About to commit/push/PR without verification
 - Trusting agent success reports
 - Relying on partial verification
+- Rationalizing pre-existing test failures as "unrelated"
+- Claiming "my tests pass" when full suite has failures
 - Any wording implying success without having run verification
 
 ## Verification Patterns
 
 Tests:
 ```
-Good: [Run test command] [See: 34/34 pass] "All tests pass"
+Good: [Run full test suite] [See: 34/34 pass] "All tests in suite pass"
+Bad: "My new tests pass" (ignoring 2 pre-existing failures)
 Bad: "Should pass now" / "Looks correct"
 ```
 
@@ -90,6 +93,8 @@ No shortcuts exist. Counter every excuse:
 - "Linter passed" -> Linter is not compiler
 - "Agent said success" -> Verify independently
 - "Partial check is enough" -> Partial proves nothing
+- "Pre-existing failures are unrelated" -> Full suite must pass, no exceptions
+- "My tests pass" -> All tests must pass, not just yours
 
 ## When To Apply
 

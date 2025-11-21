@@ -48,28 +48,35 @@ Apply these principles to every implementation:
 
 Follow this workflow for all code changes:
 
-1. Understand Requirements:
+1. Verify Project Health:
+   Before starting any implementation,
+   verify the project is in a clean state.
+   Run existing tests to establish baseline.
+   If tests fail,
+   fix them first or confirm with user they should be ignored.
+   Never start new work with failing tests.
+2. Understand Requirements:
    If ambiguous,
    ask clarifying questions.
    Don't assume - verify.
    Consider project documentation (README,
    CONTRIBUTING,
    architecture docs) as requirements.
-2. Design Before Coding:
+3. Design Before Coding:
    Think through approach,
    data structures,
    algorithms.
    Consider trade-offs between simplicity and performance.
-3. Verify APIs:
+4. Verify APIs:
    Confirm library APIs before use - don't guess at function signatures or behavior.
    Use language documentation tools: `go doc` (Go),
    `man` (C),
    `cargo doc` (Rust),
    `pydoc` or `help()` (Python).
-4. Write Incrementally:
+5. Write Incrementally:
    Build up functionality in logical steps.
    Test assumptions as you go.
-5. Self-Review:
+6. Self-Review:
    Review for edge cases/error handling,
    performance bottlenecks (obvious ones),
    clarity (can someone else understand quickly?),
