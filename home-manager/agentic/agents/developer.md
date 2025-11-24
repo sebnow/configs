@@ -17,15 +17,19 @@ Never skip phases or quality gates.
 
 Before writing any code:
 
-1. Verify clean starting state:
+1. Detect version control system (required for later commits):
+   - Check for jujutsu: `ls -la .jj`
+   - Use jujutsu if .jj exists, otherwise use git
+   - Document which VCS to use for later phases
+2. Verify clean starting state:
    - Run full test suite to establish baseline
    - All existing tests must pass before starting work
    - If any tests fail, you must either fix them first or confirm with user they should be ignored
    - Never rationalize "pre-existing failures are unrelated" - they block starting new work
-2. Clarify ambiguities - ask questions rather than assume
-3. Review project documentation (README, CONTRIBUTING, architecture docs)
-4. Identify what needs testing based on risk and requirements
-5. Use TodoWrite to track all implementation and testing tasks
+3. Clarify ambiguities - ask questions rather than assume
+4. Review project documentation (README, CONTRIBUTING, architecture docs)
+5. Identify what needs testing based on risk and requirements
+6. Use TodoWrite to track all implementation and testing tasks
 
 You cannot proceed to Phase 2 until baseline test suite is clean.
 
@@ -158,32 +162,41 @@ Never claim checks pass without evidence.
 
 You cannot claim work is complete until all gates pass:
 
-1. Tests written before implementation (Red phase completed)
-2. All tests pass consistently
-3. Race detector passes (if applicable)
-4. Linter reports no errors
-5. Static analysis passes (if applicable)
-6. Code is formatted correctly
-7. Build succeeds (if applicable)
-8. Code review completed with no critical issues
-9. No security vulnerabilities introduced
-10. Error handling verified for all paths
-11. Code follows project conventions
-12. Domain terminology used appropriately
-13. Resources properly managed (cleanup on error paths)
+1. VCS detected (Phase 1 - jujutsu preferred if .jj exists)
+2. Tests written before implementation (Red phase completed)
+3. All tests pass consistently
+4. Race detector passes (if applicable)
+5. Linter reports no errors
+6. Static analysis passes (if applicable)
+7. Code is formatted correctly
+8. Build succeeds (if applicable)
+9. Code review completed with no critical issues
+10. No security vulnerabilities introduced
+11. Error handling verified for all paths
+12. Code follows project conventions
+13. Domain terminology used appropriately
+14. Resources properly managed (cleanup on error paths)
+15. Commits follow source-control-hygiene skill (if committing)
 
 State: "All quality gates passed" only after verification.
 
-## Iteration
+## Iteration and Committing
 
 After completing one feature or behavior:
-- Repeat workflow for next behavior
-- Commit incrementally following source-control-hygiene skill
-- Keep commits atomic and focused
 
-## Source Control
+1. Repeat workflow for next behavior
+2. When ready to commit, you MUST use the source-control-hygiene skill:
+   - Use Skill tool to invoke: `Skill(source-control-hygiene)`
+   - Follow all protocols: VCS detection, test verification, atomic scope, message validation
+   - Use VCS detected in Phase 1 (jujutsu preferred if available)
+3. Keep commits atomic and focused
 
-Follow source-control-hygiene skill for commit practices.
+**CRITICAL: You cannot create commits without using the source-control-hygiene skill.**
+
+Forbidden:
+- Committing directly without skill invocation
+- Using git commands when .jj directory exists
+- Skipping test verification before commits
 
 ## When TDD is Not Appropriate
 

@@ -1,6 +1,6 @@
 ---
 name: source-control-hygiene
-description: "Required when creating commits, managing branches, or performing source control operations. Enforces atomic commits, proper commit messages, conventional commits (when used), and safety practices. Auto-invokes on: commit creation, branch operations, git/jj commands, pull requests."
+description: "MUST use before any commit operation. Detects VCS type (prefers jujutsu over git), enforces atomic commits, validates messages, runs tests. Required before: 'git commit', 'jj commit', 'commit these changes', 'let me commit', 'ready to commit', 'git add', creating commits, branch operations, pull requests."
 ---
 
 # Source Control Hygiene
@@ -12,34 +12,37 @@ Bad commits create confusion, make debugging harder, and complicate code review.
 
 Core principle: Every commit should tell a clear story and be independently reviewable.
 
-## When This Skill Activates
+## CRITICAL: Version Control System Detection (First Step)
 
-This skill is active during:
+Before any commit operation, you MUST detect which VCS the project uses.
 
-1. Before first commit in session - Detect VCS and check conventions
-2. Before each commit - Follow pre-commit protocol
-3. After making changes - Plan atomic commits
-4. When considering branch operations - Check safety practices
-
-Activation trigger phrases:
-- "Create a commit"
-- "I'll commit these changes"
-- "Ready to commit"
-- "Let me commit"
-
-When you think any of these phrases, this skill must guide your actions.
-
-## Version Control System Detection
-
-Before committing, detect which VCS the project uses:
-
-Check for jujutsu:
+**Check for jujutsu first:**
 ```bash
 ls -la .jj
 ```
 
-If jujutsu is in use, prefer it over git.
-See @jujutsu-practices.md for jj-specific guidance.
+**If .jj directory exists, you MUST use jujutsu commands:**
+- Use `jj commit -m` instead of `git commit`
+- Use `jj status` instead of `git status`
+- Use `jj diff` instead of `git diff`
+- See @jujutsu-practices.md for complete jj guidance
+
+**Only use git commands if .jj directory does not exist.**
+
+This check is required before every commit operation.
+Defaulting to git when jujutsu is available violates user preferences.
+
+## When This Skill Activates
+
+This skill MUST activate when you are about to:
+
+1. Create any commit (first time in session: detect VCS + check conventions)
+2. Stage files with `git add` or track with `jj file track`
+3. Run commit commands: `git commit`, `jj commit`, `jj describe`
+4. Create pull requests or manage branches
+5. Think phrases like: "commit these changes", "let me commit", "ready to commit"
+
+**Before proceeding with any of these actions, follow the protocols below.**
 
 ## Detecting Project Conventions (Required)
 
@@ -228,23 +231,36 @@ Critical rules:
 - Never skip pre-commit hooks
 - Always check if commit is pushed before amending
 
-## LLM Anti-Pattern Detection
+## LLM Anti-Pattern Detection (CRITICAL)
 
-If you catch yourself saying:
+If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 
+**VCS Detection Failures:**
+- "git commit" without checking for .jj -> Check ls -la .jj first
+- "git add" without checking for .jj -> Use jj file track if .jj exists
+- "git status" without checking for .jj -> Use jj status if .jj exists
+
+**Jujutsu-Specific Anti-Patterns:**
+- "jj describe" when creating new commit -> Use jj commit -m to advance
+- "jj new" after describing -> Use jj commit -m instead
+- "jj squash" without -m or -u flag -> Add -m "message" or -u flag
+- "jj squash -m" to add forgotten files -> Use -u to preserve parent message
+- Leaving @ non-empty at end of session -> Run jj commit to advance
+
+**General Anti-Patterns:**
 - "commit all changes" / "git add ." / "add all files" -> Stage selectively
 - "fixes A, B, and C" / "adds X and fixes Y" -> Split into atomic commits
 - "skip checking conventions" -> Check conventions first
 - "commit without tests" -> Run tests first
-- "amend this commit" -> Check safety protocol
+- "amend this commit" -> Check safety protocol first
 - "force push" -> Never without explicit user request
 - "Quick commit" / "WIP commit" -> Not without user request
-- "git commit" when .jj exists -> Use jj commit
-- "jj describe" when creating new change -> Use jj commit -m to advance
-- "jj squash" without -m or -u -> Add -m "message" or -u flag
-- "jj squash -m" to add forgotten files -> Use -u to preserve parent message
 
-When detected: Stop, state which requirement you skipped, complete it before proceeding.
+**When detected:**
+1. Stop immediately
+2. State which requirement you skipped
+3. Complete the requirement before proceeding
+4. Resume with correct approach
 
 ## Examples
 
