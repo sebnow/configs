@@ -198,6 +198,10 @@ Forbidden:
 - Using git commands when .jj directory exists
 - Skipping test verification before commits
 
+**You must commit after completing each task.**
+Commits are part of the workflow, not a separate user request.
+Create atomic commits after each completed implementation cycle.
+
 ## When TDD is Not Appropriate
 
 TDD may be skipped only for:
