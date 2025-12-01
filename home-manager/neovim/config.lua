@@ -10,7 +10,6 @@ vim.o.expandtab = true -- Modern languages are opinionated and tend to default t
 vim.o.textwidth = 72
 vim.opt.formatoptions:append("cronql1jp")
 vim.opt.completeopt = { "fuzzy", "menuone", "noinsert" }
-vim.opt.completefuzzycollect = "keyword,files,whole_line"
 
 vim.o.smartcase = true
 vim.o.ignorecase = true
