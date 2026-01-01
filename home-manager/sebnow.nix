@@ -24,6 +24,7 @@
     ./fonts
     ./ghostty
     ./gnome
+    ./ipfs
     ./kitty
     ./obsidian.nix
     ./process-compose.nix
