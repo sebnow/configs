@@ -34,6 +34,7 @@
   home.homeDirectory = "/home/sebnow";
   home.packages = with pkgs; [
     bottom
+    calibre
     fd
     jq
     restic
