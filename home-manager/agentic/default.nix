@@ -1,5 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 {
+
+  home.packages = [ pkgs.ast-grep ];
+
   programs.claude-code = {
     enable = true;
     memory.source = ./agents.md;
@@ -8,6 +11,7 @@
       includeCoAuthoredBy = false;
       permissions = {
         allow = [
+          "Bash(ast-grep:*)"
           "Bash(cat:*)"
           "Bash(fd:*)"
           "Bash(git diff:*)"
