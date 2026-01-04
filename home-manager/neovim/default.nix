@@ -30,7 +30,6 @@
         comment-nvim
         conform-nvim
         diffview-nvim
-        go-nvim
         inc-rename-nvim
         lualine-nvim
         markview-nvim
