@@ -298,23 +298,15 @@ vim.lsp.config("yamlls", {
 
 vim.filetype.add({ extension = { templ = "templ" } })
 
-require("nvim-treesitter.configs").setup({
-  ensure_installed = {}, -- Nix manages parsers
-  auto_install = false,
-  sync_install = false,
-  ignore_install = { "all" },
-  modules = {},
-
-  highlight = {
-    enable = true,
-  },
-  indent = {
-    enable = true,
-    disable = { "yaml" },
-  },
-  matchup = {
-    enable = true,
-  },
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function()
+    if vim.treesitter.get_parser(0, nil, { error = false }) then
+      vim.treesitter.start()
+      if vim.bo.filetype ~= "yaml" then
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end
+    end
+  end,
 })
 
 require("treesitter-context").setup({
