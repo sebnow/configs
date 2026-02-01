@@ -16,7 +16,7 @@
     programs.neovim = {
       enable = true;
       defaultEditor = true;
-      extraLuaConfig = lib.strings.concatStrings [
+      initLua = lib.strings.concatStrings [
         ''
           vim.g.codelldb_path = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb";
         ''
