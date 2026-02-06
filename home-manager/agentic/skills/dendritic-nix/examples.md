@@ -11,17 +11,19 @@ let
   userName = "vic";
 in
 {
-  flake.modules.nixos.${userName} = {
-    users.users.${userName} = { isNormalUser = true; };
-  };
+  flake.modules = {
+    nixos.${userName} = {
+      users.users.${userName} = { isNormalUser = true; };
+    };
 
-  flake.modules.darwin.${userName} = {
-    system.primaryUser = userName;
-  };
+    darwin.${userName} = {
+      system.primaryUser = userName;
+    };
 
-  flake.modules.homeManager.${userName} = {
-    home.username = userName;
-    # shell, git, editor, dotfiles...
+    homeManager.${userName} = {
+      home.username = userName;
+      # shell, git, editor, dotfiles...
+    };
   };
 }
 ```
@@ -104,6 +106,24 @@ and their values merge:
 Both modules contribute to `flake.modules.nixos.ssh`.
 The `deferredModule` type merges them
 using standard Nixpkgs module merge semantics.
+
+Aspect values can also be functions
+to access the lower-level module arguments:
+
+```nix
+# modules/shell.nix
+{ config, ... }:
+{
+  flake.modules.nixos.shell = nixosArgs: {
+    programs.fish.enable = true;
+    users.users.${config.username}.shell =
+      nixosArgs.config.programs.fish.package;
+  };
+}
+```
+
+Here `config` is the flake-parts top-level config,
+while `nixosArgs.config` is the NixOS evaluation config.
 
 ## Community Sharing with Dendrix
 

@@ -29,17 +29,79 @@ store as option values using `flake.modules.<class>.<aspect>`,
 typically with the `deferredModule` type
 which provides beneficial merge semantics.
 
+## Required Scaffolding
+
+`flake.modules` is not a built-in flake-parts option.
+It lives in `flake-parts.flakeModules.modules` (an extra)
+and must be explicitly imported.
+Without it, multiple aspect files defining `flake.modules`
+produces: `The option 'flake.modules' is defined multiple times`.
+
+Every dendritic repo needs at minimum:
+
+```nix
+# modules/flake-parts.nix
+{ inputs, ... }:
+{
+  imports = [
+    inputs.flake-parts.flakeModules.modules
+  ];
+}
+```
+
+For NixOS configurations,
+a `nixos.nix` module wires `configurations.nixos`
+to `flake.nixosConfigurations` and auto-generates checks:
+
+```nix
+# modules/nixos.nix
+{ lib, config, ... }:
+{
+  options.configurations.nixos = lib.mkOption {
+    type = lib.types.lazyAttrsOf (
+      lib.types.submodule {
+        options.module = lib.mkOption {
+          type = lib.types.deferredModule;
+        };
+      }
+    );
+  };
+
+  config.flake = {
+    nixosConfigurations = lib.mapAttrs
+      (name: { module }: lib.nixosSystem { modules = [ module ]; })
+      config.configurations.nixos;
+
+    checks =
+      config.flake.nixosConfigurations
+      |> lib.mapAttrsToList (
+        name: nixos: {
+          ${nixos.config.nixpkgs.hostPlatform.system} = {
+            "configurations:nixos:${name}" =
+              nixos.config.system.build.toplevel;
+          };
+        }
+      )
+      |> lib.mkMerge;
+  };
+}
+```
+
+Equivalent modules can be created for darwin, home-manager, etc.
+
 ## Structure
 
 ```
-flake.nix          # Minimal: inputs + mkFlake + import-tree ./modules
+flake.nix           # Minimal: inputs + mkFlake + import-tree ./modules
 modules/
-  ssh.nix          # SSH config across all classes
-  vim.nix          # Editor config across all classes
-  vpn.nix          # VPN config across all classes
-  hosts.nix        # Host compositions from aspects
+  flake-parts.nix   # Imports flakeModules.modules (required)
+  nixos.nix         # Wires configurations.nixos to flake outputs
+  ssh.nix           # SSH config across all classes
+  vim.nix           # Editor config across all classes
+  vpn.nix           # VPN config across all classes
+  desktop.nix       # Host composition from aspects
   users/
-    vic.nix        # User-specific config across all classes
+    vic.nix         # User-specific config across all classes
 ```
 
 `flake.nix` stays minimal — a manifest of dependencies.
@@ -55,22 +117,24 @@ A single file configures one feature across all relevant classes:
 
 ```nix
 # modules/ssh.nix
-{ inputs, config, ... }:
+{ config, ... }:
 let
   scpPort = 2277;
 in {
-  flake.modules.nixos.ssh = {
-    services.openssh.enable = true;
-    services.openssh.ports = [ scpPort ];
-    networking.firewall.allowedTCPPorts = [ scpPort ];
-  };
+  flake.modules = {
+    nixos.ssh = {
+      services.openssh.enable = true;
+      services.openssh.ports = [ scpPort ];
+      networking.firewall.allowedTCPPorts = [ scpPort ];
+    };
 
-  flake.modules.darwin.ssh = {
-    # macOS built-in SSH server config
-  };
+    darwin.ssh = {
+      # macOS built-in SSH server config
+    };
 
-  flake.modules.homeManager.ssh = {
-    # ~/.ssh/config, authorized_keys, private key secrets
+    homeManager.ssh = {
+      # ~/.ssh/config, authorized_keys, private key secrets
+    };
   };
 
   perSystem = { pkgs, ... }: {
@@ -83,31 +147,40 @@ The `let` binding shares `scpPort` across all classes
 without `specialArgs`.
 Everything needed for SSH lives in one file.
 
+The `flake.modules` option (from `flakeModules.modules`)
+is typed `lazyAttrsOf (lazyAttrsOf deferredModule)`,
+keyed by class then aspect name.
+The `deferredModule` type merges values
+when multiple files contribute to the same aspect.
+
 ## Host Composition
 
-Hosts compose by selecting aspects:
+Hosts compose by selecting aspects through `config.flake.modules`:
 
 ```nix
-# modules/hosts.nix
+# modules/desktop.nix
+{ config, ... }:
+let
+  inherit (config.flake.modules) nixos;
+in
 {
-  flake.nixosConfigurations.my-host =
-    inputs.nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules = with inputs.self.modules.nixos;
-        [ ai ssh vpn scrolling-desktop ];
-    };
-
-  flake.darwinConfigurations.my-mac =
-    inputs.nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      modules = with inputs.self.modules.darwin;
-        [ ai ssh vpn ];
-    };
+  configurations.nixos.desktop.module = {
+    imports = [
+      nixos.admin
+      nixos.ssh
+      nixos.vpn
+      nixos.shell
+    ];
+    nixpkgs.hostPlatform = "x86_64-linux";
+  };
 }
 ```
 
-Aspects are reusable across hosts and platforms.
-Adding a feature to a host means adding one name to the list.
+This uses the `configurations.nixos` option from the scaffolding `nixos.nix`,
+which wires to `flake.nixosConfigurations` and auto-generates checks.
+Aspects are referenced through `config.flake.modules.<class>`,
+not through `inputs.self`.
+Adding a feature to a host means adding one import to the list.
 
 ## Auto-Importing with import-tree
 
