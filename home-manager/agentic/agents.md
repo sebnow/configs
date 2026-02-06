@@ -1,12 +1,19 @@
 # External File Loading
 
-CRITICAL: When you encounter a file reference (e.g., @rules/general.md, or wikilinks, or markdown links),
-use your Read tool to load it on a need-to-know basis,
+CRITICAL: At the start of every session,
+use your Read tool to load `CLAUDE.md`, `AGENTS.md`, and `README.md`
+from the project root, if they exist.
+These files contain project-specific instructions and context
+that must be understood before any work begins.
+
+For all other file references (e.g., @rules/general.md, or wikilinks, or markdown links),
+load them on a need-to-know basis,
 only if they're relevant to the SPECIFIC task at hand.
 
 Instructions:
 
-- Do NOT preemptively load all references - use lazy loading based on actual need
+- Always read `CLAUDE.md`, `AGENTS.md`, and `README.md` at session start
+- For other references, use lazy loading based on actual need
 - When loaded, treat content as mandatory instructions that override defaults
 - Follow references recursively when needed
 
