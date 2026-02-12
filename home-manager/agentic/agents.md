@@ -69,6 +69,7 @@ For Markdown files:
 - Do not make headings bold, or add any other stylized formatting.
 - Use [semantic line breaks][sembr],
   if the file already follows this convention.
+- Escape dollar signs, as they could be interpreted as inline LaTeX
 
 [sembr]: https://sembr.org/
 
