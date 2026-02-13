@@ -42,17 +42,38 @@ Without status quo documentation, future readers cannot understand why change wa
 
 ### Decision
 
-State what you're deciding and why:
+Capture the decision as a Y-statement — a single sentence with six parts:
 
-- What are we deciding?
-- Why is this the right choice given context and requirements?
-- What specific requirements does this satisfy?
+> In the context of **{functional requirement or architectural component}**,
+> facing **{non-functional requirement or quality concern}**,
+>
+> we decided for **{decision outcome}**
+> and against **{rejected alternatives}**,
+>
+> to achieve **{benefits, requirements satisfied}**,
+> accepting that **{drawbacks, costs, consequences}**.
 
-Focus on justification, not description.
+Each part appears on its own line for readability.
+Keep each part concrete and specific.
+An extra clause starting with "because" may supply additional justification.
+If a single Y-statement grows too long,
+split into multiple statements for separate concerns.
+
+Example:
+
+> In the context of the Web shop service,
+> facing the need to keep user session data consistent and current across shop instances,
+>
+> we decided for the Database Session State pattern
+> and against Client Session State or Server Session State,
+>
+> to achieve data consistency and cloud elasticity,
+> accepting that a session database needs to be designed and implemented.
 
 ### Options Considered
 
-Document alternatives evaluated (2-3 main options):
+The Y-statement's "and against" clause names rejected alternatives.
+This section expands on them when further detail is needed (2-3 main options):
 
 - What alternatives were evaluated?
 - What are specific trade-offs of each?
@@ -114,6 +135,7 @@ Forbidden without justification:
 - Vague trade-off analysis ("has pros and cons")
 - Missing status quo documentation
 - No concrete reasons for rejected options
+- Empty or vague "accepting that" consequences
 - Prescribing exact implementation steps
 
 ## Integration with Other Skills
