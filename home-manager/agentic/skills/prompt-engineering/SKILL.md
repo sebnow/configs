@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering
-description: "Use when writing or improving any LLM prompts. Applies TDD methodology and research-backed practices (Meincke 2025): test don't assume, measure baseline, iterate rigorously. Prevents assuming universal techniques work. Triggers: 'write a prompt', 'improve prompt', 'prompt not working', general prompting, application development."
+description: "Use when writing or improving any LLM prompts. Applies TDD methodology and research-backed practices (Meincke 2025): test don't assume, measure baseline, iterate rigorously. Prevents assuming universal techniques work. Includes persuasion principles for compliance. Triggers: 'write a prompt', 'improve prompt', 'prompt not working', general prompting, application development."
 ---
 
 # Prompt Engineering
@@ -35,51 +35,34 @@ When you think any of these, apply this skill.
 
 ## TDD Methodology for Prompts
 
-Test-Driven Development applies to prompts:
-observe failures with current approach,
-write minimal improvements,
-then test rigorously.
+Follow red-green-refactor skill for the core TDD methodology.
+This section defines prompt-specific specializations.
 
-### Red Phase: Establish Baseline
+### Red Phase: Prompt-Specific Baseline
 
-Before changing anything, measure current performance.
+In addition to red-green-refactor baseline requirements:
 
-Required steps:
-
-1. Define success criteria:
-   - What does good output look like?
-   - How will you measure it?
-   - What's the acceptable threshold?
-
-2. Create test cases:
+1. Create test cases:
    - Minimum 5-10 representative examples
    - Include edge cases
    - Cover expected input variations
 
-3. Run current prompt and document results:
+2. Run current prompt and document results:
    - How many test cases pass?
    - What patterns in failures?
    - Where does it struggle?
 
-You cannot proceed to Green without baseline measurements.
-
-Forbidden rationalizations:
+Prompt-specific forbidden rationalizations:
 
 - "I'll just try this technique"
 - "Step-by-step thinking always helps"
 - "Being polite to AI improves output"
-- "I'll test after I improve it"
 - "This is a simple prompt, no need to test"
 - "I know this works from experience"
 
-If you haven't measured baseline, you don't know if changes help.
+### Green Phase: Prompt Techniques
 
-Failure mode: Skipping Red creates prompts that may work worse than simple baseline.
-
-### Green Phase: Minimal Improvements
-
-Apply one technique at a time.
-Test after each change.
+Apply one technique at a time. Test after each change.
 
 #### Core Techniques
 
@@ -149,24 +132,11 @@ Don't embed JSON schema in prompt if SDK provides native schema support.
 
 For chat: Specify format in instructions ("Respond in bullet points", "Use markdown table").
 
-#### One Change at a Time
+### Refactor Phase: Prompt-Specific Testing
 
-Change one thing, measure impact, repeat.
-
-Don't change:
-- Instructions AND examples AND format simultaneously
-
-Do change:
-- Instructions (test)
-- Then add examples (test)
-- Then adjust format (test)
-
-This isolates what helps vs hurts.
-
-### Refactor Phase: Rigorous Testing
+In addition to red-green-refactor testing requirements:
 
 Single-run testing masks variability.
-
 Meincke et al. showed 60-point swings on individual questions.
 Performance collapses at strict thresholds.
 
@@ -185,6 +155,14 @@ Required testing:
 
 Only after rigorous testing can you claim improvement.
 
+## Persuasion Principles
+
+LLMs respond to psychological persuasion principles.
+Apply these when writing prompts for agent compliance.
+
+See [persuasion-principles.md](references/persuasion-principles.md)
+for the full framework and ethical guidelines.
+
 ## Three Use Cases
 
 ### 1. Claude Configuration (Skills/Agents)
@@ -197,7 +175,9 @@ When creating skills or agent prompts:
 - Test agent behavior against baseline
 - Refine based on observed failures
 
-Note: Specialized guidance for agent documentation exists (quality gates, persuasion principles, token efficiency requirements) but core TDD methodology remains the same.
+Note: Specialized guidance for agent documentation exists
+(quality gates, token efficiency requirements)
+but core TDD methodology remains the same.
 
 ### 2. Ad-Hoc Prompting
 
@@ -301,6 +281,7 @@ Required before claiming success:
 
 ## Integration with Other Skills
 
+- red-green-refactor: Core TDD methodology
 - verification-before-completion: Test prompts before claiming they work
 - systematic-debugging: When prompts fail, investigate systematically
 

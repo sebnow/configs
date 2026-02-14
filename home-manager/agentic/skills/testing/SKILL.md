@@ -160,6 +160,8 @@ See @go-patterns.md for examples.
 
 ## TDD Workflow
 
+Follow red-green-refactor skill for the core TDD methodology.
+
 When practicing TDD:
 
 1. Red: Write failing test that defines desired behavior

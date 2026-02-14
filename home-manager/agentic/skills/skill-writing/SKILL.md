@@ -1,6 +1,6 @@
 ---
 name: skill-writing
-description: "Creates and edits SKILL.md files for agent skills. Use when building or refining agent configuration. Enforces prompt-engineering TDD with agent-specific requirements: frontmatter format, persuasion principles, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'. Do NOT use for general documentation or README files."
+description: "Creates and edits SKILL.md files for agent skills. Use when building or refining agent configuration. Enforces red-green-refactor methodology with agent-specific requirements: frontmatter format, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'. Do NOT use for general documentation or README files."
 allowed-tools: "Bash(skills-ref validate:*)"
 ---
 
@@ -8,11 +8,9 @@ allowed-tools: "Bash(skills-ref validate:*)"
 
 Skills are reference guides for proven techniques.
 
-This skill specializes prompt-engineering for Claude configurations.
-Apply TDD methodology from prompt-engineering skill:
-observe failures without the skill,
-write minimal guidance addressing those failures,
-then refactor to close loopholes.
+This skill specializes red-green-refactor methodology for Claude configurations.
+Follow red-green-refactor skill for the core TDD methodology.
+Apply persuasion principles from prompt-engineering skill.
 
 This skill follows the [Agent Skills specification](https://agentskills.io/specification).
 
@@ -34,34 +32,15 @@ All other files must be in `scripts/`, `references/`, or `assets/`.
 
 ## Before Writing: The Red Phase
 
-You must observe baseline behavior before creating documentation.
+Follow red-green-refactor skill for core Red phase methodology.
 
-State: "Beginning Red phase - observing baseline behavior"
-
-Required steps:
+Required domain-specific steps:
 
 1. Run pressure scenarios showing how agents fail without this skill
 2. Document specific rationalizations or mistakes
 3. Identify concrete symptoms triggering skill activation
 
-You cannot proceed to Green phase until you complete all steps.
-
-Forbidden rationalizations:
-
-- "This is simple enough to skip testing"
-- "I know what the agent will do"
-- "I'll write documentation then test later"
-- "Quick documentation is better than none"
-
-If you did not watch an agent fail without the skill,
-you do not know if the skill teaches the right thing.
-
-Failure mode:
-Skipping Red creates ineffective skills that waste tokens without changing behavior.
-
-## Writing: The Green Phase
-
-State: "Beginning Green phase - writing minimal documentation"
+## Writing the Skill
 
 Create minimal documentation addressing observed failures.
 
@@ -181,13 +160,13 @@ See [skill-categories.md](references/skill-categories.md) for details.
 
 ### Persuasion Principles
 
-Every skill must apply persuasion principles matching its type.
+Follow prompt-engineering skill for the full persuasion principles framework.
+
+Apply principles matching skill type:
 
 Discipline-enforcing skills: Authority + Commitment + Social Proof
 Guidance skills: Moderate authority + Unity
 Collaborative skills: Unity + Commitment
-
-See [persuasion-principles.md](references/persuasion-principles.md) for detailed framework and ethical guidelines.
 
 ### Workflow Patterns
 
@@ -205,13 +184,9 @@ Destructive operations must require explicit user confirmation.
 
 ## Refining: The Refactor Phase
 
-State: "Beginning Refactor phase - testing with fresh instances"
+Follow red-green-refactor skill for core Refactor phase methodology.
 
-Test with fresh agent instances.
-Observe where they struggle.
-Close loopholes discovered during testing.
-
-Test across three areas:
+Test with fresh agent instances across three areas:
 
 1. **Triggering tests** -
    obvious tasks, paraphrased requests, negative (unrelated topics)
@@ -260,7 +235,7 @@ You cannot finalize until all gates pass:
 5. Core content under 500 lines, body under 5000 tokens
 6. Tested across target models (sonnet minimum)
 7. Keywords match likely search terms
-8. Persuasion principles match skill type
+8. Persuasion principles match skill type (see prompt-engineering skill)
 9. Validation loops for destructive operations
 10. No ALL CAPS (except acronyms), no emojis
 11. File references use relative paths, one level deep

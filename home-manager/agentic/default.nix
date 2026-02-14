@@ -56,6 +56,7 @@
           "Grep"
           "Skill(adr-writing)"
           "Skill(prompt-engineering)"
+          "Skill(red-green-refactor)"
           "Skill(skill-writing)"
           "Skill(source-control-hygiene)"
           "Skill(systematic-debugging)"

@@ -51,7 +51,8 @@ Follow this workflow for all code changes:
 1. Verify Project Health:
    Before starting any implementation,
    verify the project is in a clean state.
-   Run existing tests to establish baseline.
+   Run existing tests to establish baseline
+   (follow red-green-refactor skill).
    If tests fail,
    fix them first or confirm with user they should be ignored.
    Never start new work with failing tests.
