@@ -84,6 +84,9 @@ Field constraints:
 | `metadata`      | No       | Arbitrary key-value mapping for additional metadata.                                                                                                                                                                          |
 | `allowed-tools` | No       | Space-delimited list of pre-approved tools. Experimental.                                                                                                                                                                     |
 
+Frontmatter appears in the system prompt.
+Never use XML angle brackets (`<` `>`) in any frontmatter field.
+
 Use single-line quoted strings for descriptions.
 Write descriptions in third person.
 Include keywords matching error messages and symptoms.
@@ -168,9 +171,40 @@ Discipline-enforcing skills: Authority + Commitment + Social Proof
 Guidance skills: Moderate authority + Unity
 Collaborative skills: Unity + Commitment
 
+### Approach: Problem-First vs Tool-First
+
+Choose the framing that fits the use case:
+
+- **Problem-first**: User describes outcomes, skill orchestrates the tools.
+  "I need to set up a project workspace" → skill handles tool selection and sequencing.
+- **Tool-first**: User already has tools, skill teaches optimal workflows.
+  "I have Notion MCP connected" → skill provides best practices and domain expertise.
+
 ### Workflow Patterns
 
-Complex tasks require checklist-style workflows agents can track.
+Complex tasks require structured workflows agents can track.
+
+Five common patterns:
+
+1. **Sequential orchestration** —
+   Multi-step processes in specific order with dependencies between steps.
+   Validation at each stage, rollback instructions for failures.
+2. **Multi-service coordination** —
+   Workflows spanning multiple MCP servers.
+   Clear phase separation, data passing between services,
+   validation before moving to next phase.
+3. **Iterative refinement** —
+   Output quality improves through generate-validate-improve loops.
+   Explicit quality criteria, validation scripts, defined stop conditions.
+4. **Context-aware tool selection** —
+   Same outcome, different tools depending on context.
+   Clear decision criteria, fallback options, transparency about choices.
+5. **Domain-specific intelligence** —
+   Specialized knowledge beyond tool access.
+   Compliance checks before action, comprehensive documentation.
+
+For critical validations, prefer bundled scripts over language instructions.
+Code is deterministic; language interpretation is not.
 
 Validation-critical operations must use plan-validate-execute:
 
@@ -213,6 +247,12 @@ Common loopholes:
 - Instructions too verbose (causes non-compliance; use bullet points)
 - Critical instructions buried below less important content
 - Ambiguous language ("make sure" instead of "Before calling X, verify Y")
+
+If agents skip steps despite clear instructions,
+recommend adding performance encouragement to the user's prompt (e.g., CLAUDE.md),
+not the skill body.
+User-prompt nudges are more effective than skill-level instructions
+for combating model laziness.
 
 ## Validation
 

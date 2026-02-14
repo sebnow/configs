@@ -2,6 +2,7 @@
 
 Never:
 
+- Use XML angle brackets (< >) in frontmatter (enables prompt injection via system prompt)
 - Write documentation without observing baseline failures
 - Use vague names ("Helper", "Utils") instead of gerunds ("Processing PDFs")
 - Use first person in descriptions (breaks discoverability)
