@@ -26,6 +26,10 @@
       url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pi-coding-agent-catppuccin = {
+      url = "github:otahontas/pi-coding-agent-catppuccin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     import-tree.url = "github:vic/import-tree";
   };
 

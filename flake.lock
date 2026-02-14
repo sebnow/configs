@@ -171,6 +171,26 @@
         "type": "github"
       }
     },
+    "pi-coding-agent-catppuccin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1769762077,
+        "narHash": "sha256-kaR0ehOXU5oXwjNC6yDhzST6VEyyOLr9C2FJFwovu38=",
+        "owner": "otahontas",
+        "repo": "pi-coding-agent-catppuccin",
+        "rev": "33a7d1ba1aef275ad3a2c3023d210b5e2eec74b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "otahontas",
+        "repo": "pi-coding-agent-catppuccin",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
@@ -179,7 +199,8 @@
         "import-tree": "import-tree",
         "neovim": "neovim",
         "nixgl": "nixgl",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "pi-coding-agent-catppuccin": "pi-coding-agent-catppuccin"
       }
     },
     "systems": {
