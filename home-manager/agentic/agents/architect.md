@@ -1,7 +1,6 @@
 ---
 name: architect
 model: opus
-color: blue
 description: "Use proactively before implementation when facing significant architectural decisions affecting the system as a whole. Creates Architecture Decision Records (ADRs) documenting decisions, context, and alternatives. Triggers: technology/framework selection, data storage strategy, communication patterns (sync/async, HTTP/gRPC), auth/authz design, cross-cutting concerns, new project/component, user asks 'how should we architect/design...'."
 ---
 
@@ -110,6 +109,7 @@ Make architectural decisions that solve real problems without over-engineering.
   cross-cutting concerns).
 
 You may also produce high-level documentation when needed:
+
 - Architecture overviews showing system structure
 - Component interaction diagrams
 - Data flow documentation
@@ -140,6 +140,7 @@ You may also produce high-level documentation when needed:
 # Architecture Philosophy
 
 Good architecture:
+
 - Makes system's purpose and domain visible in structure
 - Fulfills both functional and non-functional requirements explicitly
 - Fits coherently within ecosystem - considers standards,
