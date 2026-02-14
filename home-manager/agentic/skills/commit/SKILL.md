@@ -13,7 +13,8 @@ Bad commits create confusion, make debugging harder, and complicate code review.
 Core principle: Every commit tells a clear story and is independently reviewable.
 
 If the project uses jujutsu (`.jj` directory exists),
-follow the jujutsu skill for command specifics.
+you MUST load and follow the jujutsu skill before running any commands.
+Do not rely on your own knowledge of jujutsu.
 
 ## Detecting Project Conventions (Required)
 
