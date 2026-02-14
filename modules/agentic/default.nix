@@ -118,5 +118,10 @@
           "anthropic/claude-haiku-4-5"
         ];
       };
+
+      home.file.".pi/agent/skills" = {
+        source = ./skills;
+        recursive = true;
+      };
     };
 }
