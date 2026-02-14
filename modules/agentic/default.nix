@@ -26,6 +26,7 @@
         memory.source = ./agents.md;
         agentsDir = ./agents;
         hooksDir = ./hooks;
+        skillsDir = ./skills;
         settings = {
           includeCoAuthoredBy = false;
           hooks.PostToolUse = [
@@ -97,11 +98,6 @@
             ];
           };
         };
-      };
-
-      home.file.".claude/skills" = {
-        source = ./skills;
-        recursive = true;
       };
 
       home.file.".pi/agent/themes/catppuccin-${config.catppuccin.flavor}.json".source =
