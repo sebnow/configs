@@ -5,25 +5,21 @@ description: "Required for any bug, error, test failure, or unexpected behavior.
 
 # Systematic Debugging
 
-## Overview
+Every investigation follows the same framework: find root cause, then fix.
+No fixes without completing Phase 1 first.
 
-Random fixes waste time and create new bugs. Quick patches mask underlying issues.
+Especially critical when:
+under time pressure,
+"quick fix" seems obvious,
+already tried multiple fixes,
+previous fix didn't work,
+don't fully understand issue.
 
-Core principle: Always find root cause before attempting fixes. Symptom fixes are failure.
-
-No fixes without root cause investigation first. If you haven't completed Phase 1, you cannot propose fixes.
-
-## When to Use
-
-For any technical issue: test failures, bugs, unexpected behavior, performance problems, build failures, integration issues
-
-Especially when: Under time pressure, "quick fix" seems obvious, already tried multiple fixes, previous fix didn't work, don't fully understand issue
-
-Never skip when: Issue seems simple, you're in a hurry, under pressure
+Never skip — even when issue seems simple.
 
 ## Phase Tracking (Required)
 
-At start of each phase:
+Every debugging session follows this 4-phase framework. At start of each phase:
 1. Use TodoWrite to create phase checkpoint
 2. Mark current phase as "in_progress"
 3. List specific tasks
@@ -99,7 +95,7 @@ Add debug statements at each level of the call stack.
 
 #### Evidence Gathering Techniques
 
-See @evidence-gathering.md for:
+See [evidence-gathering](references/evidence-gathering.md) for:
 - Debug statement format and examples
 - Language-specific debugging tools
 - Investigation strategies by issue type (memory, concurrency, performance, state, integration)
@@ -153,21 +149,19 @@ If after thorough investigation you cannot identify root cause:
 
 Don't continue indefinitely. If multiple hypotheses tested with evidence and root cause remains elusive, escalation is appropriate.
 
-## Before Proposing Any Fix
-
-Ask yourself:
-1. Have I completed Phase 1? (Can I answer all 4 checklist items?)
-2. Have I found a working counterexample? (Phase 2)
-3. Have I stated one specific hypothesis? (Phase 3)
-4. Have I tested that hypothesis minimally? (Phase 3)
-
-If any answer is "no", you are not ready to fix. State which phase you're in and continue investigation.
-
 ### Phase 4: Implementation
+
+Entry gate — you cannot begin Phase 4 until all are true:
+1. Phase 1 complete (can answer all 4 checklist items)
+2. Found working counterexample (Phase 2)
+3. Stated one specific hypothesis (Phase 3)
+4. Tested that hypothesis minimally (Phase 3)
+
+If any is false, state which phase you're in and continue investigation.
 
 Fix root cause, not symptom:
 
-1. Create Failing Test Case: Simplest possible reproduction, automated test if possible, one-off script if no framework, must have before fixing. Write test that fails with current code, will pass after fix.
+1. Create Failing Test Case: All fixes require a failing test first. Simplest possible reproduction, automated test if possible, one-off script if no framework. Write test that fails with current code, will pass after fix.
 
 2. Implement Single Fix: Address root cause identified, one change at a time, no "while I'm here" improvements, no bundled refactoring
 
@@ -255,7 +249,7 @@ When you see these: Stop. Return to Phase 1.
 
 ## Common Rationalizations
 
-See @common-rationalizations.md for complete list of excuses to counter.
+See [common-rationalizations](references/common-rationalizations.md) for complete list of excuses to counter.
 
 ## When Process Reveals "No Root Cause"
 
@@ -269,7 +263,4 @@ But: 95% of "no root cause" cases are incomplete investigation.
 
 ## Integration with Other Skills
 
-Complementary skills:
-- defense-in-depth: Add validation at multiple layers after finding root cause
-- condition-based-waiting: Replace arbitrary timeouts identified in Phase 2
-- verification-before-completion: Verify fix worked before claiming success
+Follow verification-before-completion skill to verify fix worked before claiming success.
