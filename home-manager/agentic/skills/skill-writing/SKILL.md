@@ -1,6 +1,7 @@
 ---
 name: skill-writing
 description: "Use when creating or editing SKILL.md files for agent skills. Enforces prompt-engineering TDD with agent-specific requirements: frontmatter format, persuasion principles, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'."
+allowed-tools: Bash(skills-ref validate:*)
 ---
 
 # Skill Writing
@@ -46,6 +47,7 @@ Required steps:
 You cannot proceed to Green phase until you complete all steps.
 
 Forbidden rationalizations:
+
 - "This is simple enough to skip testing"
 - "I know what the agent will do"
 - "I'll write documentation then test later"
@@ -91,14 +93,14 @@ allowed-tools: Bash(git:*) Read
 
 Field constraints:
 
-| Field           | Required | Constraints                                                              |
-| --------------- | -------- | ------------------------------------------------------------------------ |
+| Field           | Required | Constraints                                                                                                                                                     |
+| --------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`          | Yes      | Max 64 chars. Unicode lowercase alphanumeric and hyphens only. Must not start/end with hyphen or contain consecutive hyphens. Must match parent directory name. |
-| `description`   | Yes      | Max 1024 chars. Single-line quoted string. Describes what skill does and when to use it. |
-| `license`       | No       | License name or reference to bundled license file.                       |
-| `compatibility` | No       | Max 500 chars. Environment requirements (product, packages, network).    |
-| `metadata`      | No       | Arbitrary key-value mapping for additional metadata.                     |
-| `allowed-tools` | No       | Space-delimited list of pre-approved tools. Experimental.                |
+| `description`   | Yes      | Max 1024 chars. Single-line quoted string. Describes what skill does and when to use it.                                                                        |
+| `license`       | No       | License name or reference to bundled license file.                                                                                                              |
+| `compatibility` | No       | Max 500 chars. Environment requirements (product, packages, network).                                                                                           |
+| `metadata`      | No       | Arbitrary key-value mapping for additional metadata.                                                                                                            |
+| `allowed-tools` | No       | Space-delimited list of pre-approved tools. Experimental.                                                                                                       |
 
 Use single-line quoted strings for descriptions.
 Write descriptions in third person.
@@ -145,6 +147,7 @@ Degrees of freedom must match task fragility:
 - Multi-approach problems require high-freedom guidance (principles, examples)
 
 Examples:
+
 - Source control, security, testing → checklists, "You must", "Never", "Required"
 - Architecture, design patterns → principles, "Consider", moderate authority
 - Research, exploration → context, goals, minimal constraints

@@ -10,6 +10,7 @@
           inputs.nixgl.overlays.default
           (final: prev: {
             camunda-modeler = prev.callPackage ../pkgs/camunda-modeler { };
+            skills-ref = prev.python3Packages.callPackage ../pkgs/skills-ref { };
           })
         ];
       };

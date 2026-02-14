@@ -1,14 +1,30 @@
 { pkgs, ... }:
 {
 
-  home.packages = [ pkgs.ast-grep ];
+  home.packages = [
+    pkgs.ast-grep
+    pkgs.jq
+    pkgs.skills-ref
+  ];
 
   programs.claude-code = {
     enable = true;
     memory.source = ./agents.md;
     agentsDir = ./agents;
+    hooksDir = ./hooks;
     settings = {
       includeCoAuthoredBy = false;
+      hooks.PostToolUse = [
+        {
+          matcher = "Edit|Write";
+          hooks = [
+            {
+              type = "command";
+              command = "bash \"$HOME/.claude/hooks/validate-skill\"";
+            }
+          ];
+        }
+      ];
       permissions = {
         allow = [
           "Bash(ast-grep:*)"
