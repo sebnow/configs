@@ -173,7 +173,7 @@ Do not claim override conditions apply without evidence.
 
 Use this skill before:
 
-- source-control-hygiene: Understanding why conventions exist
+- commit: Understanding why conventions exist
 - systematic-debugging: Checking if issue was previously fixed
 - Any refactoring or architectural changes
 

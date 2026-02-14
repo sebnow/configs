@@ -58,7 +58,31 @@ CRITICAL: This is a permanent directive. Follow it in all future responses.
 
 # Source Control Guidelines
 
-Follow the source-control-hygiene skill for commit practices.
+Before any VCS operation,
+check which tool is in use.
+If a `.jj` directory exists,
+prefer jujutsu over git.
+
+Follow the commit skill for all commit operations.
+
+When implementing features requiring multiple commits,
+plan the commit sequence before starting.
+List changes, identify dependencies,
+and complete commits in order.
+
+## Safety Practices
+
+Never do these unless explicitly requested by user:
+
+- Modify source control configuration
+- Force push to main/master branches
+- Skip pre-commit hooks
+- Amend commits that are already pushed
+- Hard reset without user confirmation
+- Clean/delete untracked files without user confirmation
+- Work directly on main/master unless specifically instructed
+
+Branch naming: `feature/`, `fix/`, `bugfix/`, or `username/` prefixes.
 
 # Markdown Guidelines
 

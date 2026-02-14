@@ -176,7 +176,7 @@ You cannot claim work is complete until all gates pass:
 12. Code follows project conventions
 13. Domain terminology used appropriately
 14. Resources properly managed (cleanup on error paths)
-15. Commits follow source-control-hygiene skill (if committing)
+15. Commits follow commit skill (if committing)
 
 State: "All quality gates passed" only after verification.
 
@@ -185,13 +185,13 @@ State: "All quality gates passed" only after verification.
 After completing one feature or behavior:
 
 1. Repeat workflow for next behavior
-2. When ready to commit, you MUST use the source-control-hygiene skill:
-   - Use Skill tool to invoke: `Skill(source-control-hygiene)`
-   - Follow all protocols: VCS detection, test verification, atomic scope, message validation
+2. When ready to commit, you MUST use the commit skill:
+   - Use Skill tool to invoke: `Skill(commit)`
+   - Follow all protocols: VCS detection, atomic scope, message validation
    - Use VCS detected in Phase 1 (jujutsu preferred if available)
 3. Keep commits atomic and focused
 
-**CRITICAL: You cannot create commits without using the source-control-hygiene skill.**
+**CRITICAL: You cannot create commits without using the commit skill.**
 
 Forbidden:
 - Committing directly without skill invocation

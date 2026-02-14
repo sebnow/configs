@@ -127,7 +127,7 @@ Avoid deeply nested reference chains.
 
 For other skills:
 Use "skill-name skill" or "Follow skill-name" syntax.
-Example: `Follow source-control-hygiene skill for commits`
+Example: `Follow commit skill for commits`
 
 ### Body Structure
 
