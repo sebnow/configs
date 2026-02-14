@@ -13,3 +13,4 @@ Never:
 - Include ALL CAPS (except acronyms) or emojis
 - Write descriptions in first person
 - Create deeply nested file hierarchies
+- Place files at skill root besides SKILL.md

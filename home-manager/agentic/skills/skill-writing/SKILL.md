@@ -1,6 +1,6 @@
 ---
 name: skill-writing
-description: "Required when creating SKILL.md files for Claude Code agents. Specializes prompt-engineering TDD with agent-specific requirements: frontmatter format, persuasion principles, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'."
+description: "Use when creating or editing SKILL.md files for agent skills. Enforces prompt-engineering TDD with agent-specific requirements: frontmatter format, persuasion principles, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'."
 ---
 
 # Skill Writing
@@ -8,10 +8,28 @@ description: "Required when creating SKILL.md files for Claude Code agents. Spec
 Skills are reference guides for proven techniques.
 
 This skill specializes prompt-engineering for Claude configurations.
-Apply TDD methodology from @prompt-engineering.md:
+Apply TDD methodology from prompt-engineering skill:
 observe failures without the skill,
 write minimal guidance addressing those failures,
 then refactor to close loopholes.
+
+This skill follows the [Agent Skills specification](https://agentskills.io/specification).
+
+## Directory Structure
+
+A skill is a directory containing at minimum a `SKILL.md` file:
+
+```
+skill-name/
+├── SKILL.md          # Required - main skill instructions
+├── scripts/          # Optional - executable code agents can run
+├── references/       # Optional - additional documentation loaded on demand
+└── assets/           # Optional - static resources (templates, schemas, images)
+```
+
+The directory name must match the `name` field in frontmatter.
+`SKILL.md` is the only file allowed at the skill root.
+All other files must be in `scripts/`, `references/`, or `assets/`.
 
 ## Before Writing: The Red Phase
 
@@ -47,7 +65,7 @@ Create minimal documentation addressing observed failures.
 
 ### Frontmatter Requirements
 
-Use single-line quoted strings for descriptions:
+Required fields:
 
 ```yaml
 ---
@@ -56,6 +74,33 @@ description: "Use when [trigger]. Does [purpose]. Triggers: [symptoms]."
 ---
 ```
 
+Optional fields:
+
+```yaml
+---
+name: skill-name
+description: "Use when [trigger]. Does [purpose]. Triggers: [symptoms]."
+license: Apache-2.0
+compatibility: Requires git, docker, jq, and access to the internet
+metadata:
+  author: example-org
+  version: "1.0"
+allowed-tools: Bash(git:*) Read
+---
+```
+
+Field constraints:
+
+| Field           | Required | Constraints                                                              |
+| --------------- | -------- | ------------------------------------------------------------------------ |
+| `name`          | Yes      | Max 64 chars. Unicode lowercase alphanumeric and hyphens only. Must not start/end with hyphen or contain consecutive hyphens. Must match parent directory name. |
+| `description`   | Yes      | Max 1024 chars. Single-line quoted string. Describes what skill does and when to use it. |
+| `license`       | No       | License name or reference to bundled license file.                       |
+| `compatibility` | No       | Max 500 chars. Environment requirements (product, packages, network).    |
+| `metadata`      | No       | Arbitrary key-value mapping for additional metadata.                     |
+| `allowed-tools` | No       | Space-delimited list of pre-approved tools. Experimental.                |
+
+Use single-line quoted strings for descriptions.
 Write descriptions in third person.
 Include keywords matching error messages and symptoms.
 Start with "Use when..." for discoverability.
@@ -63,22 +108,36 @@ Start with "Use when..." for discoverability.
 ### Structure Guidelines
 
 SKILL.md must not exceed 500 lines.
-Use progressive disclosure:
-keep core guidance in SKILL.md,
-link supporting details in separate files.
+Body content should stay under 5000 tokens.
 
-### Cross-Referencing
+Use progressive disclosure with three tiers:
 
-Distinguish between internal and external references:
+1. **Metadata** (~100 tokens): `name` and `description` loaded at startup for all skills
+2. **Instructions** (<5000 tokens): Full SKILL.md body loaded when skill activates
+3. **Resources** (as needed): Files in `scripts/`, `references/`, `assets/` loaded on demand
 
-Internal files (within same skill directory):
-Use @file.md syntax for progressive disclosure.
-Example: `See @examples.md for detailed patterns`
+Keep core guidance in SKILL.md.
+Move detailed reference material to `references/` subdirectory.
 
-Other skills:
+### File References
+
+Use relative paths from skill root for internal references:
+
+```markdown
+See [the reference guide](references/REFERENCE.md) for details.
+
+Run the extraction script:
+scripts/extract.py
+```
+
+Keep file references one level deep from SKILL.md.
+Avoid deeply nested reference chains.
+
+For other skills:
 Use "skill-name skill" or "Follow skill-name" syntax.
-Never use @ syntax for other skills.
 Example: `Follow source-control-hygiene skill for commits`
+
+### Content Guidelines
 
 Degrees of freedom must match task fragility:
 
@@ -102,7 +161,7 @@ Discipline-enforcing skills: Authority + Commitment + Social Proof
 Guidance skills: Moderate authority + Unity
 Collaborative skills: Unity + Commitment
 
-See @persuasion-principles.md for detailed framework and ethical guidelines.
+See [persuasion-principles.md](references/persuasion-principles.md) for detailed framework and ethical guidelines.
 
 ### Workflow Patterns
 
@@ -140,20 +199,32 @@ Common loopholes:
 - Agent misses edge cases in instructions
 - Description lacks activation keywords
 
+## Validation
+
+Use the skills-ref reference library to validate skills:
+
+```bash
+skills-ref validate ./my-skill
+```
+
+This checks frontmatter validity and naming conventions.
+
 ## Quality Gates
 
 You cannot finalize until all gates pass:
 
 1. Observed baseline failures without skill
-2. Description uses third person and includes triggers
-3. Frontmatter uses single-line quoted string
-4. Core content under 500 lines
-5. Tested across target models (sonnet minimum)
-6. Keywords match likely search terms
-7. Persuasion principles match skill type
-8. Validation loops for destructive operations
-9. No ALL CAPS (except acronyms), no emojis
-10. Title matches frontmatter name
+2. Directory name matches `name` field
+3. `name` field: max 64 chars, unicode lowercase alphanumeric + hyphens only
+4. `description` field: max 1024 chars, single-line quoted string, third person, includes triggers
+5. Core content under 500 lines, body under 5000 tokens
+6. Tested across target models (sonnet minimum)
+7. Keywords match likely search terms
+8. Persuasion principles match skill type
+9. Validation loops for destructive operations
+10. No ALL CAPS (except acronyms), no emojis
+11. File references use relative paths, one level deep
+12. No files at skill root besides SKILL.md
 
 State: "All quality gates passed" before finalizing.
 
@@ -173,8 +244,8 @@ Frequently-loaded skills must target under 200 words total.
 
 ## Anti-Patterns
 
-See @anti-patterns.md for complete list of forbidden practices.
+See [anti-patterns.md](references/anti-patterns.md) for complete list of forbidden practices.
 
 ## Search Optimization
 
-See @search-optimization.md for keyword strategy and discoverability requirements.
+See [search-optimization.md](references/search-optimization.md) for keyword strategy and discoverability requirements.
