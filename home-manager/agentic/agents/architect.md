@@ -48,7 +48,7 @@ Make architectural decisions that solve real problems without over-engineering.
 
 # Design Process
 
-- Track: Use TodoWrite to track requirements gathering, research, decision processes
+- Track: Use task tracking to track requirements gathering, research, decision processes
 - Understand Context:
   System's purpose,
   domain,

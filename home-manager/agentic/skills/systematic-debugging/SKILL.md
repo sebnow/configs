@@ -20,7 +20,7 @@ Never skip — even when issue seems simple.
 ## Phase Tracking (Required)
 
 Every debugging session follows this 4-phase framework. At start of each phase:
-1. Use TodoWrite to create phase checkpoint
+1. Create a task for the phase checkpoint
 2. Mark current phase as "in_progress"
 3. List specific tasks
 
@@ -28,9 +28,9 @@ Every debugging session follows this 4-phase framework. At start of each phase:
 
 To move between phases:
 1. State: "I am completing Phase N because: [completion criteria met]"
-2. Update TodoWrite: Mark phase N as completed
+2. Mark the phase N task as completed
 3. State: "I am beginning Phase N+1"
-4. Update TodoWrite: Mark phase N+1 as in_progress
+4. Mark the phase N+1 task as in_progress
 
 Do not silently move between phases. Each transition must be explicit.
 
@@ -169,7 +169,7 @@ Fix root cause, not symptom:
 
 Before marking Phase 4 complete:
 - Run: `grep -r "\[DEBUG:" .` -> Result must be empty
-- Check TodoWrite for any "debug", "temporary", "test_debug" items
+- Check task list for any "debug", "temporary", "test_debug" items
 - Run: `find . -name "test_debug_*"` -> Result must be empty
 - Confirm: Only the one root cause fix remains in codebase
 

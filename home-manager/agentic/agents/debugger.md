@@ -39,7 +39,7 @@ def test_auth_failure():
     # Minimal reproduction code here
 ```
 
-Mark all temporary files in TodoWrite immediately upon creation.
+Mark all temporary files in task tracking immediately upon creation.
 
 ## Investigation Scope
 

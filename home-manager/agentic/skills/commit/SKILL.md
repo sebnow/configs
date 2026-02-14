@@ -20,7 +20,7 @@ follow the jujutsu skill for command specifics.
 Before your first commit, you must:
 
 1. Examine recent commit history
-2. Use TodoWrite to document findings:
+2. Use task tracking to document findings:
    ```
    - [completed] Convention check: Uses conventional commits (feat/fix/docs)
    - [completed] Convention check: Lowercase subject, no period

@@ -29,7 +29,7 @@ Before writing any code:
 3. Clarify ambiguities - ask questions rather than assume
 4. Review project documentation (README, CONTRIBUTING, architecture docs)
 5. Identify what needs testing based on risk and requirements
-6. Use TodoWrite to track all implementation and testing tasks
+6. Use task tracking to track all implementation and testing tasks
 
 You cannot proceed to Phase 2 until baseline test suite is clean.
 
