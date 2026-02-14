@@ -119,6 +119,8 @@
         ];
       };
 
+      home.file.".pi/agent/AGENTS.md".source = ./agents.md;
+
       home.file.".pi/agent/skills" = {
         source = ./skills;
         recursive = true;
