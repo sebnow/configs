@@ -1,18 +1,21 @@
-{ pkgs, lib, ... }:
+{ inputs, ... }:
 {
-  imports = [
-    ./lang/bash.nix
-    ./lang/c.nix
-    ./lang/golang.nix
-    ./lang/javascript.nix
-    ./lang/lua.nix
-    ./lang/markdown.nix
-    ./lang/nix.nix
-    ./lang/protobuf.nix
-    ./lang/yaml.nix
-    ./lang/zig.nix
-  ];
-  config = {
+  flake.overlays.neovim = inputs.neovim.overlays.default;
+
+  flake.modules.homeManager.neovim = { pkgs, lib, ... }: {
+    imports = [
+      ./_lang/bash.nix
+      ./_lang/c.nix
+      ./_lang/golang.nix
+      ./_lang/javascript.nix
+      ./_lang/lua.nix
+      ./_lang/markdown.nix
+      ./_lang/nix.nix
+      ./_lang/protobuf.nix
+      ./_lang/yaml.nix
+      ./_lang/zig.nix
+    ];
+
     programs.neovim = {
       enable = true;
       defaultEditor = true;

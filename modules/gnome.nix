@@ -1,9 +1,6 @@
+{ ... }:
 {
-  config,
-  pkgs,
-  ...
-}: {
-  config = {
+  flake.modules.homeManager.gnome = { ... }: {
     programs.gnome-terminal = {
       enable = true;
       showMenubar = false;

@@ -26,6 +26,7 @@
       url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    import-tree.url = "github:vic/import-tree";
   };
 
   outputs =
@@ -38,7 +39,7 @@
         systems = [ "x86_64-linux" ];
 
         imports = [
-          ./home-manager/flake-module.nix
+          (inputs.import-tree ./modules)
         ];
       };
 }
