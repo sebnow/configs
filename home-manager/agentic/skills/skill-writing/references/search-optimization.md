@@ -15,7 +15,7 @@ Include these keywords in:
 
 ## Description Field Requirements
 
-Start with "Use when..." for pattern matching.
+Start with what the skill does, then "Use when..." for pattern matching.
 
 Include concrete triggers:
 - Error patterns ("test failures", "crashes")
@@ -30,3 +30,23 @@ Front-load important keywords in first 100 characters of description.
 This maximizes match probability in Claude's skill scanning.
 
 Avoid synonyms - use exact terms users/agents will search.
+
+## Negative Triggers
+
+Use negative triggers to prevent over-triggering
+on related but distinct tasks.
+
+When to use:
+
+- The skill's domain overlaps with other skills
+- Users commonly request similar-sounding tasks the skill should not handle
+- Testing reveals false activations
+
+Format in description field:
+
+```
+"Do NOT use for [specific unrelated task]."
+```
+
+Place negative triggers at the end of the description,
+after the positive triggers.

@@ -14,3 +14,11 @@ Never:
 - Write descriptions in first person
 - Create deeply nested file hierarchies
 - Place files at skill root besides SKILL.md
+- Use reserved name prefixes ("claude", "anthropic")
+- Omit error handling or troubleshooting section in skill body
+- Omit examples in skill body
+- Write overly verbose instructions (causes non-compliance)
+- Bury critical instructions below less important content
+- Use ambiguous validation language
+  ("make sure" instead of specific checks like "Before calling X, verify Y")
+- Omit negative triggers when skill could over-trigger on related topics
