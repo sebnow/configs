@@ -4,10 +4,15 @@
     skills-ref = prev.python3Packages.callPackage ../../pkgs/skills-ref { };
   };
 
+  flake.overlays.pi-coding-agent = final: prev: {
+    pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
+  };
+
   flake.modules.homeManager.agentic = { pkgs, ... }: {
     home.packages = [
       pkgs.ast-grep
       pkgs.jq
+      pkgs.pi-coding-agent
       pkgs.skills-ref
     ];
 
