@@ -19,6 +19,7 @@
         pkgs.jq
         pkgs.pi-coding-agent
         pkgs.skills-ref
+        pkgs.tmux
       ];
 
       programs.claude-code = {
