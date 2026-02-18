@@ -108,15 +108,14 @@
         quietStartup = true;
         editorPaddingX = 1;
         theme = "catppuccin-${config.catppuccin.flavor}";
-        defaultProvider = "anthropic";
-        defaultModel = "claude-opus-4-6";
+        defaultProvider = "github-copilot";
+        defaultModel = "claude-opus-4.6";
         enabledModels = [
-          "anthropic/claude-opus-4-6"
-          "anthropic/claude-sonnet-4-5"
+          "github-copilot/claude-opus-4.6"
+          "github-copilot/claude-sonnet-4.5"
           "github-copilot/gpt-5.2-codex"
           "github-copilot/gpt-5.2"
           "github-copilot/gemini-3-pro-preview"
-          "anthropic/claude-haiku-4-5"
         ];
       };
 
