@@ -3,7 +3,7 @@
   flake.modules.homeManager.tmux = { ... }: {
     programs.tmux = {
       enable = true;
-      shortcut = "\\";
+      shortcut = "\\\\";
       mouse = true;
       keyMode = "vi";
       customPaneNavigationAndResize = true;
