@@ -1,5 +1,5 @@
 { lib, inputs, ... }:
 {
   imports = [ inputs.flake-parts.flakeModules.modules ];
-  config.flake.modules = lib.mkDefault {};
+  config.flake.modules = lib.mkDefault { };
 }

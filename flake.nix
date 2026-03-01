@@ -45,5 +45,11 @@
         imports = [
           (inputs.import-tree ./modules)
         ];
+
+        perSystem =
+          { pkgs, ... }:
+          {
+            formatter = pkgs.nixfmt-tree;
+          };
       };
 }
