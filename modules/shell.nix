@@ -1,12 +1,14 @@
 { ... }:
 {
   flake.modules.homeManager.shell =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       programs.home-manager.enable = true;
 
       programs.bash = {
         enable = true;
+        historyFile = "${config.xdg.cacheHome}/bash/history";
+        historySize = 5000;
         historyControl = [
           "ignorespace"
           "ignoredups"
