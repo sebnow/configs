@@ -35,7 +35,7 @@
 
       programs.fzf = {
         enable = true;
-        defaultCommand = "rg --files --hidden --follow --glob \"!.git/*\"";
+        defaultCommand = "rg --files --hidden --follow --glob '!.git/objects/*' --glob '!.jj/*'";
         defaultOptions = [
           "--height 30%"
           "--min-height 5"
