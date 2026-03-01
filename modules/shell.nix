@@ -36,6 +36,11 @@
       programs.fzf = {
         enable = true;
         defaultCommand = "rg --files --hidden --follow --glob \"!.git/*\"";
+        defaultOptions = [
+          "--height 30%"
+          "--min-height 5"
+        ];
+        fileWidgetOptions = [ "--preview 'bat -p --color=always {}'" ];
       };
 
       programs.starship = {
