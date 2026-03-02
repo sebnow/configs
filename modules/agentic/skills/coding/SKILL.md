@@ -68,16 +68,26 @@ Follow this workflow for all code changes:
    data structures,
    algorithms.
    Consider trade-offs between simplicity and performance.
-4. Verify APIs:
+4. Plan Implementation Steps:
+   Before writing code,
+   enumerate the independent logical changes needed.
+   Separate mechanical changes (renames, moves, dead code removal)
+   from functional changes (new behaviour, bug fixes).
+   State the planned sequence of commits.
+   Each step must be independently committable and testable.
+5. Verify APIs:
    Confirm library APIs before use - don't guess at function signatures or behavior.
    Use language documentation tools: `go doc` (Go),
    `man` (C),
    `cargo doc` (Rust),
    `pydoc` or `help()` (Python).
-5. Write Incrementally:
-   Build up functionality in logical steps.
-   Test assumptions as you go.
-6. Self-Review:
+6. Implement, Test, Commit — One Step at a Time:
+   Implement one planned step.
+   Verify it compiles and tests pass.
+   Commit following the commit skill.
+   Only then proceed to the next step.
+   Never accumulate multiple logical changes before committing.
+7. Self-Review:
    Review for edge cases/error handling,
    performance bottlenecks (obvious ones),
    clarity (can someone else understand quickly?),
