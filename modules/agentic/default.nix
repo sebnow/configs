@@ -56,6 +56,7 @@
               "Bash(go mod:*)"
               "Bash(go run:*)"
               "Bash(go test:*)"
+              "Bash(go vet:*)"
               "Bash(grep:*)"
               "Bash(jj commit:*)"
               "Bash(jj diff:*)"
