@@ -110,7 +110,7 @@ State: "Beginning Code Review phase - verifying production readiness"
 
 You must review your own code before proceeding.
 
-Follow code-review skill principles to check for:
+Follow review-code skill principles to check for:
 
 Critical (must fix):
 
