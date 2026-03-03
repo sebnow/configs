@@ -124,5 +124,12 @@
         source = ./skills;
         recursive = true;
       };
+
+      programs.git = {
+        ignores = [
+          ".agents/"
+          ".claude/"
+        ];
+      };
     };
 }

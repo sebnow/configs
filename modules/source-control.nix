@@ -53,7 +53,6 @@
         enable = true;
         ignores = [
           "*.swp"
-          ".claude/"
           ".direnv/"
           ".envrc"
           ".private/"
