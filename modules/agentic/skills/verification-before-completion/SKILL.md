@@ -1,111 +1,94 @@
 ---
 name: verification-before-completion
-description: "Use when claiming work is complete, tests pass, or fixes work. Required before commits and PRs. Enforces running verification commands and confirming output before success claims. Triggers: 'done', 'fixed', 'passing', 'works now', before committing."
+description: "MUST load after making code changes and before claiming done. Run the project build/test command and confirm exit 0 before any completion claim, commit, or push. If verification fails, use the diagnostic output to fix the problem and re-verify. Triggers: editing source files, writing code, modifying config, making changes, implementing features, fixing bugs."
 ---
 
 # Verification Before Completion
 
-## Overview
-
-Claiming work is complete without verification is dishonesty, not efficiency.
-
 Core principle: Evidence before claims, always.
+
+## When To Apply
+
+MUST apply before:
+- Any commit or push operation
+- Any completion claim ("done", "finished", "complete", "fixed")
+- Any summary of completed work to the user
+- Moving to the next task after finishing one
 
 ## Verification Protocol
 
 Before claiming any status:
 
-1. Identify: What command proves this claim?
-2. Run: Execute the full command (fresh, complete)
+1. Detect: What build/test command does this project use?
+2. Run: Execute the command (fresh, complete)
 3. Read: Full output, check exit code, count failures
-4. Verify: Does output confirm the claim?
-   - If no: State actual status with evidence
-   - If yes: State claim with evidence
-5. Only then: Make the claim
+4. Confirm: Does output confirm success?
+   - If yes: State result with evidence. Proceed.
+   - If no: Read the diagnostic output. Fix the problem. Re-run from step 2.
+   - If tool unavailable: Stop and tell the user.
+5. Only then: Make the claim, commit, or declare done
 
 Skip any step = no claim permitted.
+
+### When Verification Cannot Run
+
+If the verification command is not available in the environment
+(e.g., `nix: command not found`),
+this is not an exemption.
+Do not label the work "UNVERIFIED" and proceed anyway.
+Stop and tell the user the verification command is unavailable.
+
+### Detecting the Verification Command
+
+Check the project root for these files and run the corresponding command:
+
+| File | Command |
+|------|---------|
+| `flake.nix` | `nix flake check` or `nix build` |
+| `go.mod` | `go build ./...` and `go test ./...` |
+| `Cargo.toml` | `cargo build` and `cargo test` |
+| `build.zig` | `zig build test` |
+| `package.json` | `npm test` |
+| `Makefile` | `make check` or `make test` |
+| `pyproject.toml` | `pytest` |
+
+If multiple apply, run all that are relevant to the changed files.
+If none apply, state explicitly: "No build/test command found for this project."
+Do not treat absence of a build tool as permission to skip verification.
+
+## Red Flags
+
+Stop immediately if you are about to:
+
+- Say "should", "probably", "seems to" instead of running verification
+- Express satisfaction before verification ("Great!", "Perfect!", "Done!")
+- Commit or push without running the build/test command
+- Claim "my tests pass" when the full suite has failures
+- Say "looks correct" based on reading code instead of executing it
+- Rationalize skipping verification ("simple change", "config only", "just docs")
 
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Full suite: 0 failures | "My new tests pass", ignoring pre-existing failures |
-| Linter clean | Linter output: 0 errors | Partial check |
-| Build succeeds | Build: exit 0 | Linter passing |
-| Bug fixed | Test symptom: passes | Code changed |
-| Regression test | Red-green cycle | Test passes once |
-| Agent completed | VCS diff verified | Agent reports success |
-| Requirements met | Line-by-line check | Tests passing |
-
-## Red Flags
-
-Stop immediately if:
-
-- Using "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!")
-- About to commit/push/PR without verification
-- Trusting agent success reports
-- Relying on partial verification
-- Rationalizing pre-existing test failures as "unrelated"
-- Claiming "my tests pass" when full suite has failures
-- Any wording implying success without having run verification
+| Tests pass | Full suite: 0 failures | "My new tests pass" |
+| Build succeeds | Build command: exit 0 | Reading the diff |
+| Bug fixed | Test reproducing symptom: passes | Code changed |
+| Config works | Config evaluates without error | "Syntax looks valid" |
 
 ## Verification Patterns
 
-Tests:
-```
-Good: [Run full test suite] [See: 34/34 pass] "All tests in suite pass"
-Bad: "My new tests pass" (ignoring 2 pre-existing failures)
-Bad: "Should pass now" / "Looks correct"
-```
-
-Regression tests (TDD Red-Green):
-```
-Good: Write -> Run (pass) -> Revert fix -> Run (must fail) -> Restore -> Run (pass)
-Bad: "I've written a regression test" (without red-green verification)
-```
-
 Build:
 ```
-Good: [Run build] [See: exit 0] "Build passes"
-Bad: "Linter passed" (linter doesn't verify compilation)
+Good: Run `nix flake check` -> exit 0 -> "Build passes"
+Bad:  Read the diff -> "Looks correct" -> commit
 ```
 
-Requirements:
+Tests:
 ```
-Good: Re-read plan -> Create checklist -> Verify each -> Report
-Bad: "Tests pass, phase complete"
+Good: Run full test suite -> 34/34 pass -> "All tests pass"
+Bad:  "My new tests pass" (ignoring pre-existing failures)
 ```
-
-Agent delegation:
-```
-Good: Agent reports success -> Check VCS diff -> Verify -> Report actual state
-Bad: Trust agent report
-```
-
-## Rationalization Prevention
-
-No shortcuts exist. Counter every excuse:
-
-- "Should work now" -> Run verification
-- "I'm confident" -> Confidence is not evidence
-- "Just this once" -> No exceptions
-- "Linter passed" -> Linter is not compiler
-- "Agent said success" -> Verify independently
-- "Partial check is enough" -> Partial proves nothing
-- "Pre-existing failures are unrelated" -> Full suite must pass, no exceptions
-- "My tests pass" -> All tests must pass, not just yours
-
-## When To Apply
-
-Always before:
-- Any variation of success/completion claims
-- Any expression of satisfaction
-- Any positive statement about work state
-- Committing, PR creation, task completion
-- Moving to next task
-
-Rule applies to exact phrases, paraphrases, synonyms, and implications.
 
 ## Bottom Line
 
