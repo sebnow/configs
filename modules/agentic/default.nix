@@ -22,6 +22,7 @@
           --ro-bind "$HOME/.nix-profile" "$HOME/.nix-profile" \
           --ro-bind "$HOME/.config/git" "$HOME/.config/git" \
           --ro-bind /nix/store /nix/store \
+          --ro-bind /nix/var/nix/profiles/default /nix/var/nix/profiles/default \
           --ro-bind /etc/resolv.conf /etc/resolv.conf \
           --ro-bind /etc/ssl /etc/ssl \
           --ro-bind /etc/ca-certificates /etc/ca-certificates \
