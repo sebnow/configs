@@ -12,9 +12,42 @@
     { pkgs, config, ... }:
     let
       piThemes = inputs.pi-coding-agent-catppuccin.packages.${pkgs.system}.default;
+      piWrapped = pkgs.writeShellScriptBin "bwrap-pi" ''
+        set -euo pipefail
+        (exec ${pkgs.bubblewrap}/bin/bwrap \
+          --dir /tmp \
+          --dir /var \
+          --bind "$HOME/.pi" "$HOME/.pi" \
+          --bind "$PWD" "$PWD" \
+          --ro-bind "$HOME/.nix-profile" "$HOME/.nix-profile" \
+          --ro-bind /nix/store /nix/store \
+          --ro-bind /etc/resolv.conf /etc/resolv.conf \
+          --ro-bind /etc/ssl /etc/ssl \
+          --ro-bind /etc/ca-certificates /etc/ca-certificates \
+          --ro-bind /usr /usr \
+          --symlink usr/lib /lib \
+          --symlink usr/lib64 /lib64 \
+          --symlink usr/bin /bin \
+          --symlink usr/sbin /sbin \
+          --proc /proc \
+          --dev /dev \
+          --unshare-all \
+          --share-net \
+          --unshare-pid \
+          --die-with-parent \
+          --new-session \
+          --dir /run/user/$(${pkgs.coreutils}/bin/id -u) \
+          --setenv XDG_RUNTIME_DIR "/run/user/$(${pkgs.coreutils}/bin/id -u)" \
+          --file 11 /etc/passwd \
+          --file 12 /etc/group \
+          ${pkgs.pi-coding-agent}/bin/pi) \
+        11< <(getent passwd $UID 65534) \
+        12< <(getent group $(${pkgs.coreutils}/bin/id -g) 65534)
+      '';
     in
     {
       home.packages = [
+        piWrapped
         pkgs.ast-grep
         pkgs.jq
         pkgs.pi-coding-agent
