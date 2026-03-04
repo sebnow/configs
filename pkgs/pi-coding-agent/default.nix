@@ -2,6 +2,9 @@
   lib,
   buildNpmPackage,
   fetchzip,
+  fd,
+  ripgrep,
+  makeBinaryWrapper,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "pi-coding-agent";
@@ -18,7 +21,14 @@ buildNpmPackage (finalAttrs: {
     cp ${./package-lock.json} package-lock.json
   '';
 
+  nativeBuildInputs = [ makeBinaryWrapper ];
+
   dontNpmBuild = true;
+
+  postInstall = ''
+    wrapProgram $out/bin/pi \
+      --prefix PATH : ${lib.makeBinPath [ fd ripgrep ]}
+  '';
 
   meta = {
     description = "Coding agent CLI with read, bash, edit, write tools and session management";
