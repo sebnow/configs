@@ -39,6 +39,8 @@
           --new-session \
           --dir /run/user/$(${pkgs.coreutils}/bin/id -u) \
           --setenv XDG_RUNTIME_DIR "/run/user/$(${pkgs.coreutils}/bin/id -u)" \
+          ''${SSH_AUTH_SOCK:+--bind "$SSH_AUTH_SOCK" "/run/user/$(${pkgs.coreutils}/bin/id -u)/ssh-agent.sock"} \
+          ''${SSH_AUTH_SOCK:+--setenv SSH_AUTH_SOCK "/run/user/$(${pkgs.coreutils}/bin/id -u)/ssh-agent.sock"} \
           --file 11 /etc/passwd \
           --file 12 /etc/group \
           ${pkgs.pi-coding-agent}/bin/pi) \
