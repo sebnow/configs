@@ -73,5 +73,7 @@
           set keymap vi
         '';
       };
+
+      programs.ripgrep.enable = true;
     };
 }
