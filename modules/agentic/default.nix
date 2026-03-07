@@ -54,6 +54,7 @@
         piWrapped
         pkgs.ast-grep
         pkgs.jq
+        pkgs.nushell
         pkgs.pi-coding-agent
         pkgs.skills-ref
         pkgs.tmux
