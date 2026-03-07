@@ -23,3 +23,11 @@ Never:
 - Use ambiguous validation language
   ("make sure" instead of specific checks like "Before calling X, verify Y")
 - Omit negative triggers when skill could over-trigger on related topics
+- Write the full skill in one pass then test afterward
+  (each change must be tested individually with before/after metrics)
+- Treat quality gate compliance as substitute for performance testing
+  (gates are necessary but not sufficient; test with fresh agent instances)
+- Add features based on reasoning alone without testing
+  (every addition must show measured improvement against baseline)
+- Conflate analyzing failures with measuring baseline
+  (a baseline requires running scenarios and recording numbered pass/fail results)

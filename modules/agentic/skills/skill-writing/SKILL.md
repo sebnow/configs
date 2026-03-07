@@ -30,7 +30,7 @@ The directory name must match the `name` field in frontmatter.
 `SKILL.md` is the only file allowed at the skill root.
 All other files must be in `scripts/`, `references/`, or `assets/`.
 
-## Before Writing: The Red Phase
+## Phase 1: Red — Baseline Measurement
 
 Follow red-green-refactor skill for core Red phase methodology.
 
@@ -39,194 +39,70 @@ Required domain-specific steps:
 1. Run pressure scenarios showing how agents fail without this skill
 2. Document specific rationalizations or mistakes
 3. Identify concrete symptoms triggering skill activation
+4. Define success criteria: what you will measure and what threshold is acceptable
 
-## Writing the Skill
+Record numbered pass/fail results per scenario.
+Required format:
 
-Create minimal documentation addressing observed failures.
+> Without skill, agent fails on 3/5 test scenarios.
+> Failure modes: skips validation (2x), wrong output format (1x).
 
-### Frontmatter Requirements
+Phase gate: You must have numbered pass/fail results
+and documented failure patterns before proceeding.
 
-Required fields:
+Do not rationalize: "I analyzed the failures, that counts as a baseline."
+Analyzing failures is not measuring them.
+A baseline requires running scenarios and recording outcomes.
 
-```yaml
----
-name: skill-name
-description: "[What it does]. Use when [applicable situations, triggers]. [Key capabilities]."
----
-```
+## Phase 2: Green — Iterative Skill Writing
 
-Optional fields:
+You cannot write the full SKILL.md in one pass.
 
-```yaml
----
-name: skill-name
-description: "[What it does]. Use when [applicable situations, triggers]. [Key capabilities]."
-license: Apache-2.0
-compatibility: Requires git, docker, jq, and access to the internet
-metadata:
-  author: example-org
-  version: "1.0"
-  mcp-server: server-name
-  category: workflow-automation
-  tags: [project-management, automation]
-allowed-tools: Bash(git:*) Read
----
-```
+Each iteration makes one change:
+add or modify one section, one instruction, or one example.
 
-Field constraints:
+After each change, re-test against the same pressure scenarios from Red phase.
+Record which scenarios now pass/fail, compare against baseline.
 
-| Field           | Required | Constraints                                                                                                                                                                                                                   |
-| --------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`          | Yes      | Max 64 chars. Unicode lowercase alphanumeric and hyphens only. Must not start/end with hyphen or contain consecutive hyphens. Must match parent directory name. Must not contain "claude" or "anthropic" (reserved prefixes). |
-| `description`   | Yes      | Max 1024 chars. Single-line quoted string. Describes what skill does and when to use it.                                                                                                                                      |
-| `license`       | No       | License name or reference to bundled license file.                                                                                                                                                                            |
-| `compatibility` | No       | Max 500 chars. Environment requirements (product, packages, network).                                                                                                                                                         |
-| `metadata`      | No       | Arbitrary key-value mapping for additional metadata.                                                                                                                                                                          |
-| `allowed-tools` | No       | Space-delimited list of pre-approved tools. Experimental.                                                                                                                                                                     |
+Required format per change:
 
-Frontmatter appears in the system prompt.
-Never use XML angle brackets (`<` `>`) in any frontmatter field.
+> Added: [description of change]
+> Before: 2/5 scenarios passed. After: 3/5 scenarios passed.
+> Newly passing: [scenario name]. Still failing: [scenario names].
 
-Use single-line quoted strings for descriptions.
-Write descriptions in third person.
-Include keywords matching error messages and symptoms.
-Start with what the skill does, then "Use when..." for discoverability.
-Include specific tasks users might say (e.g., "create a skill", "write tests").
-Mention relevant file types if applicable (e.g., "SKILL.md", ".test.ts").
-Use negative triggers to prevent over-triggering
-(e.g., "Do NOT use for [unrelated task]").
-See [search-optimization.md](references/search-optimization.md) for details.
+See [writing-guidelines.md](references/writing-guidelines.md) for
+frontmatter format, structure constraints, content guidelines,
+persuasion principles, and workflow patterns.
 
-### Structure Guidelines
+Phase gate: each change must have before/after metrics.
 
-SKILL.md must not exceed 500 lines.
-Body content should stay under 5000 tokens.
+Forbidden rationalizations:
 
-Use progressive disclosure with three tiers:
+- "I'll write the full skill then test it"
+- "These changes are all related so I'll make them together"
+- "I already know what the skill needs from my Red phase analysis"
+- "Quality gates will catch any issues"
+- "I'll add this feature based on reasoning alone"
 
-1. **Metadata** (~100 tokens): `name` and `description` loaded at startup for all skills
-2. **Instructions** (<5000 tokens): Full SKILL.md body loaded when skill activates
-3. **Resources** (as needed): Files in `scripts/`, `references/`, `assets/` loaded on demand
-
-Keep core guidance in SKILL.md.
-Move detailed reference material to `references/` subdirectory.
-
-### File References
-
-Use relative paths from skill root for internal references:
-
-```markdown
-See [the reference guide](references/REFERENCE.md) for details.
-
-Run the extraction script:
-scripts/extract.py
-```
-
-Keep file references one level deep from SKILL.md.
-Avoid deeply nested reference chains.
-
-For other skills:
-Use "skill-name skill" or "Follow skill-name" syntax.
-Example: `Follow commit skill for commits`
-
-### Body Structure
-
-Include these sections in skill bodies:
-
-- **Instructions** - step-by-step workflow with clear phases
-- **Common Issues** - error handling and troubleshooting
-- **Examples** - concrete scenarios with expected outputs
-
-See [body-template.md](assets/body-template.md) for a recommended template.
-
-### Content Guidelines
-
-Degrees of freedom must match task fragility:
-
-- High-fragility tasks require low-freedom guidance (checklists, imperatives)
-- Multi-approach problems require high-freedom guidance (principles, examples)
-
-Examples:
-
-- Source control, security, testing → checklists, "You must", "Never", "Required"
-- Architecture, design patterns → principles, "Consider", moderate authority
-- Research, exploration → context, goals, minimal constraints
-
-Assume the agent is smart.
-Never include redundant explanations.
-Only explain what baseline knowledge lacks.
-
-Skills generally fall into three categories:
-Document and Asset Creation, Workflow Automation, and MCP Enhancement.
-Each category has distinct techniques.
-See [skill-categories.md](references/skill-categories.md) for details.
-
-### Persuasion Principles
-
-Follow prompt-engineering skill for the full persuasion principles framework.
-
-Apply principles matching skill type:
-
-Discipline-enforcing skills: Authority + Commitment + Social Proof
-Guidance skills: Moderate authority + Unity
-Collaborative skills: Unity + Commitment
-
-### Approach: Problem-First vs Tool-First
-
-Choose the framing that fits the use case:
-
-- **Problem-first**: User describes outcomes, skill orchestrates the tools.
-  "I need to set up a project workspace" → skill handles tool selection and sequencing.
-- **Tool-first**: User already has tools, skill teaches optimal workflows.
-  "I have Notion MCP connected" → skill provides best practices and domain expertise.
-
-### Workflow Patterns
-
-Complex tasks require structured workflows agents can track.
-
-Five common patterns:
-
-1. **Sequential orchestration** —
-   Multi-step processes in specific order with dependencies between steps.
-   Validation at each stage, rollback instructions for failures.
-2. **Multi-service coordination** —
-   Workflows spanning multiple MCP servers.
-   Clear phase separation, data passing between services,
-   validation before moving to next phase.
-3. **Iterative refinement** —
-   Output quality improves through generate-validate-improve loops.
-   Explicit quality criteria, validation scripts, defined stop conditions.
-4. **Context-aware tool selection** —
-   Same outcome, different tools depending on context.
-   Clear decision criteria, fallback options, transparency about choices.
-5. **Domain-specific intelligence** —
-   Specialized knowledge beyond tool access.
-   Compliance checks before action, comprehensive documentation.
-
-For critical validations, prefer bundled scripts over language instructions.
-Code is deterministic; language interpretation is not.
-
-Validation-critical operations must use plan-validate-execute:
-
-1. Generate plan
-2. Validate plan before execution
-3. Execute with verification
-
-Batch operations must include validation loops before proceeding.
-
-Destructive operations must require explicit user confirmation.
-
-## Refining: The Refactor Phase
+## Phase 3: Refactor — Comprehensive Testing
 
 Follow red-green-refactor skill for core Refactor phase methodology.
 
+Compare against Red phase baseline.
+Required format:
+
+> Baseline: 1/5 scenarios passed. Current: 5/5 scenarios passed.
+
+Quality gates are necessary but not sufficient.
+Passing gates does not replace testing with fresh agent instances.
+
 Test with fresh agent instances across three areas:
 
-1. **Triggering tests** -
+1. **Triggering tests** —
    obvious tasks, paraphrased requests, negative (unrelated topics)
-2. **Functional tests** -
+2. **Functional tests** —
    valid outputs, tool calls succeed, edge cases covered
-3. **Performance comparison** -
+3. **Performance comparison** —
    with-skill vs without-skill behavior
 
 See [testing-framework.md](references/testing-framework.md) for detailed test cases and metrics.
@@ -254,6 +130,18 @@ not the skill body.
 User-prompt nudges are more effective than skill-level instructions
 for combating model laziness.
 
+## Skill Specification Reference
+
+See [writing-guidelines.md](references/writing-guidelines.md) for:
+
+- Frontmatter requirements (field constraints, description guidance)
+- Structure guidelines (line limits, progressive disclosure tiers, file references)
+- Body structure (section recommendations, link to body-template.md)
+- Content guidelines (freedom-fragility matching, skill categories)
+- Persuasion principles (principle-to-type mapping)
+- Approach: Problem-First vs Tool-First
+- Workflow patterns (five patterns, plan-validate-execute)
+
 ## Validation
 
 Use the skills-ref reference library to validate skills:
@@ -268,19 +156,21 @@ This checks frontmatter validity and naming conventions.
 
 You cannot finalize until all gates pass:
 
-1. Observed baseline failures without skill
-2. Directory name matches `name` field
-3. `name` field: max 64 chars, unicode lowercase alphanumeric + hyphens only, no reserved prefixes
-4. `description` field: max 1024 chars, single-line quoted string, third person, includes triggers
-5. Core content under 500 lines, body under 5000 tokens
-6. Tested across target models (sonnet minimum)
-7. Keywords match likely search terms
-8. Persuasion principles match skill type (see prompt-engineering skill)
-9. Validation loops for destructive operations
-10. No ALL CAPS (except acronyms), no emojis
-11. File references use relative paths, one level deep
-12. No files at skill root besides SKILL.md
-13. Negative triggers considered if skill risks over-triggering
+1. Red phase baseline metrics documented with numbered pass/fail results
+2. Green phase changes tested individually with before/after metrics
+3. Refactor phase comparison against baseline shows improvement
+4. Directory name matches `name` field
+5. `name` field: max 64 chars, unicode lowercase alphanumeric + hyphens only, no reserved prefixes
+6. `description` field: max 1024 chars, single-line quoted string, third person, includes triggers
+7. Core content under 500 lines, body under 5000 tokens
+8. Tested across target models (sonnet minimum)
+9. Keywords match likely search terms
+10. Persuasion principles match skill type (see prompt-engineering skill)
+11. Validation loops for destructive operations
+12. No ALL CAPS (except acronyms), no emojis
+13. File references use relative paths, one level deep
+14. No files at skill root besides SKILL.md
+15. Negative triggers considered if skill risks over-triggering
 
 State: "All quality gates passed" before finalizing.
 
