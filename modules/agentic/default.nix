@@ -8,6 +8,10 @@
     pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
   };
 
+  flake.overlays.md = final: prev: {
+    md = inputs.md.packages.${prev.system}.default;
+  };
+
   flake.modules.homeManager.agentic =
     { pkgs, config, ... }:
     let
@@ -54,6 +58,7 @@
         piWrapped
         pkgs.ast-grep
         pkgs.jq
+        pkgs.md
         pkgs.nushell
         pkgs.pi-coding-agent
         pkgs.skills-ref
