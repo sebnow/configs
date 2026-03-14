@@ -30,6 +30,17 @@ Without a file argument, reads from stdin.
 Mutation programs produce the modified document.
 Use `-i` to write changes back to the file.
 
+| Operation | Context | Effect |
+| --- | --- | --- |
+| `replace(str)` | After node pipeline | Replaces matched nodes with `str` |
+| `append(str)` | After node pipeline | Appends `str` after matched nodes |
+| `set(field, val)` | After `frontmatter` | Sets a frontmatter field |
+| `del(field)` | After `frontmatter` | Deletes a frontmatter field |
+| `.field += [val]` | After `frontmatter` | Appends to a frontmatter array |
+
+These are the only mutation operations.
+`md` has no subcommands — the interface is always `md '<program>'`.
+
 ### Replacing content between markers
 
 Use `nodes | skip_until() | take_until() | replace()` to target
@@ -39,22 +50,26 @@ because it works regardless of what the content currently contains.
 
 ```bash
 # Replace content between Obsidian comment markers
-md 'nodes | skip_until(.text == "begin notes") | take_until(.text == "end notes") | replace("New content here.\n")' -i note.md
+md 'nodes | skip_until(.text == "begin notes") | take_until(.text == "end notes") | replace("New content here.\n\n")' -i note.md
 
 # Replace content under a heading (stops at next h2)
-md 'nodes | skip_until(.text == "Notes") | take_until(.type == "heading" and .depth == 2) | replace("Updated.\n")' -i note.md
+md 'nodes | skip_until(.text == "Notes") | take_until(.type == "heading" and .depth == 2) | replace("Updated.\n\n")' -i note.md
 
 # Append after a section
-md 'nodes | skip_until(.text == "Notes") | take_until(.type == "heading") | append("More.\n")' -i note.md
+md 'nodes | skip_until(.text == "Notes") | take_until(.type == "heading") | append("More.\n\n")' -i note.md
 ```
 
-`skip_until` excludes the matched element.
+Both `skip_until` and `take_until` exclude their matched element.
+The selected range is the content strictly between the two boundaries.
 Use `.depth` in `take_until` to control whether subsections are included.
+End `replace()` and `append()` strings with `\n\n`
+to preserve the blank line before the next section.
 
 ### Frontmatter mutation
 
 ```bash
 md 'frontmatter | set(.draft, false)' -i note.md
+md 'frontmatter | del(.draft)' -i note.md
 md 'frontmatter | del(.tags)' -i note.md
 md 'frontmatter | .tags += ["new-tag"]' -i note.md
 ```
@@ -94,6 +109,9 @@ md 'body | replace("# Fresh Start\n\nNew content.\n")' -i note.md
 md 'frontmatter | .title' note.md
 md 'frontmatter | (.title, .tags)' note.md
 ```
+
+Comma binds looser than pipe.
+Always parenthesize: `(.title, .tags)` not `.title, .tags`.
 
 ## Filtering
 

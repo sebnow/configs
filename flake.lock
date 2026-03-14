@@ -120,11 +120,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772976899,
-        "narHash": "sha256-TFnyG54Kjrc3f1Ns7MK0S4vhZ3vgfHx0GqZPZBViAFs=",
+        "lastModified": 1773500992,
+        "narHash": "sha256-C1qvlifyNFwzQBK+OIWnhw9/2NXBTg6KM579dyt+xDc=",
         "owner": "sebnow",
         "repo": "md",
-        "rev": "fc22996bcad38545197086c267bf57b9a18f193c",
+        "rev": "3b22b246eb989b484a5134ad516ce20224227d98",
         "type": "github"
       },
       "original": {
