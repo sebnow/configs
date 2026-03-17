@@ -76,7 +76,9 @@ tags: [nix, flake-parts]
 - Use `import-tree` to auto-import all modules
 - Top-level flake.nix only calls `mkFlake` with imports
 
-Related: [[nix-import-tree]], [[dendritic-pattern]]
+Related:
+- [[nix-import-tree]] — how import-tree discovers and loads modules
+- [[dendritic-pattern]] — the directory convention this pattern implements
 ```
 
 ## Wikilinks
@@ -85,6 +87,9 @@ Connect notes using `[[note-filename]]` (without `.md`).
 Links create traversable edges in the knowledge graph.
 
 - Link when concepts are genuinely related
+- Annotate every link with a short reason to follow it
+  (e.g., `[[arena-allocator]] — memory layout tradeoffs`).
+  Bare links force the reader to open the note to judge relevance.
 - Prefer inline links that read naturally in context
 - Bidirectional links are implicit: searching for `[[note-a]]` finds all notes linking to it
 
@@ -150,7 +155,7 @@ while "this project's CI requires Node 20" goes in `projects/`.
 2. Use a descriptive slug filename
 3. Include required frontmatter (`created`, `source`)
 4. Write terse, structured content (bullets, not prose)
-5. Add wikilinks to related existing notes
+5. Add wikilinks to related existing notes, each with a short annotation
 6. Prefer creating new notes over editing existing ones
 
 Before creating a note, search the vault
