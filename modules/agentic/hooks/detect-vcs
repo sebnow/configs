@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cwd=$(jq -r '.cwd // empty')
+if [[ -z "$cwd" ]]; then
+  exit 0
+fi
+
+vcs=""
+if [[ -d "$cwd/.jj" ]]; then
+  vcs="jujutsu"
+elif [[ -d "$cwd/.git" ]]; then
+  vcs="git"
+else
+  # Walk up to find VCS root
+  dir="$cwd"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.jj" ]]; then
+      vcs="jujutsu"
+      break
+    elif [[ -d "$dir/.git" ]]; then
+      vcs="git"
+      break
+    fi
+    dir="$(dirname "$dir")"
+  done
+fi
+
+if [[ -z "$vcs" ]]; then
+  exit 0
+fi
+
+jq -n --arg vcs "$vcs" '{
+  hookSpecificOutput: {
+    hookEventName: "SessionStart",
+    additionalContext: "This project uses \($vcs) for version control. Use the \($vcs) workflow for all VCS operations."
+  }
+}'

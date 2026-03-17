@@ -73,6 +73,16 @@
         skillsDir = ./skills;
         settings = {
           includeCoAuthoredBy = false;
+          hooks.SessionStart = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/detect-vcs";
+                }
+              ];
+            }
+          ];
           hooks.PostToolUse = [
             {
               matcher = "Edit|Write";
