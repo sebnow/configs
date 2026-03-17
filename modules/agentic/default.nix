@@ -83,6 +83,16 @@
               ];
             }
           ];
+          hooks.SessionEnd = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/vault-debrief";
+                }
+              ];
+            }
+          ];
           hooks.PostToolUse = [
             {
               matcher = "Edit|Write";

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+jq -n '{
+  continue: true,
+  systemMessage: "Run /agent-vault debrief before ending the session."
+}'
