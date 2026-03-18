@@ -139,6 +139,10 @@
                   type = "command";
                   command = "bash \"$HOME/.claude/hooks/validate-skill\"";
                 }
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/gofmt";
+                }
               ];
             }
           ];

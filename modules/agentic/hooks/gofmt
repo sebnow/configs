@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+file_path=$(jq -r '.tool_input.file_path // empty')
+if [[ -z "$file_path" ]]; then
+  exit 0
+fi
+
+if [[ "$file_path" != *.go ]]; then
+  exit 0
+fi
+
+gofmt -w "$file_path"
