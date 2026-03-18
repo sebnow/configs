@@ -35,6 +35,20 @@
             continue
           fi
 
+          # Skip sessions with no meaningful content (e.g. cancelled /resume)
+          msg_count=$(${pkgs.jq}/bin/jq -c 'select(.type == "user" or .type == "assistant")' "$transcript" | wc -l)
+          if [[ "$msg_count" -lt 2 ]]; then
+            rm -f "$entry"
+            continue
+          fi
+
+          # Skip debrief sessions to avoid debriefing our own runs
+          first_user_msg=$(${pkgs.jq}/bin/jq -n -r 'first(inputs | select(.type == "user")) | .message.content | if type == "string" then . else .[0].text // "" end' "$transcript")
+          if [[ "$first_user_msg" == *"Run /agent-vault debrief for session"* ]]; then
+            rm -f "$entry"
+            continue
+          fi
+
           project_dir=$(${pkgs.coreutils}/bin/dirname "$transcript")
           project_name=$(${pkgs.coreutils}/bin/basename "$project_dir" | rev | cut -d- -f1 | rev)
 
