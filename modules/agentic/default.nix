@@ -16,6 +16,40 @@
     { pkgs, config, ... }:
     let
       piThemes = inputs.pi-coding-agent-catppuccin.packages.${pkgs.system}.default;
+      vaultDebriefProcess = pkgs.writeShellScriptBin "vault-debrief-process" ''
+        set -euo pipefail
+
+        queue_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/agents/agent-vault-debrief-queue"
+
+        if [[ ! -d "$queue_dir" ]]; then
+          exit 0
+        fi
+
+        for entry in "$queue_dir"/*; do
+          session_id=$(${pkgs.coreutils}/bin/basename "$entry")
+          [[ "$session_id" = "*" ]] && break
+
+          transcript=$(${pkgs.findutils}/bin/find "$HOME/.claude/projects" -name "$session_id.jsonl" 2>/dev/null | head -1)
+          if [[ -z "$transcript" ]]; then
+            rm -f "$entry"
+            continue
+          fi
+
+          project_dir=$(${pkgs.coreutils}/bin/dirname "$transcript")
+          project_name=$(${pkgs.coreutils}/bin/basename "$project_dir" | rev | cut -d- -f1 | rev)
+
+          if claude --print \
+            --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)' \
+            "Run /agent-vault debrief for session $session_id.
+        The session transcript is at: $transcript
+        The project name is: $project_name"; then
+            rm -f "$entry"
+          else
+            echo "Failed to debrief session: $session_id" >&2
+          fi
+        done
+      '';
+
       piWrapped = pkgs.writeShellScriptBin "bwrap-pi" ''
         set -euo pipefail
         (exec ${pkgs.bubblewrap}/bin/bwrap \
@@ -186,6 +220,23 @@
       home.file.".pi/agent/skills" = {
         source = ./skills;
         recursive = true;
+      };
+
+      systemd.user.services.vault-debrief = {
+        Unit.Description = "Process vault debrief queue";
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${vaultDebriefProcess}/bin/vault-debrief-process";
+        };
+      };
+
+      systemd.user.timers.vault-debrief = {
+        Unit.Description = "Process vault debrief queue periodically";
+        Timer = {
+          OnCalendar = "hourly";
+          Persistent = true;
+        };
+        Install.WantedBy = [ "timers.target" ];
       };
 
       programs.git = {

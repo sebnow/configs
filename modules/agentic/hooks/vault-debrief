@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-jq -n '{
-  continue: true,
-  systemMessage: "Run /agent-vault debrief before ending the session."
-}'
+session_id=$(jq -r '.session_id // empty')
+if [[ -z "$session_id" ]]; then
+  exit 0
+fi
+
+queue_dir="${XDG_DATA_HOME:-$HOME/.local/share}/agents/agent-vault-debrief-queue"
+mkdir -p "$queue_dir"
+touch "$queue_dir/$session_id"
