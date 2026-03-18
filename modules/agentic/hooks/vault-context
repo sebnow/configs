@@ -11,7 +11,12 @@ while IFS= read -r note; do
   desc=$(md 'frontmatter.description' < "$note" 2>/dev/null)
   if [[ -n "$desc" ]]; then
     name=$(basename "$note" .md)
-    descriptions+="- [[$name]]: $desc"$'\n'
+    tags=$(md 'frontmatter.tags' < "$note" 2>/dev/null)
+    if [[ "$tags" != "null" ]]; then
+      descriptions+="- [[$name]]: $desc (tags: $(echo "$tags" | paste -sd, -))"$'\n'
+    else
+      descriptions+="- [[$name]]: $desc"$'\n'
+    fi
   fi
 done < <(find "$vault" -name '*.md' -not -path '*/archive/*' | sort)
 
