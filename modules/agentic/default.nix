@@ -38,11 +38,10 @@
           project_dir=$(${pkgs.coreutils}/bin/dirname "$transcript")
           project_name=$(${pkgs.coreutils}/bin/basename "$project_dir" | rev | cut -d- -f1 | rev)
 
-          if claude --print \
-            --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)' \
-            "Run /agent-vault debrief for session $session_id.
+          if echo "Run /agent-vault debrief for session $session_id.
         The session transcript is at: $transcript
-        The project name is: $project_name"; then
+        The project name is: $project_name" | claude --print \
+            --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)'; then
             rm -f "$entry"
           else
             echo "Failed to debrief session: $session_id" >&2
