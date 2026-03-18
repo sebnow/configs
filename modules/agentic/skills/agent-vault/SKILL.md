@@ -41,16 +41,22 @@ Required frontmatter:
 ```yaml
 ---
 created: 2026-03-14
-source: claude-code/project-name/session-id
+sources:
+  - "[[a1b2c3d4-configs]]"
 ---
 ```
+
+Each source is a wikilink to the session note that created or modified this note.
+When extending an existing note, append the current session to `sources`.
 
 Optional frontmatter:
 
 ```yaml
 ---
 created: 2026-03-14
-source: claude-code/project-name/session-id
+sources:
+  - "[[a1b2c3d4-configs]]"
+  - "[[e5f6g7h8-configs]]"
 confidence: high    # high, medium, low
 tags: [nix, debugging]
 supersedes: "[[previous-note]]"
@@ -65,7 +71,8 @@ Use bullet points and key-value pairs, not prose.
 ```markdown
 ---
 created: 2026-03-14
-source: claude-code/configs
+sources:
+  - "[[a1b2c3d4-configs]]"
 tags: [nix, flake-parts]
 ---
 
@@ -153,7 +160,7 @@ while "this project's CI requires Node 20" goes in `projects/`.
 
 1. Choose the right directory (`concepts/` or `projects/<name>/`)
 2. Use a descriptive slug filename
-3. Include required frontmatter (`created`, `source`)
+3. Include required frontmatter (`created`, `sources`)
 4. Write terse, structured content (bullets, not prose)
 5. Add wikilinks to related existing notes, each with a short annotation
 6. Prefer creating new notes over editing existing ones
@@ -177,10 +184,13 @@ This builds the project's knowledge base for future sessions.
 
 At session end or on `/vault debrief`:
 
-1. Review what was accomplished, what was learned, what failed
-2. Write a session note to `sessions/<project>-<date>.md`
-3. Extract any general insights into separate concept notes
-4. Link the session note to relevant project and concept notes
+1. Determine the session ID.
+   For Claude Code, use the session UUID from the conversation.
+   If the session ID is not available, ask the user.
+2. Review what was accomplished, what was learned, what failed
+3. Write a session note to `sessions/<session-id>-<project>.md`
+4. Extract any general insights into separate concept notes
+5. Link the session note to relevant project and concept notes
 
 Session notes capture ephemeral context.
 Concept notes capture durable knowledge.
