@@ -40,7 +40,8 @@
 
           if echo "Run /agent-vault debrief for session $session_id.
         The session transcript is at: $transcript
-        The project name is: $project_name" | claude --print \
+        The project name is: $project_name
+        This is a non-interactive background process. Do not ask questions. If the session has no meaningful content to debrief, silently skip it." | claude --print \
             --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)'; then
             rm -f "$entry"
           else
