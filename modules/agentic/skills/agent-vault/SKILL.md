@@ -1,6 +1,6 @@
 ---
 name: agent-vault
-description: "Persistent cross-project memory using a zettelkasten-style vault of atomic markdown notes connected by wikilinks. Agents store and recall knowledge at $XDG_DATA_HOME/agents/vault/. Use when starting sessions, hitting errors, or when asked to remember/recall/analyze/debrief. Triggers: /vault, 'remember this', 'recall', 'what do we know about', 'check memory', 'vault maintain', 'vault debrief'. Do NOT use for project-specific scratch files or temporary task state."
+description: "Persistent cross-project memory using a zettelkasten-style vault of atomic markdown notes connected by wikilinks. Agents store and recall knowledge at $XDG_DATA_HOME/agents/vault/. Use when starting sessions, hitting errors, or when asked to remember/recall/analyze/debrief. Triggers: /agent-vault, 'remember this', 'recall', 'what do we know about', 'check memory', 'vault maintain', 'vault debrief'. Do NOT use for project-specific scratch files or temporary task state."
 ---
 
 # Agent Vault
@@ -41,10 +41,17 @@ Required frontmatter:
 ```yaml
 ---
 created: 2026-03-14
+description: "When to read this note and what it covers"
 sources:
   - "[[a1b2c3d4-configs]]"
 ---
 ```
+
+The `description` field tells agents when and why to read a note.
+Write it for an agent scanning a list at session start:
+describe when this note is relevant, not what it contains.
+Keep under one sentence.
+Think of it like a skill description — match on agent intent.
 
 Each source is a wikilink to the session note that created or modified this note.
 When extending an existing note, append the current session to `sources`.
@@ -54,6 +61,7 @@ Optional frontmatter:
 ```yaml
 ---
 created: 2026-03-14
+description: "When to read this note and what it covers"
 sources:
   - "[[a1b2c3d4-configs]]"
   - "[[e5f6g7h8-configs]]"
@@ -71,6 +79,7 @@ Use bullet points and key-value pairs, not prose.
 ```markdown
 ---
 created: 2026-03-14
+description: "Read when structuring or debugging flake-parts modules"
 sources:
   - "[[a1b2c3d4-configs]]"
 tags: [nix, flake-parts]
@@ -113,7 +122,7 @@ Recall automatically at:
    When hitting an error, test failure, or unfamiliar pattern,
    search the vault for matching terms before debugging from scratch.
 
-Recall on demand: `/vault recall <query>`
+Recall on demand: `/agent-vault recall <query>`
 
 ### How to Recall
 
@@ -143,7 +152,7 @@ Write to the vault when you discover:
 - A pattern or technique that applies beyond the current task
 - An error whose root cause was not immediately apparent
 
-On demand: `/vault remember <topic>`
+On demand: `/agent-vault remember <topic>`
 
 ### What to Write
 
@@ -160,7 +169,7 @@ while "this project's CI requires Node 20" goes in `projects/`.
 
 1. Choose the right directory (`concepts/` or `projects/<name>/`)
 2. Use a descriptive slug filename
-3. Include required frontmatter (`created`, `sources`)
+3. Include required frontmatter (`created`, `description`, `sources`)
 4. Write terse, structured content (bullets, not prose)
 5. Add wikilinks to related existing notes, each with a short annotation
 6. Prefer creating new notes over editing existing ones
@@ -171,7 +180,7 @@ If one exists, extend it rather than creating a duplicate.
 
 ## Analyze: Project Scanning
 
-On `/vault analyze` or when exploring an unfamiliar project:
+On `/agent-vault analyze` or when exploring an unfamiliar project:
 
 1. Scan the project structure, conventions, and key patterns
 2. Write or update project notes in `projects/<name>/`
@@ -182,7 +191,7 @@ This builds the project's knowledge base for future sessions.
 
 ## Debrief: Session Summaries
 
-At session end or on `/vault debrief`:
+At session end or on `/agent-vault debrief`:
 
 1. Determine the session ID.
    For Claude Code, use the session UUID from the conversation.
@@ -229,7 +238,7 @@ Stale notes mislead more than missing notes.
 
 ## Maintain: Vault Hygiene
 
-On `/vault maintain` or when you notice issues during reads:
+On `/agent-vault maintain` or when you notice issues during reads:
 
 - **Duplicates**: find notes covering the same concept, merge into one
 - **Orphans**: notes with no inbound or outbound wikilinks.
@@ -247,7 +256,7 @@ Suggest it when you notice problems during normal vault use.
 ### Empty vault on first session
 
 The vault starts empty. On first use with a project,
-run `/vault analyze` to populate it.
+run `/agent-vault analyze` to populate it.
 Subsequent sessions benefit from accumulated knowledge.
 
 ### Too many search results

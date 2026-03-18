@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+vault="${XDG_DATA_HOME:-$HOME/.local/share}/agents/vault"
+if [[ ! -d "$vault" ]]; then
+  exit 0
+fi
+
+descriptions=""
+while IFS= read -r note; do
+  desc=$(md 'frontmatter.description' < "$note" 2>/dev/null)
+  if [[ -n "$desc" ]]; then
+    name=$(basename "$note" .md)
+    descriptions+="- [[$name]]: $desc"$'\n'
+  fi
+done < <(find "$vault" -name '*.md' -not -path '*/archive/*' | sort)
+
+if [[ -z "$descriptions" ]]; then
+  exit 0
+fi
+
+context="The following vault notes are available. Use /agent-vault recall to read relevant notes.
+$descriptions"
+
+jq -n --arg ctx "$context" '{
+  hookSpecificOutput: {
+    hookEventName: "SessionStart",
+    additionalContext: $ctx
+  }
+}'
