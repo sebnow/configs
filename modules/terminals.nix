@@ -18,12 +18,15 @@
       config = lib.mkMerge [
         # Ghostty
         (lib.mkIf ghosttyCfg.enable {
+          # Catppuccin nix only supports one theme
+          catppuccin.ghostty.enable = false;
+
           programs.ghostty = {
             package = if pkgs.stdenv.isDarwin then null else (config.lib.nixGL.wrap pkgs.ghostty);
             settings = {
               font-size = if pkgs.stdenv.isDarwin then 14 else 12;
               font-family = "IosevkaTerm NF";
-              theme = "catppuccin-${config.catppuccin.flavor}";
+              theme = "light:Catppuccin Latte,dark:Catppuccin Mocha";
               keybind = pkgs.lib.optionals pkgs.stdenv.isLinux [
                 "ctrl+shift+enter=new_split:right"
                 "ctrl+shift+d=new_split:down"
