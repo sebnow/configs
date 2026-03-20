@@ -16,6 +16,19 @@ Apply these principles to every implementation:
   For dependencies,
   prefer small bits of duplication over adding third-party dependencies for trivial functionality.
   Larger or complex functionality requires careful trade-off consideration - discuss when uncertain.
+- Discover Abstractions, Don't Invent Them:
+  Write the concrete code the problem demands.
+  Only extract shared functions or types
+  when the same logic has appeared in at least two places.
+  Do not create interfaces with one implementation,
+  options structs with fewer than two fields,
+  or functions and methods called from a single site.
+  When compressing duplicated code,
+  extract into the minimum number of functions —
+  do not decompose extracted helpers into further sub-functions.
+  When asked to refactor,
+  compress genuinely duplicated logic.
+  Do not add methods, parameters, or features beyond what was requested.
 - Domain Aware:
   Every system has purpose and intrinsic concepts - compiler has parsers and ASTs,
   game has players and inventories,
