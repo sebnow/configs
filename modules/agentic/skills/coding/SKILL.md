@@ -141,6 +141,7 @@ Follow this workflow for all code changes:
   Implementation details must not leak through error types.
   Fail fast only on truly unrecoverable errors.
 - Language-Specific: Follow established conventions for the language you're writing in.
+  For Zig concurrency and threading, see [zig-concurrency.md](references/zig-concurrency.md).
 
 ## Boy Scout Rule
 
