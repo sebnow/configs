@@ -12,22 +12,18 @@ Bad commits create confusion, make debugging harder, and complicate code review.
 
 Core principle: Every commit tells a clear story and is independently reviewable.
 
-If the project uses jujutsu (`.jj` directory exists),
+If the project uses jujutsu,
 you MUST load and follow the jujutsu skill before running any commands.
 Do not rely on your own knowledge of jujutsu.
 
 ## Detecting Project Conventions (Required)
 
-Before your first commit, you must:
+Before your first commit,
+analyze recent commits for project conventions.
+If recent commits are already visible in the conversation,
+use those — do not fetch history redundantly.
 
-1. Examine recent commit history
-2. Use task tracking to document findings:
-   ```
-   - [completed] Convention check: Uses conventional commits (feat/fix/docs)
-   - [completed] Convention check: Lowercase subject, no period
-   - [completed] Convention check: Imperative mood
-   ```
-3. State explicitly: "This project [uses/doesn't use] conventional commits"
+State explicitly: "This project [uses/doesn't use] conventional commits."
 
 If you skip this step, you will violate project conventions.
 
@@ -106,6 +102,7 @@ See [commit-messages.md](references/commit-messages.md)
 for detailed format, examples, and templates.
 
 Key requirements:
+
 - Subject: 50 chars (max 72), imperative mood
 - Describe why, not what — the diff shows what changed;
   the message must supply the reasoning the diff cannot convey
@@ -124,6 +121,7 @@ Review the diff and list every distinct modification
 ### Step 2: Verify Atomicity
 
 Apply the atomic commit test to the enumerated list:
+
 - Could any change be committed independently?
 - Are there mechanical changes mixed with functional changes?
 - Would reverting this commit undo more than one decision?
@@ -154,6 +152,7 @@ Only after all steps pass may you create the commit.
 ## Post-Commit Verification
 
 After committing, review message and diff. Verify:
+
 - [ ] Message follows conventions
 - [ ] Only intended changes included
 - [ ] No debug statements committed
@@ -167,6 +166,7 @@ else create fixup commit.
 If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 
 **Anti-Patterns:**
+
 - "commit all changes" / "git add ." / "add all files" -> Stage selectively
 - "fixes A, B, and C" / "adds X and fixes Y" -> Split into atomic commits
 - "skip checking conventions" -> Check conventions first
@@ -182,6 +182,7 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 Jujutsu-specific anti-patterns are covered in the jujutsu skill.
 
 **When detected:**
+
 1. Stop immediately
 2. State which requirement you skipped
 3. Complete the requirement before proceeding
