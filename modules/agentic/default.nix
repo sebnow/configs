@@ -162,6 +162,10 @@
                   type = "command";
                   command = "$HOME/.claude/hooks/gofmt";
                 }
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/zigfmt";
+                }
               ];
             }
           ];

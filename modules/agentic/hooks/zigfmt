@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+file_path=$(jq -r '.tool_input.file_path // empty')
+if [[ -z "$file_path" ]]; then
+  exit 0
+fi
+
+if [[ "$file_path" != *.zig ]]; then
+  exit 0
+fi
+
+if ! command -v zig &>/dev/null; then
+  exit 0
+fi
+
+zig fmt "$file_path"
