@@ -7,32 +7,19 @@ if [[ -z "$cwd" ]]; then
 fi
 
 vcs=""
-if [[ -d "$cwd/.jj" ]]; then
+commits=""
+
+if commits=$(cd "$cwd" && jj log -r 'ancestors(@-, 5)' -T 'change_id.short() ++ " " ++ description.first_line() ++ "\n"' --no-graph 2>/dev/null); then
   vcs="jujutsu"
-elif [[ -d "$cwd/.git" ]]; then
+elif commits=$(cd "$cwd" && git log --oneline -5 2>/dev/null); then
   vcs="git"
 else
-  # Walk up to find VCS root
-  dir="$cwd"
-  while [[ "$dir" != "/" ]]; do
-    if [[ -d "$dir/.jj" ]]; then
-      vcs="jujutsu"
-      break
-    elif [[ -d "$dir/.git" ]]; then
-      vcs="git"
-      break
-    fi
-    dir="$(dirname "$dir")"
-  done
-fi
-
-if [[ -z "$vcs" ]]; then
   exit 0
 fi
 
-jq -n --arg vcs "$vcs" '{
+jq -n --arg vcs "$vcs" --arg commits "$commits" '{
   hookSpecificOutput: {
     hookEventName: "SessionStart",
-    additionalContext: "This project uses \($vcs) for version control. Use the \($vcs) workflow for all VCS operations."
+    additionalContext: "This project uses \($vcs) for version control. Use the \($vcs) workflow for all VCS operations.\n\nRecent commits:\n\($commits)"
   }
 }'
