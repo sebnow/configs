@@ -227,13 +227,11 @@
         editorPaddingX = 1;
         theme = "catppuccin-${config.catppuccin.flavor}";
         defaultProvider = "github-copilot";
-        defaultModel = "claude-opus-4.6";
+        defaultModel = "claude-sonnet.6";
         enabledModels = [
           "github-copilot/claude-opus-4.6"
-          "github-copilot/claude-sonnet-4.5"
-          "github-copilot/gpt-5.2-codex"
-          "github-copilot/gpt-5.2"
-          "github-copilot/gemini-3-pro-preview"
+          "github-copilot/claude-sonnet-4.6"
+          "github-copilot/gpt-5.3-codex"
         ];
       };
 
