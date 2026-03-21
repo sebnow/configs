@@ -93,7 +93,8 @@ Follow this workflow for all code changes:
    Use language documentation tools: `go doc` (Go),
    `man` (C),
    `cargo doc` (Rust),
-   `pydoc` or `help()` (Python).
+   `pydoc` or `help()` (Python),
+   `zigdoc` (Zig — drill iteratively: `zigdoc std.ArrayList` then `zigdoc std.ArrayList.init`).
 6. Implement, Test, Commit — One Step at a Time:
    Implement one planned step.
    Verify it compiles and tests pass.

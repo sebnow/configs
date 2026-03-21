@@ -8,6 +8,10 @@
     pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
   };
 
+  flake.overlays.zigdoc = final: prev: {
+    zigdoc = prev.callPackage ../../pkgs/zigdoc { };
+  };
+
   flake.overlays.md = final: prev: {
     md = inputs.md.packages.${prev.system}.default;
   };
@@ -111,6 +115,7 @@
         pkgs.pi-coding-agent
         pkgs.skills-ref
         pkgs.tmux
+        pkgs.zigdoc
       ];
 
       programs.claude-code = {
@@ -192,6 +197,7 @@
               "Bash(rg:*)"
               "Bash(tee:*)"
               "Bash(zig build:*)"
+              "Bash(zigdoc:*)"
               "Glob"
               "Grep"
               "Skill(adr-writing)"
