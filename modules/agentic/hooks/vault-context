@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+command -v md &>/dev/null || exit 0
+
 vault="${XDG_DATA_HOME:-$HOME/.local/share}/agents/vault"
 if [[ ! -d "$vault" ]]; then
   exit 0
