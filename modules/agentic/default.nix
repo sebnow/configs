@@ -156,7 +156,7 @@
               hooks = [
                 {
                   type = "command";
-                  command = "bash \"$HOME/.claude/hooks/validate-skill\"";
+                  command = "$HOME/.claude/hooks/validate-skill";
                 }
                 {
                   type = "command";
