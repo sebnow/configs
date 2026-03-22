@@ -153,6 +153,23 @@ it's only for special cases like creating empty commits on different branches.
 
 Use HEREDOC for multi-line messages.
 
+## Splitting Commits
+
+**Always use `jj split` to split a commit. Never use manual workarounds
+(`jj edit` + `jj restore`, file backups, etc.).**
+
+```bash
+# Split working copy: files go in first commit, rest in second
+jj split -m "first commit message" path/to/file.zig
+
+# Split a previous commit (rebases descendants automatically)
+jj split -r @- -m "first part" path/to/file.zig
+```
+
+The second commit gets no description — describe or commit it next.
+Never use bare `jj split` without filesets — it opens an interactive diff editor.
+See [advanced-operations.md](references/advanced-operations.md) for `--parallel`.
+
 ## Common Anti-Patterns
 
 **Using `jj describe` + `jj new` to create commits (wrong pattern):**
@@ -200,11 +217,10 @@ jj commit -m "message"
 **Interactive operations:**
 ```bash
 # Bad: Waits for user input
-jj split
 jj squash
 jj squash -r <change>
 
-# Good: Non-interactive with -m or -u flags
+# Good: Non-interactive squash with -m or -u flags
 jj squash -m "New message"          # Squash @ into parent with new message
 jj squash -u                        # Squash @ into parent, keep message
 jj squash -r <change> -m "message"  # Squash specific change with message
@@ -235,7 +251,7 @@ Always check parent message first: `jj log -r @-`
 
 For advanced operations:
 - See [advanced-operations.md](references/advanced-operations.md)
-  for squashing safety, bookmark management, and git integration
+  for splitting commits, squashing safety, bookmark management, and git integration
 - See [operation-log.md](references/operation-log.md)
   for operation log safety net, undo vs restore, and recovery patterns
 

@@ -49,6 +49,38 @@ jj commit -m "fixup: add missing file to commit X"
 Never squash into non-HEAD commits
 unless you understand the rebase implications.
 
+## Splitting Commits
+
+**Use `jj split` with filesets to split non-interactively.**
+
+When a commit contains changes that belong in separate commits,
+split by file path:
+
+```bash
+# Split specific files into first commit, rest stays in second
+jj split -m "$(cat <<'EOF'
+First commit message
+EOF
+)" path/to/file1.zig path/to/dir/
+
+# Split a non-head commit (rebases descendants)
+jj split -r <rev> -m "message" path/to/file.zig
+```
+
+How it works:
+- Files matching the filesets go into the first (selected) commit
+- Remaining changes stay in a second (remaining) child commit
+- The second commit has no description — describe or commit it next
+
+**Use `--parallel` to create sibling commits instead of parent-child:**
+```bash
+jj split --parallel -m "message" path/to/file.zig
+```
+
+**Never use bare `jj split` without filesets** —
+it opens an interactive diff editor.
+Use `jj restore` + `jj commit` workarounds only as a last resort.
+
 ## Bookmark Management
 
 **Creating bookmarks:**
