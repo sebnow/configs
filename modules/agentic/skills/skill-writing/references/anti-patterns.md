@@ -31,3 +31,6 @@ Never:
   (every addition must show measured improvement against baseline)
 - Conflate analyzing failures with measuring baseline
   (a baseline requires running scenarios and recording numbered pass/fail results)
+- Label a command as "Bad" when the command has a valid non-interactive or safe variant
+  (agents avoid the command entirely; show safe usage in a positive section,
+  only list the truly dangerous invocation as anti-pattern)

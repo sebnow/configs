@@ -122,6 +122,60 @@ Document and Asset Creation, Workflow Automation, and MCP Enhancement.
 Each category has distinct techniques.
 See [skill-categories.md](skill-categories.md) for details.
 
+## Writing Anti-Pattern Sections
+
+Anti-pattern sections teach agents what to avoid.
+But labeling a command as "Bad" causes agents to avoid the command entirely,
+even when a valid variant exists.
+This is called label poisoning.
+
+### The Problem
+
+When a command appears under a "Bad" label:
+
+- Agents treat the command name itself as forbidden
+- A nearby "Good" variant using the same command is ignored
+- Agents use complex workarounds instead of the correct variant
+
+### The Rule
+
+If a command has both dangerous and safe modes,
+show the safe mode in a positive section first.
+Only list the truly dangerous invocation as an anti-pattern.
+Never label the command name itself as "Bad".
+
+### Before (label-poisoned)
+
+```markdown
+## Anti-Patterns
+
+**Using deploy (interactive, waits for input):**
+
+# Bad: opens confirmation dialog
+deploy staging
+
+# Good: non-interactive
+deploy --yes staging
+```
+
+Agents reading this avoid `deploy` entirely.
+
+### After (correct)
+
+```markdown
+## Deployment
+
+Always use non-interactive mode:
+deploy --yes staging
+
+## Anti-Patterns
+
+Never:
+- Run deploy without --yes in scripts (opens confirmation dialog, blocks automation)
+```
+
+Agents reading this use `deploy --yes` confidently.
+
 ## Persuasion Principles
 
 Follow prompt-engineering skill for the full persuasion principles framework.

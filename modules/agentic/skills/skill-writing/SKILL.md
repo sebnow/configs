@@ -70,6 +70,11 @@ Required format per change:
 > Before: 2/5 scenarios passed. After: 3/5 scenarios passed.
 > Newly passing: [scenario name]. Still failing: [scenario names].
 
+When writing anti-pattern sections:
+never label a command as "Bad" if it has a valid variant.
+Show correct usage in a positive section first.
+See "Writing Anti-Pattern Sections" below for the full rule and examples.
+
 See [writing-guidelines.md](references/writing-guidelines.md) for
 frontmatter format, structure constraints, content guidelines,
 persuasion principles, and workflow patterns.
@@ -123,6 +128,7 @@ Common loopholes:
 - Instructions too verbose (causes non-compliance; use bullet points)
 - Critical instructions buried below less important content
 - Ambiguous language ("make sure" instead of "Before calling X, verify Y")
+- Label poisoning in anti-pattern sections (see below)
 
 If agents skip steps despite clear instructions,
 recommend adding performance encouragement to the user's prompt (e.g., CLAUDE.md),
@@ -171,6 +177,7 @@ You cannot finalize until all gates pass:
 13. File references use relative paths, one level deep
 14. No files at skill root besides SKILL.md
 15. Negative triggers considered if skill risks over-triggering
+16. Anti-pattern sections do not label commands as "Bad" when a valid variant exists
 
 State: "All quality gates passed" before finalizing.
 
@@ -188,7 +195,39 @@ Required techniques:
 
 Frequently-loaded skills must target under 200 words total.
 
+## Writing Anti-Pattern Sections
+
+When a command appears under a "Bad" label in a skill,
+agents avoid the command entirely —
+even when a valid variant is shown nearby.
+This is label poisoning.
+
+Rule: if a command has both dangerous and safe modes,
+show correct usage in a positive section first.
+Only list the truly dangerous invocation as an anti-pattern.
+Never put a command name under a "Bad" label
+when the command has a valid non-interactive or safe variant.
+
+Wrong — labels `deploy` as bad, agents avoid it entirely:
+
+```markdown
+# Bad: opens confirmation dialog
+deploy staging
+# Good: non-interactive
+deploy --yes staging
+```
+
+Right — safe usage shown first, anti-pattern is specific:
+
+```markdown
+## Deployment
+Always use non-interactive mode:
+deploy --yes staging
+
 ## Anti-Patterns
+Never:
+- Run deploy without --yes in scripts (blocks automation)
+```
 
 See [anti-patterns.md](references/anti-patterns.md) for complete list of forbidden practices.
 
