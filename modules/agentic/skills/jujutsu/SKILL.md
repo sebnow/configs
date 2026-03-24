@@ -62,6 +62,21 @@ EOF
 jj status  # Should show "(empty)"
 ```
 
+**Committing specific files (atomic commits):**
+
+When @ contains multiple independent changes,
+use FILESETS to commit specific files:
+
+```bash
+# Commit only selected files from @, rest stays in @
+jj commit -m "add feature X" path/to/file.rs path/to/other.rs
+jj commit -m "update docs" README.md
+```
+
+This is the standard way to create atomic commits
+from working copy changes.
+Do not use `jj split` for this — `jj commit FILESETS` is simpler.
+
 **Critical:** After every commit, @ must be empty.
 Never end on a non-empty working commit -
 user's changes will auto-commit dangerously.
@@ -153,15 +168,16 @@ it's only for special cases like creating empty commits on different branches.
 
 Use HEREDOC for multi-line messages.
 
-## Splitting Commits
+## Splitting Already-Committed Changes
 
-**Always use `jj split` to split a commit. Never use manual workarounds
-(`jj edit` + `jj restore`, file backups, etc.).**
+**Use `jj split` only for already-committed changes (not @).**
+
+For working copy changes on @,
+use `jj commit FILESETS` instead (see Commit Workflow above).
+
+`jj split` is for splitting a previous commit:
 
 ```bash
-# Split working copy: files go in first commit, rest in second
-jj split -m "first commit message" path/to/file.zig
-
 # Split a previous commit (rebases descendants automatically)
 jj split -r @- -m "first part" path/to/file.zig
 ```
