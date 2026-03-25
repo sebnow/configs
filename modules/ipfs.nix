@@ -1,5 +1,9 @@
-{ ... }:
+{ inputs, ... }:
 {
+  flake.overlays.kubo = final: prev: {
+    kubo = inputs.nixpkgs-stable.legacyPackages.${prev.system}.kubo;
+  };
+
   flake.modules.homeManager.ipfs =
     { pkgs, lib, ... }:
     {
