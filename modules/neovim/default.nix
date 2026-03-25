@@ -2,6 +2,15 @@
 {
   flake.overlays.neovim = inputs.neovim.overlays.default;
 
+  # neotest tests fail against current treesitter in nixpkgs-unstable
+  flake.overlays.neotest = final: prev: {
+    luajit = prev.luajit.override {
+      packageOverrides = luaself: luasuper: {
+        neotest = luasuper.neotest.overrideAttrs { doCheck = false; };
+      };
+    };
+  };
+
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
     {
