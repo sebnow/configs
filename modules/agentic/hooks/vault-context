@@ -20,7 +20,7 @@ while IFS= read -r note; do
       descriptions+="- [[$name]]: $desc"$'\n'
     fi
   fi
-done < <(find "$vault" -name '*.md' -not -path '*/archive/*' | sort)
+done < <(find "$vault" -name '*.md' -not -path '*/archive/*' -not -path '*/sessions/*'| sort)
 
 if [[ -z "$descriptions" ]]; then
   exit 0
