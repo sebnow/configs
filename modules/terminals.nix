@@ -28,7 +28,10 @@
               font-family = "IosevkaTerm NF";
               theme = "light:Catppuccin Latte,dark:Catppuccin Mocha";
               gtk-titlebar-style = "tabs";
-              keybind = pkgs.lib.optionals pkgs.stdenv.isLinux [
+              keybind = [
+                "shift+enter=text:\\n"
+              ]
+              ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
                 "ctrl+shift+enter=new_split:right"
                 "ctrl+shift+d=new_split:down"
                 "ctrl+shift+z=toggle_split_zoom"
