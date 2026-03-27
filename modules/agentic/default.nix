@@ -263,7 +263,7 @@
       systemd.user.timers.vault-debrief = {
         Unit.Description = "Process vault debrief queue periodically";
         Timer = {
-          OnCalendar = "hourly";
+          OnCalendar = "*-*-* 0..12,19..23:00,30:00 UTC";
           Persistent = true;
         };
         Install.WantedBy = [ "timers.target" ];
