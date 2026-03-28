@@ -109,6 +109,50 @@ Links create traversable edges in the knowledge graph.
 - Prefer inline links that read naturally in context
 - Bidirectional links are implicit: searching for `[[note-a]]` finds all notes linking to it
 
+## Maps of Content
+
+A map of content (MOC) is a note that groups related notes by topic.
+MOCs are regular notes in `concepts/` with a `moc-` prefix:
+`moc-zig-patterns.md`, `moc-agent-development.md`.
+
+Create a MOC when a topic cluster reaches 5+ notes.
+The MOC links to each note with a short annotation,
+providing a navigable entry point into the cluster.
+
+MOC descriptions must surface enough keywords
+to trigger recall without reading the full MOC.
+List the subtopics so an agent scanning the note list
+can decide whether to drill in.
+
+```markdown
+---
+created: 2026-03-14
+description: "Read when working in Zig — covers memory (arenas, lifetimes), type system (tagged unions, vtables), std library (fs, process, io), JSON serialization, and testing patterns"
+tags: [zig, moc]
+---
+
+# Zig Patterns
+
+## Memory
+- [[zig-arena-scratch-pattern]] — loop-scoped scratch arenas
+- [[zig-streaming-parser-pointer-lifetime]] — dangling pointers from parsers
+
+## Type System
+- [[zig-tagged-union-dispatch]] — tagged union vs vtable polymorphism
+- [[zig-tagged-union-mock-gating]] — test-only variants for mock injection
+
+## Standard Library
+- [[zig-filesystem-pitfalls]] — std.fs API gotchas
+- [[zig-process-spawn-patterns]] — subprocess spawning in 0.16
+```
+
+MOCs are not exhaustive catalogs.
+Curate them: include notes an agent would need
+when entering a topic, not every note tangentially related.
+
+When creating a note in a cluster that has a MOC,
+add the note to the MOC.
+
 ## Recall: Reading from the Vault
 
 ### When to Recall
@@ -130,11 +174,14 @@ Recall on demand: `/agent-vault recall <query>`
 VAULT="${XDG_DATA_HOME:-$HOME/.local/share}/agents/vault"
 ```
 
-1. **Project notes**: list and read files in `$VAULT/projects/<name>/`
-2. **Keyword search**: `grep -rl "<query>" "$VAULT"/{concepts,projects} --include='*.md'`
-3. **Wikilink traversal**: when a note references `[[other-note]]`,
-   read `$VAULT/concepts/other-note.md` or search for `other-note.md` in the vault
-4. **Skip archived notes**: exclude `archive/` from search results by default.
+1. **MOCs first**: check if a `moc-*` note covers the topic.
+   Read the MOC, then follow links to the specific notes you need.
+   This avoids reading every note in a large cluster.
+2. **Project notes**: list and read files in `$VAULT/projects/<name>/`
+3. **Keyword search**: `grep -rl "<query>" "$VAULT"/{concepts,projects} --include='*.md'`
+4. **Wikilink traversal**: when a note references `[[other-note]]`,
+   search for `other-note.md` in the vault (it may be in `concepts/` or `projects/`)
+5. **Skip archived notes**: exclude `archive/` from search results by default.
    Only consult archive when tracing decision history.
 
 Before acting on recalled information,
@@ -186,6 +233,7 @@ On `/agent-vault analyze` or when exploring an unfamiliar project:
 2. Write or update project notes in `projects/<name>/`
 3. Extract general patterns into `concepts/` notes
 4. Link project notes to relevant concepts
+5. Add new concept notes to their relevant MOCs
 
 This builds the project's knowledge base for future sessions.
 
@@ -200,6 +248,7 @@ At session end or on `/agent-vault debrief`:
 3. Write a session note to `sessions/<session-id>-<project>.md`
 4. Extract any general insights into separate concept notes
 5. Link the session note to relevant project and concept notes
+6. Add any new concept notes to their relevant MOCs
 
 Session notes capture ephemeral context.
 Concept notes capture durable knowledge.
@@ -240,10 +289,14 @@ Stale notes mislead more than missing notes.
 
 On `/agent-vault maintain` or when you notice issues during reads:
 
+- **MOC coverage**: if a topic cluster has 5+ notes without a MOC,
+  create one. For each existing MOC, search for notes in its topic
+  that aren't linked yet and add them.
 - **Duplicates**: find notes covering the same concept, merge into one
 - **Orphans**: notes with no inbound or outbound wikilinks.
-  Either link them or consider if they're still relevant.
+  Either link them to a relevant MOC or consider if they're still relevant.
 - **Broken links**: wikilinks pointing to non-existent notes.
+  Search the full vault (including `projects/` subdirs) before declaring a link broken.
   Create the missing note or remove the link.
 - **Stale archive**: `archive/` notes older than 6 months
   with no inbound links can be deleted

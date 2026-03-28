@@ -8,26 +8,68 @@ if [[ ! -d "$vault" ]]; then
   exit 0
 fi
 
-descriptions=""
-while IFS= read -r note; do
+# Collect notes referenced by MOCs so we can exclude them from the flat list
+moc_refs=""
+while IFS= read -r moc; do
+  moc_refs+=$(grep -oP '\[\[\K[^\]]+' "$moc" 2>/dev/null || true)$'\n'
+done < <(find "$vault/concepts" -name 'moc-*.md' 2>/dev/null | sort)
+
+format_note() {
+  local note="$1" prefix="${2:-}"
+  local desc name tags line
   desc=$(md 'frontmatter.description' < "$note" 2>/dev/null)
-  if [[ -n "$desc" ]]; then
-    name=$(basename "$note" .md)
-    tags=$(md 'frontmatter.tags' < "$note" 2>/dev/null)
-    if [[ "$tags" != "null" ]]; then
-      descriptions+="- [[$name]]: $desc (tags: $(echo "$tags" | paste -sd, -))"$'\n'
-    else
-      descriptions+="- [[$name]]: $desc"$'\n'
-    fi
+  if [[ -z "$desc" ]]; then
+    return
   fi
-done < <(find "$vault" -name '*.md' -not -path '*/archive/*' -not -path '*/sessions/*'| sort)
+  name=$(basename "$note" .md)
+  tags=$(md 'frontmatter.tags' < "$note" 2>/dev/null)
+  line="${prefix}- [[$name]]: $desc"
+  if [[ "$tags" != "null" ]]; then
+    line+=" (tags: $(echo "$tags" | paste -sd, -))"
+  fi
+  echo "$line"
+}
+
+descriptions=""
+
+# List MOCs first if any exist
+moc_count=0
+while IFS= read -r moc; do
+  line=$(format_note "$moc")
+  if [[ -n "$line" ]]; then
+    descriptions+="$line"$'\n'
+    moc_count=$((moc_count + 1))
+  fi
+done < <(find "$vault/concepts" -name 'moc-*.md' 2>/dev/null | sort)
+
+# List notes not covered by any MOC
+while IFS= read -r note; do
+  name=$(basename "$note" .md)
+  # Skip MOCs (already listed above)
+  if [[ "$name" == moc-* ]]; then
+    continue
+  fi
+  # Skip notes referenced by a MOC
+  if [[ -n "$moc_refs" ]] && echo "$moc_refs" | grep -qxF "$name"; then
+    continue
+  fi
+  line=$(format_note "$note")
+  if [[ -n "$line" ]]; then
+    descriptions+="$line"$'\n'
+  fi
+done < <(find "$vault" -name '*.md' -not -path '*/archive/*' -not -path '*/sessions/*' | sort)
 
 if [[ -z "$descriptions" ]]; then
   exit 0
 fi
 
-context="The following vault notes are available. Use /agent-vault recall to read relevant notes.
+if [[ "$moc_count" -gt 0 ]]; then
+  context="The following vault notes are available. Notes grouped under a map of content (MOC) are not listed individually — read the MOC to discover them. Use /agent-vault recall to read relevant notes.
 $descriptions"
+else
+  context="The following vault notes are available. Use /agent-vault recall to read relevant notes.
+$descriptions"
+fi
 
 jq -n --arg ctx "$context" '{
   hookSpecificOutput: {
