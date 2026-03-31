@@ -2,23 +2,26 @@
 {
   flake.modules.homeManager.obsidian =
     { config, pkgs, ... }:
-    {
-      home.packages =
+    let
+      obsidian =
         if pkgs.stdenv.isLinux then
-          [
-            (config.lib.nixGL.wrap (
-              pkgs.obsidian.overrideAttrs (prev: rec {
-                desktopItem = prev.desktopItem.override {
-                  # https://pandasauce.org/post/linux-fonts/#application-settings
-                  exec = "obsidian --disable-font-subpixel-positioning %U";
-                };
-                installPhase =
-                  builtins.replaceStrings [ "${prev.desktopItem}" ] [ "${desktopItem}" ]
-                    prev.installPhase;
-              })
-            ))
-          ]
+          config.lib.nixGL.wrap pkgs.obsidian
         else
-          [ pkgs.obsidian ];
+          pkgs.obsidian;
+    in
+    {
+      home.packages = [ obsidian ];
+
+      xdg.dataFile."applications/obsidian.desktop".text = ''
+        [Desktop Entry]
+        Version=1.5
+        Type=Application
+        Name=Obsidian
+        Comment=Knowledge base
+        Exec=obsidian --disable-font-subpixel-positioning %U
+        Icon=obsidian
+        Categories=Office;
+        MimeType=x-scheme-handler/obsidian;
+      '';
     };
 }
