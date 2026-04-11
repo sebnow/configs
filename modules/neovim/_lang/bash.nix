@@ -4,7 +4,7 @@
     programs.neovim = {
       extraPackages = [
         pkgs.shellcheck
-        pkgs.nodePackages.bash-language-server
+        pkgs.bash-language-server
       ];
     };
   };
