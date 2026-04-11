@@ -176,12 +176,14 @@ local makePicker = function(source, opts)
   end
 end
 
-vim.keymap.set("n", "<C-p>", makePicker("smart"), { desc = "Find files" })
+local fff_snacks = require("fff-snacks")
+vim.keymap.set("n", "<C-p>", fff_snacks.find_files, { desc = "Find files" })
 vim.keymap.set("n", "<localleader>;", makePicker("command_history"), { desc = "Explore command history" })
 vim.keymap.set("n", "<localleader>be", makePicker("buffers"), { desc = "Explore buffers" })
 vim.keymap.set("n", "<localleader>l", makePicker("resume"), { desc = "Resume previous list" })
 vim.keymap.set("n", "<localleader>sw", makePicker("lsp_workspace_symbols"), { desc = "Explore workspace symbols" })
-vim.keymap.set("n", "<localleader>p/", makePicker("grep"), { desc = "Search in project" })
+vim.keymap.set("n", "<localleader>p/", fff_snacks.live_grep, { desc = "Search in project" })
+vim.keymap.set("v", "<localleader>p/", fff_snacks.grep_word, { desc = "Search word in project" })
 vim.keymap.set("n", "<localleader>Sb", makePicker("git_branches"), { desc = "Branches" })
 vim.keymap.set("n", "<localleader>dl", makePicker("diagnostics"), { desc = "Explore diagnostics" })
 -- Override builtin keymaps to have Snacks.picker provide the list. Not sure why
