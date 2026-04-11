@@ -1,12 +1,8 @@
-{ inputs, ... }:
+{ ... }:
 {
-  flake.overlays.neovim = inputs.neovim.overlays.default;
-
   flake.overlays.neovim-plugins = final: prev: {
     luajit = prev.luajit.override {
       packageOverrides = luaself: luasuper: {
-        # neotest tests fail against current treesitter in nixpkgs-unstable
-        neotest = luasuper.neotest.overrideAttrs { doCheck = false; };
         # detect_integrations requires git at load time (via vim.pack),
         # which isn't available in the Nix build sandbox.
         catppuccin-nvim = luasuper.catppuccin-nvim.overrideAttrs {
