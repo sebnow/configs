@@ -15,6 +15,15 @@
 
       catppuccin.enable = true;
 
+      # detect_integrations requires git at load time (via vim.pack),
+      # which isn't available in the Nix build sandbox.
+      catppuccin.sources.nvim = pkgs.vimPlugins.catppuccin-nvim.overrideAttrs (old: {
+        nvimSkipModule =
+          (old.nvimSkipModule or [ ])
+          ++ (old.nvimSkipModules or [ ])
+          ++ [ "catppuccin.lib.detect_integrations" ];
+      });
+
       xdg.configFile."process-compose/theme.yaml".source =
         catppuccin-process-compose + "/themes/catppuccin-mocha.yaml";
     };

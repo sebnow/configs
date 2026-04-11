@@ -1,17 +1,5 @@
 { ... }:
 {
-  flake.overlays.neovim-plugins = final: prev: {
-    luajit = prev.luajit.override {
-      packageOverrides = luaself: luasuper: {
-        # detect_integrations requires git at load time (via vim.pack),
-        # which isn't available in the Nix build sandbox.
-        catppuccin-nvim = luasuper.catppuccin-nvim.overrideAttrs {
-          nvimSkipModules = [ "catppuccin.lib.detect_integrations" ];
-        };
-      };
-    };
-  };
-
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
     {
@@ -41,7 +29,6 @@
         withRuby = false;
         withNodeJs = false;
         plugins = with pkgs.vimPlugins; [
-          catppuccin-nvim
           comment-nvim
           conform-nvim
           diffview-nvim
@@ -71,6 +58,18 @@
           pkgs.ripgrep
           pkgs.vscode-extensions.vadimcn.vscode-lldb
         ];
+      };
+
+      catppuccin.nvim.settings = {
+        integrations = {
+          diffview = true;
+          markview = true;
+          noice = true;
+          snacks = {
+            enabled = true;
+            indent_scope_color = "surface0";
+          };
+        };
       };
     };
 }
