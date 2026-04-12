@@ -17,17 +17,25 @@ Apply these principles to every implementation:
   prefer small bits of duplication over adding third-party dependencies for trivial functionality.
   Larger or complex functionality requires careful trade-off consideration - discuss when uncertain.
 - Discover Abstractions, Don't Invent Them:
-  Write the concrete code the problem demands.
-  Only extract shared functions or types
-  when the same logic has appeared in at least two places.
-  Do not create interfaces with one implementation,
-  options structs with fewer than two fields,
-  or functions and methods called from a single site.
+  Write concrete code that solves the specific problem first.
+  Do not introduce abstractions, indirection, or generalization
+  until the same logic has appeared in at least two places.
+  Before creating any interface, wrapper struct, generic function,
+  or helper, verify it passes all of these checks:
+  (a) the interface has at least two implementations that exist now,
+  (b) the struct has at least two fields or two call sites,
+  (c) the function is called from at least two sites,
+  (d) the extraction uses concrete types — no type parameters
+  unless both call sites require different types.
+  If any check fails, inline the code instead.
+  A struct wrapping a single dependency with one method
+  is a closure in disguise — use a closure or standalone function.
+  "Callers will likely want to" is not a justification —
+  extract when callers actually do, not when they might.
   When compressing duplicated code,
-  extract into the minimum number of functions —
-  do not decompose extracted helpers into further sub-functions.
-  When asked to refactor,
-  compress genuinely duplicated logic.
+  extract the literally repeated lines into one function
+  returning the most concrete type possible.
+  Do not decompose extracted helpers into further sub-functions.
   Do not add methods, parameters, or features beyond what was requested.
 - Domain Aware:
   Every system has purpose and intrinsic concepts - compiler has parsers and ASTs,
