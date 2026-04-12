@@ -1,7 +1,7 @@
 ---
 name: md
-description: "Provides the md CLI for querying and mutating Markdown files. Prefer md over Edit for replacing or appending content between structural markers (headings, comments, nodes). Use when replacing sections, appending to sections, mutating frontmatter fields, extracting frontmatter, listing headings, finding links/wikilinks, counting words, extracting code blocks or comments, validating links, or batch processing .md files. Triggers: 'replace section', 'append content', 'edit markdown', 'update section', 'frontmatter', 'wikilinks', 'headings', 'markdown metadata', 'word count', 'broken links', 'code blocks', 'comments', 'footnotes', '.md files'. Do NOT use for full-text search across files (use grep/rg), non-markdown file formats, or rendering markdown to HTML."
-compatibility: Requires md on PATH.
+description: "Provides the md CLI for querying and mutating Markdown files. Prefer md over Edit for replacing or appending content between structural markers (headings, comments, nodes). Use when replacing sections, appending to sections, mutating frontmatter fields, extracting frontmatter, listing headings, finding links/wikilinks, counting words, extracting code blocks or comments, validating links, finding incoming links, format conversion (YAML/TOML), or batch processing .md files. Triggers: 'replace section', 'append content', 'edit markdown', 'update section', 'frontmatter', 'wikilinks', 'headings', 'markdown metadata', 'word count', 'broken links', 'code blocks', 'comments', 'footnotes', 'incoming links', 'backlinks', '.md files'. Do NOT use for full-text search across files (use grep/rg), non-markdown file formats, or rendering markdown to HTML."
+compatibility: Requires md >=0.2.0 on PATH.
 ---
 
 # Markdown Query and Mutation
@@ -9,7 +9,7 @@ compatibility: Requires md on PATH.
 Prefer `md` over the Edit tool
 when replacing or appending content
 at structural boundaries in markdown files
-(headings, comment markers, node types).
+(headings, comment markers, any extractor with `.source`).
 `md` targets structure, not exact text,
 so mutations are robust against content changes.
 
@@ -32,13 +32,16 @@ Use `-i` to write changes back to the file.
 
 | Operation | Context | Effect |
 | --- | --- | --- |
-| `replace(str)` | After node pipeline | Replaces matched nodes with `str` |
-| `append(str)` | After node pipeline | Appends `str` after matched nodes |
+| `replace(str)` | After any extractor with `.source` | Replaces matched span |
+| `append(str)` | After any extractor with `.source` | Inserts after matched span |
 | `set(field, val)` | After `frontmatter` | Sets a frontmatter field |
 | `del(field)` | After `frontmatter` | Deletes a frontmatter field |
 | `.field += [val]` | After `frontmatter` | Appends to a frontmatter array |
 
-These are the only mutation operations.
+`replace()` and `append()` operate on the `.source` span
+of any extractor — not just `nodes`.
+This means you can target comments, headings, codeblocks, etc. directly.
+
 `md` has no subcommands — the interface is always `md '<program>'`.
 
 ### Replacing content between markers
@@ -65,6 +68,21 @@ Use `.depth` in `take_until` to control whether subsections are included.
 End `replace()` and `append()` strings with `\n\n`
 to preserve the blank line before the next section.
 
+Empty ranges (adjacent markers with no content between them)
+are supported — `replace()` and `append()` work correctly.
+
+### Targeting specific elements directly
+
+Any extractor with `.source` supports `replace()` and `append()`.
+
+```bash
+# Append content after a specific comment marker
+md 'comments | select(.text == "begin notes") | first | append("New note.\n\n")' -i note.md
+
+# Replace a specific heading's text
+md 'headings | select(.text == "Old Title") | first | replace("# New Title\n")' -i note.md
+```
+
 ### Frontmatter mutation
 
 ```bash
@@ -85,25 +103,34 @@ md 'body | replace("# Fresh Start\n\nNew content.\n")' -i note.md
 | Situation | Tool |
 | --- | --- |
 | Replace content between markers or headings | `md` |
-| Append to a section | `md` |
+| Append to a section or after a comment | `md` |
 | Mutate frontmatter fields | `md` |
 | Insert text at a known exact location | Edit |
 | Rename a specific phrase | Edit |
 
 ## Extractors
 
-| Extractor     | Returns                                          |
-| ------------- | ------------------------------------------------ |
-| `frontmatter` | YAML/TOML frontmatter as a record                |
-| `body`        | Document body without frontmatter                |
-| `headings`    | Headings with `.depth`, `.text`, `.line`          |
-| `links`       | Links with `.kind`, `.target`, `.text`, `.line`   |
-| `stats`       | `.words` and `.lines` counts                      |
-| `tags`        | Inline tags with `.name`, `.line`                 |
-| `codeblocks`  | Code blocks with `.language`, `.content`, `.line` |
-| `comments`    | HTML/Obsidian comments with `.kind`, `.text`      |
-| `footnotes`   | Footnote definitions with `.label`, `.text`       |
-| `nodes`       | Block-level nodes with `.type`, `.text`, `.line`  |
+All array extractors include a `.source` field
+that identifies the span in the document,
+enabling `replace()` and `append()` on any extractor.
+
+| Extractor     | Returns                                                      |
+| ------------- | ------------------------------------------------------------ |
+| `frontmatter` | YAML/TOML frontmatter as a record                            |
+| `body`        | Document body without frontmatter                            |
+| `headings`    | `.depth`, `.text`, `.line`, `.source`                        |
+| `links`       | `.kind`, `.target`, `.text`, `.line`, `.source`              |
+| `stats`       | `.words`, `.lines`                                           |
+| `tags`        | `.name`, `.line`, `.source`                                  |
+| `codeblocks`  | `.language`, `.content`, `.start_line`, `.end_line`, `.source` |
+| `comments`    | `.kind`, `.text`, `.line`, `.source`                         |
+| `footnotes`   | `.label`, `.text`, `.line`, `.source`                        |
+| `nodes`       | `.type`, `.text`, `.line`, `.source`                         |
+| `incoming`    | `.source`, `.kind`, `.line` (requires `--dir`)               |
+
+`nodes` types: `heading`, `paragraph`, `codeblock`, `comment`, `footnote`.
+Type-specific fields: `.depth` (heading), `.language` (codeblock),
+`.kind` (comment), `.label` (footnote).
 
 ```bash
 md 'frontmatter | .title' note.md
@@ -116,21 +143,50 @@ Always parenthesize: `(.title, .tags)` not `.title, .tags`.
 ## Filtering
 
 `select(predicate)` filters arrays.
-Predicates: `==`, `!=`, `<`, `>`, `contains()`, `startswith()`,
+Predicates: `==`, `!=`, `<`, `>`,
+`contains(.field, str)`, `startswith(.field, str)`,
 `and`, `or`, `not`.
 
 ```bash
 md 'headings | select(.depth == 2)' note.md
 md 'links | select(.kind == "wikilink")' note.md
+md 'links | select(contains(.target, "api"))' note.md
 ```
 
 List operations: `first`, `last`, `count`, `reverse`, `unique`,
 `sort(.field)`, `group(.field)`, `map(.field)`.
 
+Record operations: `keys`, `has("field")`.
+
 ```bash
 md 'headings | select(.depth == 2) | map(.text)' note.md
 md 'links | select(.kind == "wikilink") | count' note.md
 md 'tags | map(.name) | unique' note.md
+md 'frontmatter | keys' note.md
+md 'frontmatter | has("draft")' note.md
+```
+
+## Format Conversion
+
+`yaml` and `toml` convert between records and text (bidirectional).
+
+```bash
+# Record to YAML text
+md 'frontmatter | yaml' note.md
+
+# YAML text to record (parse stdin)
+echo 'title: Hello' | md 'body | yaml | .title'
+```
+
+## Incoming Links
+
+`incoming` finds all files in `--dir` that link to the input file.
+Returns `.source` (file path), `.kind`, `.line`.
+
+```bash
+md 'incoming' --dir ./vault/ note.md
+md 'incoming | select(.kind == "wikilink")' --dir ./vault/ note.md
+md 'incoming | map(.source) | unique' --dir ./vault/ note.md
 ```
 
 ## Link Validation
