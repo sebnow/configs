@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   flake.overlays.skills-ref = final: prev: {
     skills-ref = prev.python3Packages.callPackage ../../pkgs/skills-ref { };
@@ -107,7 +107,6 @@
     in
     {
       home.packages = [
-        piWrapped
         pkgs.ast-grep
         pkgs.jq
         pkgs.md
@@ -116,6 +115,9 @@
         pkgs.skills-ref
         pkgs.tmux
         pkgs.zigdoc
+      ]
+      ++ lib.optionals pkgs.stdenv.isLinux [
+        piWrapped
       ];
 
       programs.claude-code = {
