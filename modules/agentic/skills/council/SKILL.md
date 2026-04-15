@@ -162,12 +162,29 @@ or explicit "no consensus" with the tension preserved.
 If recommending, state what would change the recommendation.]
 ```
 
-Where lenses disagree on verifiable facts
-(not judgment — facts),
-resolve with tool calls before synthesizing.
-Run the test, grep the code, check the documentation.
-Include the evidence in the verdict under a **Resolved** section
+### Step: Resolve
+
+Before writing the verdict,
+scan all analyses for verifiable factual claims or unknowns.
+These include:
+
+- Facts lenses disagree on
+  ("this supports 100 connections" vs "this will exhaust at 50")
+- Unknowns a lens flagged as affecting its stance or confidence
+  ("conditional — depends on whether X is thread-safe")
+- Factual assumptions a lens treated as given but did not verify
+
+If a claim or unknown is answerable with available tools
+(read source code, grep for annotations, run a test,
+check documentation), resolve it now.
+Do not leave verifiable questions in the Unresolved section.
+
+Include evidence in the verdict under a **Resolved** section
 between Contradictions and Unresolved.
+Each resolved item: the question, the evidence, the conclusion.
+
+The Unresolved section is for judgment calls
+and questions that cannot be answered with available tools.
 
 ## Common Issues
 
