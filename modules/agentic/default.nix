@@ -208,6 +208,7 @@
               "Grep"
               "Skill(adr-writing)"
               "Skill(commit)"
+              "Skill(council)"
               "Skill(jujutsu)"
               "Skill(prompt-engineering)"
               "Skill(red-green-refactor)"
