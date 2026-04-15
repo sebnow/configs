@@ -93,17 +93,28 @@ or construct lenses from the question's specifics.
 Spawn one subagent per lens.
 Each subagent receives:
 
-- The decision question with full context
+- The decision question as the user stated it
+- Relevant file paths or entry points (not pre-digested summaries)
 - Its specific lens instruction
 - The output format below
+
+Do not pre-gather context for the lenses.
+Do not run an exploration step and feed results into lens prompts.
+Each lens must investigate the codebase from its own angle
+using its own tool calls.
+This is how lenses surface different facts —
+if they all receive the same summary,
+they produce the same reasoning with different labels.
 
 Subagents run in parallel.
 They never see each other's output.
 
 For each lens,
 spawn an agent via the shell
-with a prompt containing the lens instruction
-and the decision context.
+with a prompt containing the lens instruction,
+the decision question,
+and enough orientation to begin
+(file paths, module names, entry points).
 
 If spawning subagents fails or is unavailable,
 fall back to analyzing each lens sequentially.
