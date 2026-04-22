@@ -92,12 +92,21 @@ prevents compiler from optimizing away the loop body.
 
 ## testing.T.Context (Go 1.24+)
 
-Returns a context canceled when the test completes.
+Use `t.Context()` as the base context in all test code.
+Never use `context.Background()` or `context.TODO()` in tests.
+When deriving contexts (deadlines, cancellation, values),
+use `t.Context()` as the parent.
 
 ```go
 func TestFoo(t *testing.T) {
-    ctx := t.Context() // canceled after test
+    ctx := t.Context() // canceled when test completes
     result := doWork(ctx)
+    // ...
+}
+
+func TestWithTimeout(t *testing.T) {
+    ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+    defer cancel()
     // ...
 }
 ```

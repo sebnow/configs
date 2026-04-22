@@ -1,5 +1,29 @@
 # Go Testing Patterns
 
+## Test Context (Go 1.24+)
+
+Use `t.Context()` as the base context in all test code.
+Never use `context.Background()` or `context.TODO()` in tests.
+
+```go
+func TestFetchUser(t *testing.T) {
+    ctx := t.Context() // canceled when test completes
+    user, err := FetchUser(ctx, "42")
+    // ...
+}
+```
+
+When deriving contexts (deadlines, cancellation, values),
+use `t.Context()` as the parent:
+
+```go
+func TestTimeout(t *testing.T) {
+    ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+    defer cancel()
+    // ...
+}
+```
+
 ## Table-Driven Tests
 
 Valid use - testing same property with different inputs:

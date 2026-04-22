@@ -111,6 +111,15 @@ Required practices:
 
 See @go-patterns.md for race detection examples.
 
+## Test Context (Go 1.24+)
+
+Use `t.Context()` as the base context in all Go test code.
+Never use `context.Background()` or `context.TODO()` in tests.
+When deriving contexts (deadlines, cancellation, values),
+use `t.Context()` as the parent.
+
+See [go-patterns.md](go-patterns.md) for examples.
+
 ## Testing I/O Operations
 
 Database testing:
