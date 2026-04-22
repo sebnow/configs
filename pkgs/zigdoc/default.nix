@@ -2,16 +2,10 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchzip,
-  zig,
+  # zigdoc v0.3.0 requires zig >=0.15.1 and is not yet compatible with 0.16
+  zig_0_15,
 }:
-let
-  ziglint = fetchzip {
-    url = "https://github.com/rockorager/ziglint/archive/refs/tags/v0.5.2.tar.gz";
-    hash = "sha256-Q+iJ4vTqIm8FatvW8GdkmPEkIn7AEoMHHIhoWy+eYMs=";
-  };
-in
-stdenv.mkDerivation {
+stdenv.mkDerivation (finalAttrs: {
   pname = "zigdoc";
   version = "0.3.0";
 
@@ -22,14 +16,18 @@ stdenv.mkDerivation {
     hash = "sha256-MhZ7LCsqZhLazDYwDZ/hzk9lYM3Bm1j96HDQ/OrdZFg=";
   };
 
-  nativeBuildInputs = [ zig ];
+  zigDeps = zig_0_15.fetchDeps {
+    inherit (finalAttrs) src pname version;
+    hash = "sha256-+ifmpS+r7vbGncJlnEUvg8vsaNv3koKdizs9r31QmwE=";
+  };
 
-  dontUseZigCheck = true;
+  nativeBuildInputs = [ zig_0_15.hook ];
 
   postConfigure = ''
-    mkdir -p $ZIG_GLOBAL_CACHE_DIR/p
-    ln -s ${ziglint} $ZIG_GLOBAL_CACHE_DIR/p/ziglint-0.5.2-t0bwL2FwBQC5i-ifhKKv2ls5jGXHShJpuNhFVhiU-Tt-
+    ln -s ${finalAttrs.zigDeps} "$ZIG_GLOBAL_CACHE_DIR/p"
   '';
+
+  dontUseZigCheck = true;
 
   meta = {
     description = "Terminal documentation viewer for Zig standard library and project dependencies";
@@ -37,4 +35,4 @@ stdenv.mkDerivation {
     license = lib.licenses.mit;
     mainProgram = "zigdoc";
   };
-}
+})
