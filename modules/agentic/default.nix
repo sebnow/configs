@@ -122,10 +122,10 @@
 
       programs.claude-code = {
         enable = true;
-        memory.source = ./agents.md;
+        context = ./agents.md;
         agentsDir = ./agents;
         hooksDir = ./hooks;
-        skillsDir = ./skills;
+        skills = ./skills;
         settings = {
           includeCoAuthoredBy = false;
           hooks.SessionStart = [
