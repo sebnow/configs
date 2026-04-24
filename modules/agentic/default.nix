@@ -23,6 +23,9 @@
       vaultDebriefProcess = pkgs.writeShellScriptBin "vault-debrief-process" ''
         set -euo pipefail
 
+        log() { printf '%s\n' "$*" >&2; }
+        skip() { log "skip $session_id: $*"; rm -f "$entry"; }
+
         queue_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/agents/agent-vault-debrief-queue"
 
         if [[ ! -d "$queue_dir" ]]; then
@@ -35,27 +38,35 @@
 
           transcript=$(${pkgs.findutils}/bin/find "$HOME/.claude/projects" -name "$session_id.jsonl" 2>/dev/null | head -1)
           if [[ -z "$transcript" ]]; then
-            rm -f "$entry"
+            skip "no transcript under ~/.claude/projects"
             continue
           fi
 
-          # Skip sessions with no meaningful content (e.g. cancelled /resume)
-          msg_count=$(${pkgs.jq}/bin/jq -c 'select(.type == "user" or .type == "assistant")' "$transcript" | wc -l)
+          # Skip sessions with no meaningful content (e.g. cancelled /resume).
+          # A malformed transcript is unrecoverable — log and drop it, don't abort the queue.
+          if ! msg_count=$(${pkgs.jq}/bin/jq -c 'select(.type == "user" or .type == "assistant")' "$transcript" 2>&1 | wc -l); then
+            skip "jq failed parsing transcript $transcript (exit ''${PIPESTATUS[0]})"
+            continue
+          fi
           if [[ "$msg_count" -lt 2 ]]; then
-            rm -f "$entry"
+            skip "only $msg_count user/assistant messages in $transcript"
             continue
           fi
 
           # Skip debrief sessions to avoid debriefing our own runs
-          first_user_msg=$(${pkgs.jq}/bin/jq -n -r 'first(inputs | select(.type == "user")) | .message.content | if type == "string" then . else .[0].text // "" end' "$transcript")
+          if ! first_user_msg=$(${pkgs.jq}/bin/jq -n -r 'first(inputs | select(.type == "user")) | .message.content | if type == "string" then . else .[0].text // "" end' "$transcript" 2>&1); then
+            skip "jq failed extracting first user message from $transcript (exit $?)"
+            continue
+          fi
           if [[ "$first_user_msg" == *"Run /agent-vault debrief for session"* ]]; then
-            rm -f "$entry"
+            skip "self-debrief session"
             continue
           fi
 
           project_dir=$(${pkgs.coreutils}/bin/dirname "$transcript")
           project_name=$(${pkgs.coreutils}/bin/basename "$project_dir" | rev | cut -d- -f1 | rev)
 
+          log "debriefing $session_id (project=$project_name)"
           if echo "Run /agent-vault debrief for session $session_id.
         The session transcript is at: $transcript
         The project name is: $project_name
@@ -63,7 +74,7 @@
             --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)'; then
             rm -f "$entry"
           else
-            echo "Failed to debrief session: $session_id" >&2
+            log "debrief failed for $session_id (claude exit $?); leaving in queue"
           fi
         done
       '';
