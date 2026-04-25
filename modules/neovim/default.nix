@@ -77,12 +77,8 @@
           comment-nvim
           conform-nvim
           diffview-nvim
-        ]
-        ++ [
           fff-nvim
           fff-snacks-nvim
-        ]
-        ++ (with pkgs.vimPlugins; [
           inc-rename-nvim
           lualine-nvim
           markview-nvim
@@ -96,14 +92,39 @@
           nvim-lspconfig
           nvim-nio # Required for neotest, nvim-dap-ui
           nvim-treesitter-context
-          nvim-treesitter.withAllGrammars
+          (nvim-treesitter.withPlugins (p: with p; [
+            bash
+            c
+            comment
+            go
+            gomod
+            gosum
+            gowork
+            javascript
+            jsdoc
+            lua
+            luadoc
+            luap
+            markdown
+            markdown_inline
+            nix
+            proto
+            query
+            regex
+            tsx
+            typescript
+            vim
+            vimdoc
+            yaml
+            zig
+          ]))
           nvim-web-devicons
           oil-nvim
           plenary-nvim # Required for neogit, neotest
           snacks-nvim
           vim-matchup
           which-key-nvim
-        ]);
+        ];
         extraPackages = [
           pkgs.fd
           pkgs.ripgrep
