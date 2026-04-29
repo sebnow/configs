@@ -103,6 +103,32 @@ Input: [actual input]
 Output:
 ```
 
+When an abstract rule misclassifies a borderline case during testing,
+the repair is rarely a longer abstract definition. Add the specific
+misclassified case verbatim, with the correct verdict, inside the rule.
+The example does the discrimination work the abstract definition cannot.
+
+Illustration — a rule that flags redundant transition sentences:
+
+> Drop sentences that re-state a fact already implied by surrounding prose.
+>
+> Example: "The Lambda's MemorySize lives outside this repo. It still
+> needs a bump on the infra side..." — "infra side" already implies
+> "outside this repo", so drop the first sentence.
+
+Abstract rules invoke whatever priors the model has; "implied by
+surrounding prose" is interpreted differently by different models.
+A worked example pins the rule to a concrete classification and acts
+as a few-shot anchor every time the rule is read.
+
+Decision rule: when testing reveals a misclassified case, copy that
+case into the rule with the correct verdict. Prefer a real draft/
+revision pair over a synthetic example — real cases are already
+calibrated to the intent.
+
+For the full per-delta refinement loop, see
+[rule-verification-loop.md](references/rule-verification-loop.md).
+
 **3. Chain of Thought**
 
 For reasoning tasks, ask model to show its work.
@@ -152,6 +178,9 @@ Required testing:
 4. Match evaluation to use case:
    - Exploratory tasks: 51% majority-correct may suffice
    - Critical applications: Need higher consistency
+
+For parallel fresh-agent pressure runs (the operational form of step 2),
+see [pressure-testing.md](references/pressure-testing.md).
 
 Only after rigorous testing can you claim improvement.
 
