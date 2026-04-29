@@ -138,6 +138,7 @@
         hooksDir = ./hooks;
         skills = ./skills;
         settings = {
+          editorMode = "vim";
           includeCoAuthoredBy = false;
           fileSuggestion =
             let
