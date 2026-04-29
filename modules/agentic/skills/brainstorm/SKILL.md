@@ -14,9 +14,12 @@ Respond with only questions. No solutions, no designs, no code,
 no comparisons, no recommendations. Not even as context.
 
 Ask about purpose, scope, constraints, and success criteria.
-Group related questions (2-3 per message).
 When you can enumerate reasonable options,
 prefer multiple-choice questions.
+
+If `AskUserQuestion` is available, use it to ask 2-4 questions per turn
+instead of including them in your response.
+Otherwise, group related questions (2-3 per message).
 
 Repeat until purpose, scope, constraints,
 and success criteria are all explicitly confirmed by the user.
