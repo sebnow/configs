@@ -2,22 +2,6 @@
 {
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
-    let
-      fff-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
-        pname = "fff-snacks.nvim";
-        version = "2025-04-04";
-        src = pkgs.fetchFromGitHub {
-          owner = "madmaxieee";
-          repo = "fff-snacks.nvim";
-          rev = "05e2db43f054468c0f7d7e43994c03ee560d27b9";
-          hash = "sha256-ow2jHY+hOyVoOzmyS5v3l18YHHWb5iUArc4fezgtUpY=";
-        };
-        dependencies = [
-          pkgs.vimPlugins.fff-nvim
-          pkgs.vimPlugins.snacks-nvim
-        ];
-      };
-    in
     {
       imports = [
         ./_lang/bash.nix
@@ -48,8 +32,6 @@
           comment-nvim
           conform-nvim
           diffview-nvim
-          fff-nvim
-          fff-snacks-nvim
           inc-rename-nvim
           lualine-nvim
           markview-nvim
