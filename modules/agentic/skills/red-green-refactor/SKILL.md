@@ -123,6 +123,11 @@ Consuming skills define domain-specific meanings:
   (one technique, one instruction, one code fix)
 - **Testing**: How to verify improvement
   (test cases, multi-run statistics, fresh instances, test suites)
+  - For prompt-rule artifacts, the cleanest fresh-instance check is to
+    hand the rule alone to a subagent — no surrounding context, no
+    author reasoning — and see whether the rule as written carries the
+    intent. Self-tests are unreliable because the author already knows
+    what the rule means.
 - **Loopholes**: Domain-specific failure patterns to watch for
 
 The methodology stays the same. The domain provides the vocabulary.
