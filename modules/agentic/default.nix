@@ -140,7 +140,6 @@
         settings = {
           editorMode = "vim";
           feedbackSurveyRate = 0;
-          includeCoAuthoredBy = false;
           fileSuggestion =
             let
               cmd = pkgs.writeShellScript "claude-file-suggestion" ''
@@ -161,6 +160,8 @@
               type = "command";
               command = "${cmd}";
             };
+          includeCoAuthoredBy = false;
+          includeGitInstructions = false;
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
           hooks.SessionStart = [
