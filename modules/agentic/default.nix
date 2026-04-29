@@ -162,6 +162,7 @@
             };
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
+          model = "opusplan";
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
           hooks.SessionStart = [
