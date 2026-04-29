@@ -112,6 +112,13 @@ Test with fresh agent instances across three areas:
 
 See [testing-framework.md](references/testing-framework.md) for detailed test cases and metrics.
 
+Skill bodies are prompt-rule artifacts. The operational methodology for
+running fresh-instance tests in parallel — control runs, sample-size
+calibration, common loopholes — lives in prompt-engineering's
+pressure-testing.md. For refining a specific rule when an agent
+following it diverges from intent, see prompt-engineering's
+rule-verification-loop.md.
+
 Additionally:
 
 - Run skill with target models (sonnet minimum)
