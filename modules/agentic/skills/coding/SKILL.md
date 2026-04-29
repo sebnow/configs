@@ -158,10 +158,19 @@ Follow this workflow for all code changes:
   default value,
   or actual failure.
   When errors cross abstraction boundaries,
-  transform them to match abstraction level - "database row not found" becomes "entity not found" at domain layer,
+  transform them to match abstraction level — "database row not found" becomes "entity not found" at domain layer,
   "file read error" becomes "configuration load error" at application layer.
+  Name errors by consequence to the caller —
+  what they lost, not what broke internally.
+  Distinguish permanent domain conditions (the entity does not exist)
+  from temporary infrastructure failures (the operation could not complete) —
+  callers need to tell these apart to decide whether to retry or give up.
   Implementation details must not leak through error types.
-  Fail fast only on truly unrecoverable errors.
+  Errors are control flow: `err != nil` means the operation failed.
+  Supplementary success-path information (e.g. a cache miss on a successful fetch) is not an error —
+  use a separate mechanism if callers need to act on it.
+  If the caller has no meaningful branch on failure, panic;
+  returning an error the caller cannot act on forces artificial handling at every call site.
 - Language-Specific: Follow established conventions for the language you're writing in.
   For Go modern APIs (1.26+), see [go-modern-apis.md](references/go-modern-apis.md).
   For other Go-specific guidance, see [go.md](references/go.md).

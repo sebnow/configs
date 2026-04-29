@@ -97,3 +97,70 @@ the lever is dependency shape:
 splitting a foundational package's tests into a separate package
 (or moving heavy fixtures into a leaf package)
 reduces the chains the scheduler has to honor.
+
+## Consequence-based error naming
+
+Name errors after what the caller lost, not what broke internally.
+Match the pattern to the nature of the condition:
+
+- **Sentinel** for permanent domain conditions — the state does not exist and will not appear on retry:
+  `var ErrQuizNotFound = errors.New("quiz not found")`
+  Match with `errors.Is`.
+- **Typed error** for infrastructure failures — the operation could not complete but may succeed on retry;
+  name with the domain noun and the consequence:
+  ```go
+  type QuizUnavailableError struct{ Cause error }
+  func (e *QuizUnavailableError) Error() string { return "quiz unavailable" }
+  func (e *QuizUnavailableError) Unwrap() error  { return e.Cause }
+  ```
+  Match with `errors.AsType[*QuizUnavailableError](err)` (Go 1.26+).
+  Wrapping the cause via `Unwrap` preserves it for logging without exposing it to callers.
+
+The infra layer is responsible for the mapping:
+`pgx.ErrNoRows` → `ErrQuizNotFound`;
+connection failure or timeout → `&QuizUnavailableError{Cause: err}`.
+Infra never returns infrastructure-specific errors to callers.
+
+Document retryability per error:
+sentinels are permanent (don't retry);
+typed infra errors are temporary (safe to retry).
+
+Anti-patterns:
+- `InternalError`, `DatabaseError`, `TimeoutError` — leak implementation, give the caller nothing to act on
+- `return zero, err` at a layer boundary — abdicates the mapping responsibility
+
+## Diagnostics out-parameter
+
+Errors are control flow: `err != nil` means the function failed.
+Diagnostics carry supplementary information about a successful call
+("I succeeded, but here's what you should know").
+These are separate concerns — do not return a non-nil error to communicate success-path observations.
+
+Pattern: add a `*Diagnostics` out-parameter to functions where callers may need to act on observations:
+
+```go
+type GetDiagnostics struct {
+    CacheMiss bool
+}
+
+func Get(ctx context.Context, id string, diag *GetDiagnostics) (Quiz, error) {
+    v, ok := cache.get(id)
+    if !ok {
+        if diag != nil {
+            diag.CacheMiss = true
+        }
+        v = db.get(ctx, id)
+    }
+    return v, nil
+}
+```
+
+Callers that care pass `&GetDiagnostics{}`;
+callers that don't pass `nil` — the check costs nothing.
+
+Diagnostics structs are function-specific, not generic.
+Use specific named fields (`CacheMiss bool`, `FallbackUsed bool`) rather than a generic severity level.
+Generic severity (`Severity: Warning`) loses the actionable detail;
+specific fields let each caller decide independently whether to write-back, log, emit a metric, or ignore.
+
+Introduce this pattern when real call-site usage demonstrates a need — not speculatively.
