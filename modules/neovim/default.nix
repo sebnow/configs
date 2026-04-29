@@ -3,35 +3,6 @@
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
     let
-      # Override fff-nvim 0.5.1 from nixpkgs to 0.5.2.
-      # 0.5.1 crashes on the first keystroke when filtering files in the picker.
-      # Remove once nixpkgs updates past v0.5.2.
-      fff-nvim-src = pkgs.fetchFromGitHub {
-        owner = "dmtrKovalenko";
-        repo = "fff.nvim";
-        tag = "v0.5.2";
-        hash = "sha256-rv33dRf53m9iJwRl56z9oU0EuY1wUChsZyHOi/3gv4A=";
-      };
-
-      fff-nvim-lib = pkgs.vimPlugins.fff-nvim.passthru.fff-nvim-lib.overrideAttrs (old: {
-        version = "0.5.2";
-        src = fff-nvim-src;
-        cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-          src = fff-nvim-src;
-          name = "fff-nvim-0.5.2-vendor";
-          hash = "sha256-ylQtZa3ZRs38mhge5tLLCRpnUdHYSjuZOwU+/6TO8Cw=";
-        };
-      });
-
-      fff-nvim = pkgs.vimPlugins.fff-nvim.overrideAttrs (old: {
-        version = "0.5.2";
-        src = fff-nvim-src;
-        postPatch = builtins.replaceStrings
-          [ "${pkgs.vimPlugins.fff-nvim.passthru.fff-nvim-lib}" ]
-          [ "${fff-nvim-lib}" ]
-          old.postPatch;
-      });
-
       fff-snacks-nvim = pkgs.vimUtils.buildVimPlugin {
         pname = "fff-snacks.nvim";
         version = "2025-04-04";
@@ -42,7 +13,7 @@
           hash = "sha256-ow2jHY+hOyVoOzmyS5v3l18YHHWb5iUArc4fezgtUpY=";
         };
         dependencies = [
-          fff-nvim
+          pkgs.vimPlugins.fff-nvim
           pkgs.vimPlugins.snacks-nvim
         ];
       };
