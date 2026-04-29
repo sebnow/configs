@@ -159,6 +159,7 @@
               type = "command";
               command = "${cmd}";
             };
+          showClearContextOnPlanAccept = true;
           hooks.SessionStart = [
             {
               hooks = [
