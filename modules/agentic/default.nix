@@ -160,6 +160,7 @@
               command = "${cmd}";
             };
           showClearContextOnPlanAccept = true;
+          showThinkingSummaries = true;
           hooks.SessionStart = [
             {
               hooks = [
