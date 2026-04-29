@@ -139,6 +139,26 @@
         skills = ./skills;
         settings = {
           includeCoAuthoredBy = false;
+          fileSuggestion =
+            let
+              cmd = pkgs.writeShellScript "claude-file-suggestion" ''
+                set -euo pipefail
+                cd "''${CLAUDE_PROJECT_DIR:-$PWD}" || exit 0
+
+                query=$(${pkgs.jq}/bin/jq -r '.query // empty')
+                # Trailing `|| true` swallows non-zero exits from two benign
+                # cases: head closes its pipe early (SIGPIPE 141) and fzf
+                # returns 1 when the filter has no matches.
+                ${pkgs.fd}/bin/fd --type f --hidden --exclude .git --color=never \
+                  | ${pkgs.fzf}/bin/fzf --filter="$query" \
+                  | head -n 15 \
+                  || true
+              '';
+            in
+            {
+              type = "command";
+              command = "${cmd}";
+            };
           hooks.SessionStart = [
             {
               hooks = [
