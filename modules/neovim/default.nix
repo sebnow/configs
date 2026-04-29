@@ -47,6 +47,7 @@
           nvim-treesitter-context
           (nvim-treesitter.withPlugins (p: with p; [
             bash
+            beancount
             c
             comment
             go
