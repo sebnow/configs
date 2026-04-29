@@ -1,36 +1,40 @@
 ---
 name: brainstorm
-description: "Explores ideas through structured questioning before any implementation. Use when brainstorming, requirements are unclear, or fleshing out ideas. Triggers: 'brainstorm', 'let us think about', 'flesh out this idea', 'explore options', unclear requirements, vague feature requests. Do NOT use for well-defined tasks with clear requirements."
+description: "Explores ideas through structured questioning to reach shared understanding. Use when brainstorming, requirements are unclear, or fleshing out any idea. Triggers: 'brainstorm', 'let us think about', 'flesh out this idea', 'explore options', unclear requirements, vague requests. Do NOT use for well-defined tasks with clear requirements."
 ---
 
 # Brainstorming
 
-Brainstorming is a multi-turn conversation
-to understand a problem before solving it.
+Brainstorming is a structured interview
+to reach shared understanding before taking any action.
 
 ## Phase 1: Question
 
 Respond with only questions. No solutions, no designs, no code,
 no comparisons, no recommendations. Not even as context.
 
-Ask about purpose, scope, constraints, and success criteria.
-When you can enumerate reasonable options,
-prefer multiple-choice questions.
+Walk down the decision tree, resolving dependencies between decisions one by one.
+For each batch of questions, provide your recommended answer.
+
+If a question can be answered by exploring the codebase or other available sources,
+do that instead of asking.
 
 If `AskUserQuestion` is available, use it to ask 2-4 questions per turn
 instead of including them in your response.
 Otherwise, group related questions (2-3 per message).
 
-Repeat until purpose, scope, constraints,
-and success criteria are all explicitly confirmed by the user.
-Not every brainstorm needs all four in depth —
+Continue until you have a clear picture of
+what the user is trying to achieve,
+why they care,
+and what constraints apply.
+Not every brainstorm needs exhaustive coverage —
 calibrate to the problem.
 
 If the user says "that's enough" or similar,
 move to Phase 2 with what you have.
 
 When neither you nor the user knows the answer,
-record it as an open question for later research.
+record it as an open question.
 Do not guess. Do not fill gaps.
 
 ### Correct response
@@ -39,8 +43,8 @@ User: "I want to add caching to my API."
 
 Response:
 "A few questions before we dig in:
-1. What is the API serving and what is the read/write ratio?
-2. What is the motivation — latency, cost, DB load?"
+1. What is the API serving and what is the read/write ratio? (My guess: read-heavy)
+2. What is the motivation — latency, cost, DB load? (My guess: DB load)"
 
 ### Incorrect response
 
@@ -61,61 +65,6 @@ Summarize what you learned:
 - List open questions and unknowns
 
 Ask: "Is this accurate? Anything to add or correct?"
-Do not proceed until confirmed.
-
-## Phase 3: Write plan
-
-Save to `.agents/plans/YYYY-MM-DD-<topic>-brainstorm.md`
-where `<topic>` is a ticket reference (e.g., `GH-42`, `PROJ-123`)
-or a short descriptive identifier (e.g., `auth-redesign`, `api-caching`).
-
-The document does not need to be committed.
-
-**Plan structure:**
-
-```markdown
-# Brainstorm: <title>
-
-## Problem
-
-[What problem this solves and why it matters]
-
-## Decisions
-
-[Key decisions made during the brainstorm, with reasoning]
-
-## Scope
-
-[What is in scope and what is explicitly excluded]
-
-## Constraints
-
-[Non-negotiables, limitations, requirements]
-
-## Open Questions
-
-[Unknowns requiring further research or discussion]
-
-## Next Steps
-
-[Concrete actions to move forward]
-```
-
-Scale sections to their relevance.
-Omit sections that do not apply.
-
-### Next steps
-
-Always propose next steps, even if the user
-only wanted to flesh out ideas. They can ignore them.
-
-Next steps might include:
-
-- Create an implementation plan
-- Research open questions
-- Prototype a specific aspect
-- Write an ADR for a key decision
-- Revisit after more thought
 
 ## Common Failures
 
