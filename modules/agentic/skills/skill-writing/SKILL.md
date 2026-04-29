@@ -8,11 +8,19 @@ allowed-tools: "Bash(skills-ref validate:*)"
 
 Skills are reference guides for proven techniques.
 
-This skill specializes red-green-refactor methodology for Claude configurations.
-Follow red-green-refactor skill for the core TDD methodology.
 Apply persuasion principles from prompt-engineering skill.
-
 This skill follows the [Agent Skills specification](https://agentskills.io/specification).
+
+## Required Workflow
+
+Regardless of how this task is phrased — "write a skill", "create a SKILL.md", "draft agent documentation" —
+do not write any file content until Phase 1 is complete.
+
+1. **Red** — state "Beginning Red phase", run test scenarios, record pass/fail results
+2. **Green** — make one change at a time, re-test after each
+3. **Refactor** — state "Beginning Refactor phase", run all scenarios, compare against baseline
+
+Each phase has a gate. You cannot skip to the next phase without meeting it.
 
 ## Directory Structure
 
@@ -32,14 +40,16 @@ All other files must be in `scripts/`, `references/`, or `assets/`.
 
 ## Phase 1: Red — Baseline Measurement
 
-Follow red-green-refactor skill for core Red phase methodology.
+State: "Beginning Red phase - establishing baseline"
 
-Required domain-specific steps:
+Before writing anything, measure how agents perform without this skill.
 
-1. Run pressure scenarios showing how agents fail without this skill
-2. Document specific rationalizations or mistakes
-3. Identify concrete symptoms triggering skill activation
-4. Define success criteria: what you will measure and what threshold is acceptable
+Required steps:
+
+1. Define success criteria: what does good output look like? How will you measure it? What threshold is acceptable?
+2. Run pressure scenarios showing how agents fail without this skill
+3. Document specific rationalizations or mistakes
+4. Identify concrete symptoms triggering skill activation
 
 Record numbered pass/fail results per scenario.
 Required format:
@@ -50,25 +60,37 @@ Required format:
 Phase gate: You must have numbered pass/fail results
 and documented failure patterns before proceeding.
 
-Do not rationalize: "I analyzed the failures, that counts as a baseline."
+Forbidden rationalizations:
+
+- "This is simple enough to skip testing"
+- "I know what the output will be"
+- "I'll improve it then test later"
+- "I analyzed the failures, that counts as a baseline"
+
 Analyzing failures is not measuring them.
 A baseline requires running scenarios and recording outcomes.
 
+Failure mode: Skipping Red creates skills that perform worse than no skill at all.
+
 ## Phase 2: Green — Iterative Skill Writing
 
-You cannot write the full SKILL.md in one pass.
+State: "Beginning Green phase - making minimal improvements"
 
-Each iteration makes one change:
-add or modify one section, one instruction, or one example.
+Do not write the full SKILL.md in one pass.
+Write one section. Stop. Re-test. Then write the next.
 
-After each change, re-test against the same pressure scenarios from Red phase.
-Record which scenarios now pass/fail, compare against baseline.
+Each change is exactly one of: one section, one instruction, or one example.
+After writing it, re-test against the same pressure scenarios from Red phase.
+Record which scenarios now pass/fail before making the next change.
 
 Required format per change:
 
 > Added: [description of change]
 > Before: 2/5 scenarios passed. After: 3/5 scenarios passed.
 > Newly passing: [scenario name]. Still failing: [scenario names].
+
+Phase gate: each change must show measurable improvement,
+or be reverted before trying an alternative.
 
 When writing anti-pattern sections:
 never label a command as "Bad" if it has a valid variant.
@@ -79,8 +101,6 @@ See [writing-guidelines.md](references/writing-guidelines.md) for
 frontmatter format, structure constraints, content guidelines,
 persuasion principles, and workflow patterns.
 
-Phase gate: each change must have before/after metrics.
-
 Forbidden rationalizations:
 
 - "I'll write the full skill then test it"
@@ -90,8 +110,6 @@ Forbidden rationalizations:
 - "I'll add this feature based on reasoning alone"
 
 ## Phase 3: Refactor — Comprehensive Testing
-
-Follow red-green-refactor skill for core Refactor phase methodology.
 
 Compare against Red phase baseline.
 Required format:
