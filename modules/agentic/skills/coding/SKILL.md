@@ -45,6 +45,20 @@ Apply these principles to every implementation:
   rather than generic technical terms or made-up names.
   Ensure changes are cohesive with system's purpose and broader project.
   Don't use "best practices" or design patterns for the sake of it - make sure they're fit for purpose.
+- Layering Direction:
+  Orchestration and decisions live in business code;
+  infra primitives execute.
+  Business code calls infra through interfaces it owns;
+  infra never invokes business policy in return.
+  Retry, fallback, and conditional flow decisions belong in the business
+  caller — infra reports the outcome and the caller decides what to do.
+  Smell check: if an adapter or repository contains a retry policy,
+  decides when to fall back, or sequences workflow steps,
+  the decision belongs in the use case, not the adapter.
+  Infra implementing a domain interface is normal — that is how Clean
+  Architecture inverts the dependency. The smell is logic flowing the
+  other way: a use case reaching past its port into an adapter's concrete
+  type, or an adapter encoding business rules.
 - Clarity and Legibility:
   Write code that communicates intent clearly.
   Use straightforward control flow - avoid unnecessary jumping around that loses context.
