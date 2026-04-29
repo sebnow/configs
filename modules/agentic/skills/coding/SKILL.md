@@ -164,6 +164,7 @@ Follow this workflow for all code changes:
   Fail fast only on truly unrecoverable errors.
 - Language-Specific: Follow established conventions for the language you're writing in.
   For Go modern APIs (1.26+), see [go-modern-apis.md](references/go-modern-apis.md).
+  For other Go-specific guidance, see [go.md](references/go.md).
   For Zig concurrency and threading, see [zig-concurrency.md](references/zig-concurrency.md).
 
 ## Boy Scout Rule
