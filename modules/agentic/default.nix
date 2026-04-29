@@ -139,6 +139,7 @@
         skills = ./skills;
         settings = {
           editorMode = "vim";
+          feedbackSurveyRate = 0;
           includeCoAuthoredBy = false;
           fileSuggestion =
             let
