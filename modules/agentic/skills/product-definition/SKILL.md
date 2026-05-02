@@ -1,79 +1,76 @@
 ---
 name: product-definition
-description: "Use when creating Product Requirements Documents. Enforces clarification-first workflow, junior-dev-friendly language, and standard PRD structure. Triggers: 'create PRD', 'write requirements', 'product requirements', feature requests needing documentation."
+description: "Use after brainstorming to consolidate decisions into a Product Requirements Document. Synthesizes a brainstorm transcript into a PRD. Triggers: 'create PRD', 'write PRD', 'product requirements', 'turn brainstorm into spec'. Do NOT use when requirements are still unclear — run the brainstorm skill first."
 ---
 
 # Product Definition
 
-Required when creating Product Requirements Documents (PRD) for feature requests.
-Enforces structured clarification before documentation.
+Consolidate a completed brainstorm into a Product Requirements Document (PRD).
 
-## Workflow: Clarify Then Document
+## Predecessor: Brainstorm
+
+This skill assumes a brainstorm transcript already exists —
+the structured output of the `brainstorm` skill:
+problem restatement, decisions made, open questions.
+That transcript is the input to this skill.
+
+If no brainstorm transcript exists, do not start an inline interview.
+Direct the user to brainstorm first:
+
+> "Before writing a PRD I need a brainstorm transcript:
+> the problem restatement, decisions, and open questions.
+> Run the brainstorm skill first, then return with that summary."
+
+## Workflow
 
 You must follow this sequence:
 
-1. **Receive Request** - User describes desired feature
-2. **Ask Questions** - Required clarification phase (see below)
-3. **Generate PRD** - Create document using required structure
-4. **Get Approval** - Never begin implementation before user approval
+1. **Read brainstorm output** — synthesize what is already decided. Do not re-interview.
+2. **Sketch modules** — identify deep modules and their public interfaces.
+3. **Write PRD** — fill the required structure using the brainstorm and module sketch.
+4. **Get approval** — never begin implementation before user approval.
 
-Never skip the clarification phase.
-Never start implementation before approval.
+Synthesize from the brainstorm transcript. Do not ask new clarification questions.
+If a critical decision is missing, flag it as an open question and continue.
+The user can return to brainstorm if needed.
 
-## Clarification Phase
+## Step 2: Sketch Modules
 
-Ask 3-5 critical questions before writing any PRD.
+Before writing the PRD, identify the deep modules
+this work introduces or modifies.
+A deep module has a narrow public interface and substantial internal complexity.
 
-Required question areas:
+For each module, capture:
 
-- Problem definition (what problem does this solve?)
-- Core functionality (what must this feature do?)
-- Scope boundaries (what should this NOT include?)
-- Success indicators (how will we measure success?)
+- **Name** — what the module is called
+- **Responsibility** — one sentence
+- **Inputs** — what callers pass in (types or shapes)
+- **Outputs** — what the module returns or produces
+- **Contracts** — invariants, error modes, side effects
 
-### Question Format
+Specify interfaces, not internals.
+Downstream agents own the implementation.
 
-Use numbered questions with lettered options:
+Do not include file paths, line numbers, or code snippets.
+Those belong in the issues produced from this PRD.
 
-```
-1. What is the primary problem users face?
-   A. They cannot prioritize tasks effectively
-   B. They struggle to find tasks in large lists
-   C. They need better collaboration features
-
-2. Which prioritization method should we support initially?
-   A. Simple high/medium/low levels
-   B. Eisenhower Matrix (urgent/important)
-   C. Weighted scoring with custom factors
-```
-
-Users respond with selections like: "1A, 2C"
-
-### Question Guidelines
-
-Only ask questions where answers are not reasonably inferable from the user's initial request.
-
-Do not ask:
-
-- Questions answered in the original prompt
-- Obvious implementation details
-- Preferences you can determine from context
+The module sketch feeds the Implementation Decisions section
+of the PRD (see below).
 
 ## PRD Structure
 
 Required sections in this order:
 
-### 1. Introduction
+### 1. Problem Statement
 
-Explain the problem and goal.
-Target audience: junior developers who will implement this.
-Use clear, simple language.
-Avoid technical jargon.
+State the problem and who has it.
+Plain language. No solutions yet.
 
-### 2. Objectives
+### 2. Solution
 
-List specific, measurable goals.
-Each objective should be testable.
+Describe the chosen approach in one or two paragraphs.
+Reference decisions captured in the brainstorm.
+Avoid implementation detail — interfaces and contracts go in section 5.
 
 ### 3. User Stories
 
@@ -82,45 +79,69 @@ Format: "As a \[user type], I want to \[action] so that \[benefit]"
 
 Include realistic usage scenarios.
 
-### 4. Functional Requirements
-
-Use numbered "The system must..." statements.
-
-Example:
-
-```
-1. The system must allow users to assign priority levels to tasks
-2. The system must display tasks sorted by priority by default
-3. The system must recalculate priority when task attributes change
-```
-
-Never use "shall", "should", or "may" in requirements.
-Use "must" for all functional requirements.
-
-### 5. Out of Scope
+### 4. Out of Scope
 
 Explicitly list what this feature will NOT include.
-Prevents scope creep.
-Helps junior developers understand boundaries.
+
+This section must contain at least one non-trivial exclusion —
+something a reasonable reader might otherwise assume is in scope.
+Empty or filler exclusions defeat the purpose.
+
+This section sits above implementation details deliberately:
+scope decisions constrain everything that follows.
 
 Example:
 
 ```
 Out of scope for this release:
-- AI-powered priority suggestions
-- Team-wide priority templates
+- AI-powered priority suggestions (postpone to next quarter)
+- Bulk priority assignment via CSV import
+- Priority history and audit trail
 - Mobile-specific priority gestures
 ```
 
-### 6. Design Considerations (Optional)
+### 5. Implementation Decisions
 
-High-level UI/UX guidance if relevant.
-Avoid technical implementation details.
+Captures the module sketch from Step 2 and any architectural decisions
+made during brainstorm.
 
-### 7. Success Criteria
+Required content:
+
+- Modules to build or modify, with their public interfaces
+  (inputs, outputs, contracts) — from the module sketch
+- Architectural decisions and the reasoning behind them
+- Cross-cutting contracts (auth, persistence, error handling) if relevant
+
+No file paths, line numbers, or code snippets.
+Downstream issues will pin those down.
+
+Organize this section so issues can be sliced vertically —
+each module entry should map to one or more end-to-end issues
+that exercise the module from a user-visible behavior.
+
+### 6. Testing Decisions
+
+Captures which modules get automated tests
+and what behavior to verify.
+
+Required content:
+
+- Which modules from Implementation Decisions get tests
+- Prior-art reference: tests in the codebase that demonstrate
+  the testing style for this kind of module
+- Behavior-vs-implementation guidance:
+  what to assert (observable behavior)
+  vs. what not to assert (internal structure)
+
+### 7. Open Questions
+
+List anything still unclear after brainstorm.
+These must be resolved before implementation begins.
+
+### 8. Success Criteria
 
 How will we know this feature works?
-Include measurable metrics.
+Include measurable indicators.
 
 Example:
 
@@ -129,11 +150,6 @@ Example:
 - Task selection time decreases by 30%
 - Zero priority-related bugs in first month
 ```
-
-### 8. Open Questions
-
-List anything still unclear after clarification phase.
-These must be resolved before implementation begins.
 
 ## Language Requirements
 
@@ -173,25 +189,54 @@ Every requirement must be:
 - Unambiguous (one interpretation only)
 - Necessary (supports stated objectives)
 
-**Skipping Clarification**
-If you write a PRD without asking questions first, you have failed.
-The clarification phase is mandatory.
-
 ## Validation Checklist
 
 Before saving PRD, verify:
 
-- [ ] Asked 3-5 clarification questions first
-- [ ] All required sections present
-- [ ] Requirements use "The system must..." format
-- [ ] "Out of Scope" section included
-- [ ] Language appropriate for junior developers
-- [ ] No technical jargon without explanation
-- [ ] Asked user for approval before implementation
+- [ ] A brainstorm transcript was used as input
+- [ ] Module sketch exists and informs Implementation Decisions
+- [ ] All required sections present in the specified order
+- [ ] Out of Scope contains at least one non-trivial exclusion
+- [ ] Implementation Decisions specifies interfaces, not file paths or code
+- [ ] Testing Decisions identifies which modules get tests
+- [ ] No file paths, line numbers, or code snippets anywhere in the PRD
+- [ ] User asked for approval before issue breakdown begins
 
 ## After PRD Creation
 
-State: "PRD complete. Please review and approve before I begin implementation."
+State: "PRD complete. Please review and approve before issue breakdown."
 
 Wait for explicit approval.
 Do not proceed with any coding, architecture, or design work until user confirms.
+
+### Lifecycle
+
+The PRD is an intermediate artifact.
+Once issues are produced from it:
+
+- Move the PRD out of the active documentation path
+  (for example, into an `archive/` or `done/` directory)
+- Do not retain it where future agents will read it as authoritative
+
+Stale specifications mislead more than absent ones.
+Issues become the authoritative description of the work;
+the PRD has served its purpose.
+
+If the user asks "what now?" after PRD approval,
+the next step is issue breakdown, then archival of this PRD.
+
+## Downstream Consumer
+
+The PRD feeds an issue-breakdown step (separate skill, not this one).
+That step produces vertically-sliced issues
+that an executing agent can act on without re-exploring the codebase.
+
+To support this:
+
+- Implementation Decisions must let an agent identify
+  the affected module(s) per issue
+- Testing Decisions must let an agent know which behavior to verify
+- Out of Scope must let an agent reject creep without re-asking
+
+If a fresh agent cannot draft 3 vertical-slice issues from the PRD alone,
+the PRD is incomplete — return to Step 2 and tighten module interfaces.
