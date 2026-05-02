@@ -1,6 +1,6 @@
 ---
 name: product-definition
-description: "Use after brainstorming to consolidate decisions into a Product Requirements Document. Synthesizes a brainstorm transcript into a PRD. Triggers: 'create PRD', 'write PRD', 'product requirements', 'turn brainstorm into spec'. Do NOT use when requirements are still unclear — run the brainstorm skill first."
+description: "Synthesizes a completed brainstorm transcript into a Product Requirements Document (PRD). Use when requirements are decided and a formal spec is needed. Triggers: 'create PRD', 'write PRD', 'product requirements', 'turn brainstorm into spec'. Do NOT use when requirements are still unclear — run the brainstorm skill first."
 ---
 
 # Product Definition
@@ -59,97 +59,8 @@ of the PRD (see below).
 
 ## PRD Structure
 
-Required sections in this order:
-
-### 1. Problem Statement
-
-State the problem and who has it.
-Plain language. No solutions yet.
-
-### 2. Solution
-
-Describe the chosen approach in one or two paragraphs.
-Reference decisions captured in the brainstorm.
-Avoid implementation detail — interfaces and contracts go in section 5.
-
-### 3. User Stories
-
-Describe how users will interact with the feature.
-Format: "As a \[user type], I want to \[action] so that \[benefit]"
-
-Include realistic usage scenarios.
-
-### 4. Out of Scope
-
-Explicitly list what this feature will NOT include.
-
-This section must contain at least one non-trivial exclusion —
-something a reasonable reader might otherwise assume is in scope.
-Empty or filler exclusions defeat the purpose.
-
-This section sits above implementation details deliberately:
-scope decisions constrain everything that follows.
-
-Example:
-
-```
-Out of scope for this release:
-- AI-powered priority suggestions (postpone to next quarter)
-- Bulk priority assignment via CSV import
-- Priority history and audit trail
-- Mobile-specific priority gestures
-```
-
-### 5. Implementation Decisions
-
-Captures the module sketch from Step 2 and any architectural decisions
-made during brainstorm.
-
-Required content:
-
-- Modules to build or modify, with their public interfaces
-  (inputs, outputs, contracts) — from the module sketch
-- Architectural decisions and the reasoning behind them
-- Cross-cutting contracts (auth, persistence, error handling) if relevant
-
-No file paths, line numbers, or code snippets.
-Downstream issues will pin those down.
-
-Organize this section so issues can be sliced vertically —
-each module entry should map to one or more end-to-end issues
-that exercise the module from a user-visible behavior.
-
-### 6. Testing Decisions
-
-Captures which modules get automated tests
-and what behavior to verify.
-
-Required content:
-
-- Which modules from Implementation Decisions get tests
-- Prior-art reference: tests in the codebase that demonstrate
-  the testing style for this kind of module
-- Behavior-vs-implementation guidance:
-  what to assert (observable behavior)
-  vs. what not to assert (internal structure)
-
-### 7. Open Questions
-
-List anything still unclear after brainstorm.
-These must be resolved before implementation begins.
-
-### 8. Success Criteria
-
-How will we know this feature works?
-Include measurable indicators.
-
-Example:
-
-```
-- 60% of users assign priorities within first week
-- Task selection time decreases by 30%
-- Zero priority-related bugs in first month
-```
+Use [assets/prd-template.md](assets/prd-template.md) as the structure.
+It defines all 8 required sections in order with guidance and examples for each.
 
 ## Language Requirements
 
@@ -240,3 +151,39 @@ To support this:
 
 If a fresh agent cannot draft 3 vertical-slice issues from the PRD alone,
 the PRD is incomplete — return to Step 2 and tighten module interfaces.
+
+## Common Issues
+
+### No brainstorm transcript available
+
+Cause: User asked for a PRD without running a brainstorm session first.
+Solution: Do not start an inline interview. Direct the user to the brainstorm skill, then return with the summary output.
+
+### Module sketch lacks interface contracts
+
+Cause: The brainstorm captured decisions but not the inputs, outputs, or error modes of each module.
+Solution: Infer reasonable interfaces from the problem context. Flag each inferred contract as an open question in Open Questions so the team can validate before implementation begins.
+
+### User wants to skip the approval step
+
+Cause: User is eager to start implementation immediately after the PRD is written.
+Solution: Remind the user that the PRD may contain incorrect assumptions. Skipping review risks wasted implementation work. Do not proceed without explicit approval.
+
+### PRD sections contain implementation detail
+
+Cause: Brainstorm captured file paths, code snippets, or database schemas that belong in technical design docs.
+Solution: Move detail to Implementation Decisions as interface contracts only. Remove anything that specifies how a module works internally rather than what it accepts and returns.
+
+## Examples
+
+### Example: Brainstorm transcript → PRD
+
+Input: User shares a brainstorm summary covering a problem restatement, three decisions, and two open questions.
+Actions: (1) Read brainstorm output and synthesize decisions. (2) Sketch modules: for each module, name it, state its responsibility, and specify its inputs, outputs, and contracts. (3) Write the PRD in section order (Problem Statement → Solution → User Stories → Out of Scope → Implementation Decisions → Testing Decisions → Open Questions → Success Criteria). (4) Present the PRD and ask for approval.
+Result: A complete PRD with module interfaces in Implementation Decisions, observable behaviors in Testing Decisions, and the two original open questions carried forward in Open Questions.
+
+### Example: No brainstorm available
+
+Input: User says "write a PRD for our new notification system" with no prior brainstorm.
+Actions: Do not start an inline interview. Explain that a brainstorm transcript is required. Direct the user to run the brainstorm skill and return with its output.
+Result: No PRD is started. User is unblocked toward the correct predecessor step.
