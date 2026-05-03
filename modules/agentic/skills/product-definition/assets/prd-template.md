@@ -47,13 +47,33 @@ Captures the module sketch and any architectural decisions made during brainstor
 
 Required content:
 
-- Modules to build or modify, with their public interfaces
-  (inputs, outputs, contracts) — from the module sketch
+- Modules to build or modify, with their public interface signatures and prose contracts
+  — from the module sketch
 - Architectural decisions and the reasoning behind them
 - Cross-cutting contracts (auth, persistence, error handling) if relevant
 
-No file paths, line numbers, or code snippets.
-Downstream issues will pin those down.
+Each module entry follows this shape:
+
+> **RankFeed** (Go service)
+>
+> ```go
+> func RankFeed(ctx context.Context, userID string, cursor string) ([]FeedItem, error)
+> ```
+>
+> Contracts: returns an empty slice (not nil) when the feed is empty;
+> returns `ErrCursorExpired` if the cursor is older than 24 h;
+> no side effects.
+
+> **PriorityBadge** (TypeScript UI)
+>
+> ```ts
+> type PriorityBadge = (props: { priority: 1 | 2 | 3 | 4; label: string }) => JSX.Element
+> ```
+>
+> Contracts: renders a colored chip; throws if `priority` is outside 1–4.
+
+Permitted: signature declarations, type aliases, function/method headers, interface or trait definitions.
+Forbidden: function bodies, full schemas with column lists, configuration values, file paths, line numbers.
 
 Organize this section so issues can be sliced vertically —
 each module entry should map to one or more end-to-end issues

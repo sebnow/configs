@@ -44,14 +44,16 @@ For each module, capture:
 
 - **Name** — what the module is called
 - **Responsibility** — one sentence
-- **Inputs** — what callers pass in (types or shapes)
-- **Outputs** — what the module returns or produces
+- **Interface signature** — the public surface as a code block in the language that fits the module's area
+  (a signature pins down parameter names, types, and return shape exactly;
+  a prose description leaves those for the next agent to infer)
 - **Contracts** — invariants, error modes, side effects
 
 Specify interfaces, not internals.
 Downstream agents own the implementation.
 
-Do not include file paths, line numbers, or code snippets.
+The signature is the declaration only — no `{ ... }` body, no example data.
+Do not include implementation bodies, schemas with column lists, configuration values, file paths, or line numbers.
 Those belong in the issues produced from this PRD.
 
 The module sketch feeds the Implementation Decisions section
@@ -76,7 +78,8 @@ Required:
 Forbidden:
 
 - Technical jargon without explanation
-- Code snippets in requirements
+- Implementation bodies, configuration values, or schema definitions in requirements
+  (interface signatures in the module sketch are required, not forbidden)
 - Vague terms ("user-friendly", "intuitive", "seamless")
 - Passive voice ("shall be provided", "is enabled")
 
@@ -108,9 +111,9 @@ Before saving PRD, verify:
 - [ ] Module sketch exists and informs Implementation Decisions
 - [ ] All required sections present in the specified order
 - [ ] Out of Scope contains at least one non-trivial exclusion
-- [ ] Implementation Decisions specifies interfaces, not file paths or code
+- [ ] Each module entry has an interface signature in a fitting language
 - [ ] Testing Decisions identifies which modules get tests
-- [ ] No file paths, line numbers, or code snippets anywhere in the PRD
+- [ ] No implementation bodies, schemas, configuration values, file paths, or line numbers anywhere in the PRD
 - [ ] User asked for approval before issue breakdown begins
 
 ## After PRD Creation
@@ -159,10 +162,10 @@ the PRD is incomplete — return to Step 2 and tighten module interfaces.
 Cause: User asked for a PRD without running a brainstorm session first.
 Solution: Do not start an inline interview. Direct the user to the brainstorm skill, then return with the summary output.
 
-### Module sketch lacks interface contracts
+### Module sketch lacks signatures or contracts
 
-Cause: The brainstorm captured decisions but not the inputs, outputs, or error modes of each module.
-Solution: Infer reasonable interfaces from the problem context. Flag each inferred contract as an open question in Open Questions so the team can validate before implementation begins.
+Cause: The brainstorm captured decisions but not the signature or error modes of each module.
+Solution: Infer the most likely signature per module from the problem context, picking the language that fits the module's area. Flag each inferred signature as an open question in Open Questions so the team can validate before implementation begins.
 
 ### User wants to skip the approval step
 
@@ -171,15 +174,15 @@ Solution: Remind the user that the PRD may contain incorrect assumptions. Skippi
 
 ### PRD sections contain implementation detail
 
-Cause: Brainstorm captured file paths, code snippets, or database schemas that belong in technical design docs.
-Solution: Move detail to Implementation Decisions as interface contracts only. Remove anything that specifies how a module works internally rather than what it accepts and returns.
+Cause: Brainstorm captured file paths, implementation bodies, full schemas, or configuration values that belong in technical design docs.
+Solution: Move detail to Implementation Decisions as signature plus prose contract only. Keep the declaration; remove the body, the schema columns, the config values.
 
 ## Examples
 
 ### Example: Brainstorm transcript → PRD
 
 Input: User shares a brainstorm summary covering a problem restatement, three decisions, and two open questions.
-Actions: (1) Read brainstorm output and synthesize decisions. (2) Sketch modules: for each module, name it, state its responsibility, and specify its inputs, outputs, and contracts. (3) Write the PRD in section order (Problem Statement → Solution → User Stories → Out of Scope → Implementation Decisions → Testing Decisions → Open Questions → Success Criteria). (4) Present the PRD and ask for approval.
+Actions: (1) Read brainstorm output and synthesize decisions. (2) Sketch modules: for each module, name it, state its responsibility, write its public signature in a fitting language, and state its contracts in prose. (3) Write the PRD in section order (Problem Statement → Solution → User Stories → Out of Scope → Implementation Decisions → Testing Decisions → Open Questions → Success Criteria). (4) Present the PRD and ask for approval.
 Result: A complete PRD with module interfaces in Implementation Decisions, observable behaviors in Testing Decisions, and the two original open questions carried forward in Open Questions.
 
 ### Example: No brainstorm available
