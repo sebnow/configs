@@ -41,7 +41,12 @@ Do not create issues for:
 - Test plans — testing belongs to the testing skill
 - Effort estimates
 
-### Step 3: Explore relevant codebase boundaries
+### Step 3: Carry signatures forward, then explore the codebase
+
+If the input is a PRD, the module sketch already contains a signature block for each module.
+Copy each signature into the Context section of the issue that touches that module, verbatim.
+Do not paraphrase a signature into prose —
+that re-introduces the inference gap the PRD eliminated.
 
 Before formatting issues, explore the codebase to discover
 existing API boundaries, types, and signatures relevant to each slice.
@@ -50,6 +55,9 @@ Capture:
 - File paths where relevant code lives (labeled as orientation hints, not authoritative)
 - Existing types, function signatures, or contracts the implementing agent should know about
 - Proposed new boundaries as advisory guidance, not mandated abstractions
+
+Permitted in Context: signature declarations copied verbatim from the PRD, existing type definitions, function headers from the codebase.
+Forbidden in Context: implementation bodies, full schemas, configuration values.
 
 ### Step 4: Order by behavioral dependency
 
@@ -103,6 +111,7 @@ Never:
 - Invent decisions that are missing from the input — flag them
 - Leave a mock in place without a follow-up integration issue
 - Write acceptance criteria that only describe code quality, not observable behavior
+- Paraphrase a PRD-supplied signature into prose, or drop it from the issue's Context
 
 ## Common Issues
 
