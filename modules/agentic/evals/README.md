@@ -5,26 +5,16 @@ Run it on demand after any change to a skill, a referenced file, or the underlyi
 Each scenario invokes the skill via `pi`, then a second `pi` call judges the transcript
 against per-scenario assertions.
 
-## First-time setup
-
-Make the scripts executable (only needed once after checkout):
-
-```bash
-chmod +x modules/agentic/evals/run.sh modules/agentic/evals/lib/*.sh
-```
-
 ## Prerequisites
 
+- `nu` on PATH (nushell)
 - `pi` on PATH (pi-coding-agent)
-- `jq`
-- `md` (markdown query CLI)
-- `python3`
 - `ANTHROPIC_API_KEY` set
 
 ## Run all refactor scenarios
 
 ```bash
-modules/agentic/evals/run.sh \
+modules/agentic/evals/run.nu \
   --skill modules/agentic/skills/refactor \
   --eval-dir modules/agentic/evals/refactor
 ```
@@ -32,7 +22,7 @@ modules/agentic/evals/run.sh \
 ## Run a single scenario
 
 ```bash
-modules/agentic/evals/run.sh \
+modules/agentic/evals/run.nu \
   --skill modules/agentic/skills/refactor \
   --eval-dir modules/agentic/evals/refactor \
   --filter '01-shallow-passthrough'
@@ -45,7 +35,7 @@ Glob patterns work: `--filter '0*'` runs all single-digit-prefixed scenarios.
 Verifies the harness itself works end-to-end before running real scenarios:
 
 ```bash
-modules/agentic/evals/run.sh \
+modules/agentic/evals/run.nu \
   --skill modules/agentic/evals/_smoke/ping-smoke \
   --eval-dir modules/agentic/evals/_smoke
 ```
