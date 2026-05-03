@@ -121,6 +121,7 @@
         pkgs.ast-grep
         pkgs.jq
         pkgs.md
+        pkgs.nono
         pkgs.nushell
         pkgs.pi-coding-agent
         pkgs.skills-ref
