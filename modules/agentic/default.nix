@@ -160,6 +160,33 @@
               type = "command";
               command = "${cmd}";
             };
+          statusLine =
+            let
+              cmd = pkgs.writeShellScript "claude-statusline" ''
+                set -euo pipefail
+                input=$(cat)
+
+                model=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq -r '.model.display_name // .model.id // "?"' || echo "?")
+                ctx=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq -r '
+                  ((.context_window.current_usage // {}) | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))) as $t |
+                  (.context_window.used_percentage // 0 | floor) as $p |
+                  (if $t >= 1000 then (($t / 1000 | floor) | tostring) + "k" else ($t | tostring) end)
+                    + "(" + ($p | tostring) + "%)"
+                ' || echo "?(% ?)")
+                rate_5h=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq -r 'if .rate_limits.five_hour.used_percentage != null then (.rate_limits.five_hour.used_percentage | floor | tostring) + "%" else "" end' || echo "")
+                rate_7d=$(printf '%s' "$input" | ${pkgs.jq}/bin/jq -r 'if .rate_limits.seven_day.used_percentage != null then (.rate_limits.seven_day.used_percentage | floor | tostring) + "%" else "" end' || echo "")
+
+                parts=("$model" "ctx:$ctx")
+                [[ -n "$rate_5h" ]] && parts+=("5h:$rate_5h")
+                [[ -n "$rate_7d" ]] && parts+=("7d:$rate_7d")
+
+                (IFS=" | "; printf '%s\n' "''${parts[*]}")
+              '';
+            in
+            {
+              type = "command";
+              command = "${cmd}";
+            };
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
           model = "opusplan";
