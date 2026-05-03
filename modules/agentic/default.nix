@@ -276,6 +276,7 @@
               "Skill(jujutsu)"
               "Skill(prompt-engineering)"
               "Skill(red-green-refactor)"
+              "Skill(refactor)"
               "Skill(skill-writing)"
               "Skill(systematic-debugging)"
               "Skill(tracing-knowledge-lineages)"
