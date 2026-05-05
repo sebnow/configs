@@ -90,6 +90,13 @@ obsidian-cli search query="phrase" path="Projects"
 obsidian-cli search query="phrase" format=json
 ```
 
+`format=json` returns a flat JSON array of path strings — not objects.
+Extract paths with `jq -r '.[]'`, not `.[].path`:
+
+```bash
+obsidian-cli search query="rabbitmq" format=json | jq -r '.[]'
+```
+
 The `query=` value accepts Obsidian's full search syntax.
 
 ### Text and Boolean Operators
