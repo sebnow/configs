@@ -38,10 +38,13 @@ read [references/principles.md](references/principles.md).
 
 ### Phase 2: Present candidates
 
+For named moves to use in the solution sketch,
+read [references/transformations.md](references/transformations.md).
+
 Present a numbered list. For each candidate:
 - files involved
 - the problem in domain terms
-- a one-sentence solution sketch
+- a one-sentence solution sketch that names the move from the catalog when one fits
 - locality/leverage benefit
 
 Do not propose interface signatures yet.
