@@ -388,3 +388,96 @@ BlockUser(ctx, content, user, reporter)
 Counter-example: a `correlationID` carried through request context for tracing
 has no domain semantics — no parse rule, no equivalence beyond string equality,
 no risk of confusion with another kind. Leave it as `string`.
+
+---
+
+## Replace Opaque Payload with Schema
+
+### Detection
+
+A value flowing through public boundaries — an event payload, a workflow
+input, an HTTP body, a configuration record — is carried as an untyped bag:
+`map[string]any`, `json.RawMessage`, `interface{}`, a JSON column read as a
+string, a dict in a dynamic language. Producers fill the bag with keys and
+consumers retrieve them with type assertions or string-keyed lookups.
+Telltale signs: every consumer re-derives the same schema with assertions
+like `payload["orderId"].(string)`; field-presence and format rules
+(`if v == ""`, "must be ISO-4217") repeat across consumers because no type
+owns them; a key typo or a producer/consumer naming drift
+(`amount_cents` vs. `amountCents`) compiles cleanly and fails silently at
+runtime; the documentation for the field is "see the consumers".
+
+### Smell
+
+The schema exists — every reader and writer agrees on it — but lives only
+in convention. The type system carries none of it, so the compiler cannot
+catch typos, missing fields, or wrong-typed fields, and validation drifts
+because there is no canonical place to put it. Every new consumer pays the
+re-derivation tax; every new producer can introduce a subtle mismatch
+without breaking the build. Genuinely free-form values that have no fixed
+schema and no typed consumer — debugging breadcrumbs in a structured log
+entry, ad-hoc feature-flag context, opaque vendor responses passed through
+to a human reader — are not affected: there is nothing to put in a typed
+struct because there is no agreed shape.
+
+### Refactor move
+
+Define a typed schema for the payload and replace the bag with it. In Go:
+a struct with named fields, JSON tags where the wire format matters, and a
+parse constructor that validates invariants once
+(`ParseOrderPlaced(raw []byte) (OrderPlaced, error)`). Producers construct
+the typed value at the boundary; consumers receive it already validated.
+Field renames now require a compile fix, validation rules collapse into the
+constructor, and producer/consumer drift becomes a build error. If the
+boundary is a generic envelope (a bus that carries many event kinds), keep
+the envelope generic and dispatch to typed payloads per kind — do not
+collapse the envelope itself.
+
+### Example
+
+Before:
+
+```go
+type Event struct {
+    Kind    string
+    Payload map[string]any
+}
+
+// Every consumer re-derives the schema; producers may drift on key names.
+func HandleOrderPlaced(ctx context.Context, e Event) error {
+    orderID, ok := e.Payload["orderId"].(string)
+    if !ok || orderID == "" { return errors.New("orderId required") }
+    amountCents, ok := e.Payload["amountCents"].(float64)
+    if !ok || amountCents <= 0 { return errors.New("amountCents must be positive") }
+    currency, ok := e.Payload["currency"].(string)
+    if !ok || len(currency) != 3 { return errors.New("currency must be ISO-4217") }
+    // ...
+}
+```
+
+After:
+
+```go
+type OrderPlaced struct {
+    OrderID     string `json:"orderId"`
+    AmountCents int64  `json:"amountCents"`
+    Currency    string `json:"currency"`
+}
+
+func ParseOrderPlaced(raw []byte) (OrderPlaced, error) {
+    var p OrderPlaced
+    if err := json.Unmarshal(raw, &p); err != nil { return OrderPlaced{}, err }
+    if p.OrderID == "" { return OrderPlaced{}, errors.New("orderId required") }
+    if p.AmountCents <= 0 { return OrderPlaced{}, errors.New("amountCents must be positive") }
+    if len(p.Currency) != 3 { return OrderPlaced{}, errors.New("currency must be ISO-4217") }
+    return p, nil
+}
+
+// Consumers receive a validated value; producers cannot drift the field names.
+func HandleOrderPlaced(ctx context.Context, p OrderPlaced) error { /* ... */ }
+```
+
+Counter-example: a structured-log `Details map[string]any` field carrying
+arbitrary debugging context — evaluated feature flags, request headers,
+ad-hoc breadcrumbs — has no fixed schema, no typed consumer, and no domain
+invariants to enforce. Leave it as `map[string]any`.
