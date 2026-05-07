@@ -309,3 +309,82 @@ func RegisterWorkflows(w worker.Worker) {
 Counter-example: a `TODO` comment that records a known limitation
 (`// TODO: derive ScheduleToCloseTimeout from the gRPC deadline`) is not
 dead code — it documents a gap, not a superseded path. Leave it.
+
+---
+
+## Promote Primitive to Named Type
+
+### Detection
+
+Multiple semantically distinct values flow through public boundaries as the
+same primitive type — typically `string` or `int`. Telltale signs: function
+signatures like `func Block(userID, contentID, reporterID string)` where
+transposing arguments compiles cleanly; validation rules ("must be non-empty",
+"must match prefix `v1_`") re-derived inside every function that accepts the
+value; a struct field whose type tells you nothing about its meaning
+(`Owner string` vs. `Owner UserReference`).
+
+### Smell
+
+The compiler cannot tell two semantic kinds apart, so call-site transposition
+is a runtime bug rather than a type error. Validation rules drift across call
+sites because there is no canonical place to put them. New readers must trace
+back through the codebase to learn which `string` carries which constraint.
+Genuinely opaque values that have no domain semantics — correlation IDs,
+free-form labels, log messages — are not affected: they have nothing to put
+in a parse constructor and nothing to confuse with another kind.
+
+### Refactor move
+
+Give each kind its own named type with a parse constructor
+(`type UserReference string` + `ParseUserReference(s string) (UserReference, error)`).
+Make the constructor the only way to obtain the type from a raw string at
+boundaries (HTTP, RPC, database). Update signatures to take the named types
+so transposition becomes a compile error. Validation that previously lived
+inline collapses into the constructor; if there is no validation today, the
+empty constructor is still worth introducing for the type-safety alone, and
+rules can be added later without changing call sites.
+
+### Example
+
+Before:
+
+```go
+func BlockUser(ctx context.Context, userID, contentID string, reporterID string) error {
+    if userID == "" { return errors.New("userID required") }
+    if contentID == "" { return errors.New("contentID required") }
+    if reporterID == "" { return errors.New("reporterID required") }
+    return persistBlock(ctx, userID, contentID, reporterID)
+}
+
+// Compiles, but routes the action against the wrong subject:
+BlockUser(ctx, contentID, userID, reporterID)
+```
+
+After:
+
+```go
+type UserReference string
+type ContentReference string
+
+func ParseUserReference(s string) (UserReference, error) {
+    if s == "" { return "", errors.New("user reference required") }
+    return UserReference(s), nil
+}
+
+func ParseContentReference(s string) (ContentReference, error) {
+    if s == "" { return "", errors.New("content reference required") }
+    return ContentReference(s), nil
+}
+
+func BlockUser(ctx context.Context, user UserReference, content ContentReference, reporter UserReference) error {
+    return persistBlock(ctx, user, content, reporter)
+}
+
+// Will not compile — ContentReference is not a UserReference:
+BlockUser(ctx, content, user, reporter)
+```
+
+Counter-example: a `correlationID` carried through request context for tracing
+has no domain semantics — no parse rule, no equivalence beyond string equality,
+no risk of confusion with another kind. Leave it as `string`.
