@@ -481,3 +481,107 @@ Counter-example: a structured-log `Details map[string]any` field carrying
 arbitrary debugging context — evaluated feature flags, request headers,
 ad-hoc breadcrumbs — has no fixed schema, no typed consumer, and no domain
 invariants to enforce. Leave it as `map[string]any`.
+
+---
+
+## Extract by Responsibility
+
+### Detection
+
+A single function, method, or type packs several independent jobs into one
+body. Each block leans on its own collaborator (a different repository, a
+different external client, a different bus or mailer), reacts to its own
+failure modes, and changes for its own reason — billing rules change the
+pricing block, the schema team changes the inserts, marketing changes the
+email copy. Telltale signs: section-comment dividers (`// --- validation ---`,
+`// --- persistence ---`); collaborators injected purely to serve one block;
+unit tests that have to fake every collaborator just to exercise one slice.
+
+### Smell
+
+The bundling is co-location, not cohesion. Each block has a name a reader
+could give to a separate type or function, but lives inside the same body
+because the entry point happened to land there. Every change to one block
+risks the others; every reader has to load the union of all of them just
+to follow one. Length alone is not the smell — a long function that does
+one nameable job has nothing to extract; the smell is multiple nameable
+jobs sharing one body.
+
+### Refactor move
+
+Give each responsibility its own type or function with a name that says
+what it does (`SubmitValidator`, `Pricer`, `OrderRepository`,
+`OrderNotifier`). The original function becomes a thin orchestrator that
+sequences them — receive input, call validator, call pricer, call
+repository, call notifier, return the result. Move signatures, not logic;
+each extracted piece keeps the body it had. If a piece resists naming —
+"this part doesn't have a noun" — leave it inside; the move applies only
+where the name is obvious.
+
+### Example
+
+Before:
+
+```go
+func (p *OrderProcessor) Submit(ctx context.Context, req SubmitRequest) (Order, error) {
+    // --- validation ---
+    if req.CustomerID == "" { return Order{}, errors.New("customerID required") }
+    if !strings.Contains(req.CustomerEmail, "@") { return Order{}, errors.New("bad email") }
+    for i, item := range req.Items {
+        if item.Quantity <= 0 { return Order{}, fmt.Errorf("items[%d].quantity", i) }
+    }
+
+    // --- pricing + tax ---
+    var subtotal int64
+    for _, item := range req.Items {
+        unit, _, err := p.rates.LookupUnitPrice(ctx, item.SKU)
+        if err != nil { return Order{}, err }
+        subtotal += unit * int64(item.Quantity)
+    }
+    tax, err := p.rates.LookupTax(ctx, req.Region, subtotal)
+    // ...
+
+    // --- persistence ---
+    tx, _ := p.db.BeginTx(ctx)
+    // INSERT orders, INSERT order_items, COMMIT ...
+
+    // --- notification ---
+    _ = p.bus.Publish(ctx, "order.placed", order)
+    _ = p.smtp.Send(ctx, req.CustomerEmail, "Order confirmed", body)
+    return order, nil
+}
+```
+
+After:
+
+```go
+type SubmitValidator struct{}
+func (SubmitValidator) Check(req SubmitRequest) error { /* ... */ }
+
+type Pricer struct{ rates RateClient }
+func (p Pricer) Quote(ctx context.Context, req SubmitRequest) (Quote, error) { /* ... */ }
+
+type OrderRepository struct{ db DB }
+func (r OrderRepository) Insert(ctx context.Context, q Quote, req SubmitRequest) (Order, error) { /* ... */ }
+
+type OrderNotifier struct {
+    bus  Bus
+    smtp EmailClient
+}
+func (n OrderNotifier) Announce(ctx context.Context, order Order, to string) { /* ... */ }
+
+func (p *OrderProcessor) Submit(ctx context.Context, req SubmitRequest) (Order, error) {
+    if err := p.validator.Check(req); err != nil { return Order{}, err }
+    quote, err := p.pricer.Quote(ctx, req)
+    if err != nil { return Order{}, err }
+    order, err := p.orders.Insert(ctx, quote, req)
+    if err != nil { return Order{}, err }
+    p.notifier.Announce(ctx, order, req.CustomerEmail)
+    return order, nil
+}
+```
+
+Counter-example: a long `applyDiscounts` whose body is a switch over coupon
+kinds, each branch contributing to the same outcome (return the discounted
+subtotal), has only one nameable job. Leave it as one function; splitting on
+length alone would just relocate the switch.
