@@ -585,3 +585,84 @@ Counter-example: a long `applyDiscounts` whose body is a switch over coupon
 kinds, each branch contributing to the same outcome (return the discounted
 subtotal), has only one nameable job. Leave it as one function; splitting on
 length alone would just relocate the switch.
+
+---
+
+## Consolidate to One Atomic Unit
+
+### Detection
+
+A single domain outcome that the business expects to commit-or-fail as one
+is implemented as several sequential writes, each in its own transaction
+(or each behind its own commit boundary in a non-DB substrate). Telltale
+signs: two or more `BeginTx` / `Commit` pairs in the same method against
+the same database handle with no external collaborator between them; a
+"step 1 / step 2 / step 3" comment structure where each step is
+self-contained but the caller treats the whole sequence as one outcome;
+postmortems or runbooks describe partial-state recovery — "if the cancel
+landed but the refund row is missing, run X" — for failures between the
+steps.
+
+### Smell
+
+The fragmentation is structural, not domain-driven. The outcome the
+business names is one thing ("cancel a membership", "place an order",
+"transfer balance") but the implementation lets reality observe two or
+three intermediate states the domain rules forbid. Every transient
+failure between steps has to be reconciled by hand, and every new step
+added to the flow widens the partial-state surface. The boundaries exist
+because someone wrote the writes one at a time, not because the systems
+involved cannot share a transaction.
+
+### Refactor move
+
+Collapse the sequential writes into a single transactional boundary: one
+`BeginTx`, all the writes, one `Commit` with rollback on any error.
+Helpers that previously owned a self-contained transaction become plain
+functions taking the shared `Tx`. The atomic outcome the business
+expects is now what the code enforces, and the partial-state recovery
+work disappears. If part of the flow genuinely cannot share a
+transaction (a remote API call, a write to a different store, a
+non-transactional broker), keep that part outside and apply a saga /
+outbox pattern to it — do not invent a distributed transaction.
+
+### Example
+
+Before:
+
+```go
+func (s *Service) Cancel(ctx context.Context, id MembershipID, reason string) error {
+    tx1, _ := s.db.BeginTx(ctx)
+    tx1.ExecContext(ctx, "UPDATE memberships SET status='canceled' WHERE id=$1", id)
+    tx1.Commit()
+
+    tx2, _ := s.db.BeginTx(ctx)
+    tx2.ExecContext(ctx, "INSERT INTO refunds (membership_id, amount_cents) VALUES ($1,$2)", id, refund)
+    tx2.Commit()
+
+    tx3, _ := s.db.BeginTx(ctx)
+    tx3.ExecContext(ctx, "INSERT INTO audit_log (subject_id, action, reason) VALUES ($1,$2,$3)", id, "membership.canceled", reason)
+    return tx3.Commit()
+}
+```
+
+After:
+
+```go
+func (s *Service) Cancel(ctx context.Context, id MembershipID, reason string) error {
+    tx, err := s.db.BeginTx(ctx)
+    if err != nil { return err }
+    defer func() { _ = tx.Rollback() }() // no-op after Commit
+
+    if _, err := tx.ExecContext(ctx, "UPDATE memberships SET status='canceled' WHERE id=$1", id); err != nil { return err }
+    if _, err := tx.ExecContext(ctx, "INSERT INTO refunds (membership_id, amount_cents) VALUES ($1,$2)", id, refund); err != nil { return err }
+    if _, err := tx.ExecContext(ctx, "INSERT INTO audit_log (subject_id, action, reason) VALUES ($1,$2,$3)", id, "membership.canceled", reason); err != nil { return err }
+    return tx.Commit()
+}
+```
+
+Counter-example: a `NotifyCanceled` that writes to a local outbox table
+and then calls a remote billing API has two writes that cannot share a
+transaction — the billing API is an external system the database cannot
+enrol in `BeginTx` / `Commit`. Apply the outbox / saga pattern with
+retries and idempotency keys; do not consolidate.
