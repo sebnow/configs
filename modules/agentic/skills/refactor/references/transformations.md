@@ -235,3 +235,77 @@ Counter-example: a 600-line file that one author maintains and that has never
 shown up in a conflict resolution does not warrant this move. Files cluster
 inside a flat package by name prefix (`api_key.go`, `api_key_activities.go`)
 rather than escalating to sub-packages speculatively.
+
+---
+
+## Aggressive Dead-Code Removal After Successor Lands
+
+### Detection
+
+A module, workflow, function, or activity has a named successor that has
+already taken over every caller. Telltale signs: a recent commit pair that
+introduced the new version and migrated callers; the legacy symbol is
+referenced only by its own definition and by registration boilerplate (e.g.
+a worker, router, or DI graph); a "kept just in case" comment past its
+stated cutover; helpers or activities that exist solely to support the old
+path. Temporal / job-queue equivalents: zero in-flight executions older
+than the cutover.
+
+### Smell
+
+The migration is complete but the deletion is missing. Readers must
+re-derive that the legacy code is unused; new contributors copy patterns
+from it because it looks current; the registry still pays the cost of
+loading and reasoning about both versions. Leaving dead code "for now"
+turns a clean introduce → migrate sequence into a permanent two-version
+state, and the cost of removal grows as new code accretes around the old
+shape.
+
+### Refactor move
+
+Apply the introduce → migrate → delete sequence and finish the third step:
+delete the legacy module, its exclusive helpers and activities, and its
+registration in the same commit. Make that commit on its own — never mixed
+with hand-written changes elsewhere — so the diff is reviewable as pure
+removal and so the bisect history stays clean. The commit message states
+which successor took over and why the old version is gone, not just that
+it is.
+
+### Example
+
+Before — both workflows registered, only the new one called:
+
+```go
+// worker.go
+func RegisterWorkflows(w worker.Worker) {
+    w.RegisterWorkflow(ProcessDecisionWorkflow) // current; every caller uses this
+    w.RegisterActivity(ApplyDecisionAndAudit)
+
+    // Legacy. No callers; kept "just in case" past the cutover.
+    w.RegisterWorkflow(ApplyDecisionWorkflow)
+    w.RegisterActivity(ApplyDecision)
+    w.RegisterActivity(EmitLegacyAudit)
+}
+```
+
+After — own commit, removal only:
+
+```
+refactor: Remove ApplyDecisionWorkflow   (-353 lines)
+
+ProcessDecisionWorkflow has taken over every caller (cutover landed in
+2025-W37). Zero in-flight executions remain. Drop the legacy workflow
+and its exclusive activities so the worker registry is single-version.
+```
+
+```go
+// worker.go
+func RegisterWorkflows(w worker.Worker) {
+    w.RegisterWorkflow(ProcessDecisionWorkflow)
+    w.RegisterActivity(ApplyDecisionAndAudit)
+}
+```
+
+Counter-example: a `TODO` comment that records a known limitation
+(`// TODO: derive ScheduleToCloseTimeout from the gRPC deadline`) is not
+dead code — it documents a gap, not a superseded path. Leave it.
