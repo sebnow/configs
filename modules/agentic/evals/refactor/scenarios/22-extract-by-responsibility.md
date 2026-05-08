@@ -26,8 +26,9 @@ rationale: |
 assertions:
   - id: numbered-candidates
     text: |
-      The agent presents a numbered list of refactoring candidates
-      and asks which to explore further before proposing changes.
+      The agent presents at least one numbered candidate (e.g., "Candidate 1:"
+      or "1.") and pauses for user direction before proposing interface
+      signatures or jumping into implementation.
   - id: nameable-pieces-vs-just-long
     text: |
       The agent observes that `Submit` packs multiple distinct
