@@ -85,6 +85,87 @@ func TestConcurrent(t *testing.T) {
 }
 ```
 
+## Test Naming as Specification
+
+A test name is documentation. Before writing the body, name the test so that
+`go test -v` output reads as a behavior statement on its own. The required
+pattern is `TestGiven<context>When<action>Then<outcome>` — the literal
+keywords `Given`, `When`, and `Then` appear in the name in that order:
+
+- `Given<context>` fixes the precondition (input shape, prior state, fixture).
+- `When<action>` names the action under test (function call, method, event).
+- `Then<outcome>` states the observable outcome (return value, error, side
+  effect).
+
+DON'T compress the spec into a sentence-fragment label and call it
+"specification-like":
+
+```go
+// Bad — drops the Given/When/Then keywords:
+func TestApplyDiscount_rejects_a_negative_price(t *testing.T) { ... }
+func TestApplyDiscount_reduces_price_by_the_given_percent(t *testing.T) { ... }
+```
+
+DO use the keywords explicitly:
+
+```go
+// Good — Given/When/Then keywords present in order:
+func TestGivenNegativePriceWhenApplyDiscountThenReturnsError(t *testing.T) { ... }
+func TestGivenValidPriceAndPercentWhenApplyDiscountThenReducesPrice(t *testing.T) { ... }
+```
+
+The keywords are non-negotiable: a snake_case description of the behavior is
+not a substitute. The discipline of writing `Given/When/Then` forces the
+author to separate precondition, action, and outcome instead of fusing them
+into prose.
+
+```go
+func TestGivenNegativePriceWhenApplyDiscountThenReturnsError(t *testing.T) {
+    _, err := ApplyDiscount(-1, 10)
+    if err == nil {
+        t.Fatalf("expected error for negative price")
+    }
+}
+
+func TestGivenPercentOutOfRangeWhenApplyDiscountThenReturnsError(t *testing.T) {
+    _, err := ApplyDiscount(100, 150)
+    if err == nil {
+        t.Fatalf("expected error for percent > 100")
+    }
+}
+
+func TestGivenValidPriceAndPercentWhenApplyDiscountThenReducesPrice(t *testing.T) {
+    got, err := ApplyDiscount(100, 25)
+    if err != nil {
+        t.Fatalf("unexpected error: %v", err)
+    }
+    if got != 75 {
+        t.Errorf("got %v, want 75", got)
+    }
+}
+```
+
+The same pattern carries through subtest names so each `t.Run(...)` line
+reads as a separate behavior:
+
+```go
+func TestApplyDiscount(t *testing.T) {
+    t.Run("Given valid price and percent when ApplyDiscount then reduces price", func(t *testing.T) {
+        // ...
+    })
+    t.Run("Given negative price when ApplyDiscount then returns error", func(t *testing.T) {
+        // ...
+    })
+    t.Run("Given percent out of range when ApplyDiscount then returns error", func(t *testing.T) {
+        // ...
+    })
+}
+```
+
+One name per behavior. Names like `"happy path"`, `"error"`, or
+`"invalid input"` lump distinct outcomes under a single label and force the
+reader to open the test body to recover the spec; reject them.
+
 ## Test Helpers
 
 ```go
