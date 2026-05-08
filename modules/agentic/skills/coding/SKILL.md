@@ -58,6 +58,24 @@ Apply these principles to every implementation:
   and the named type prevents silently swapping two distinct identifiers at the call site.
   Do not introduce a named type for a value with no current or foreseeable semantic rule
   (e.g. a free-form correlation ID).
+- Push Invariants Into the Data Shape:
+  When the domain forbids a state, change the data so the state is unrepresentable —
+  do not guard against it in code.
+  If a pointer field is documented or constrained to be always-set
+  (a schema check, a loader invariant, an "every X has a Y" comment),
+  change its declared type to the value type — drop the pointer from the struct.
+  Dereferencing the pointer without a nil check is not a workaround for the bad shape;
+  it leaves the bad shape in place and silently relies on the invariant holding forever.
+  Same move for queries that return rows the caller must filter out:
+  change the query (e.g. `LEFT JOIN` → `INNER JOIN`) rather than filtering in code.
+  Same for fields that are always set: make them required rather than checking the zero value.
+  The smell is not the runtime check — the smell is the type permitting a state the runtime never produces
+  (a nullable always set, an enum value that never appears, a slice that is never empty).
+  Whether the code currently has an `if x != nil` guard, a naked dereference, or nothing at all
+  is irrelevant: if the type allows the forbidden state, the data shape is wrong.
+  When proposing this change, name the principle:
+  the goal is to push the invariant into the data shape so the code can't be wrong,
+  not merely to write "simpler" or "cleaner" code.
 - Layering Direction:
   Orchestration and decisions live in business code;
   infra primitives execute.
