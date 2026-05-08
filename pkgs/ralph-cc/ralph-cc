@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set -m  # job control: background jobs get their own process group
+
+_self_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_share_dir="${RALPH_CC_SHARE:-$_self_dir/../share/ralph-cc}"
+_claude_tmp="/tmp/claude-$(id -u)"
+
+usage() {
+  printf 'usage: ralph-cc [--allow PATH]... [--model MODEL] [--add-dir DIR]... [--branch BRANCH] [INSTRUCTIONS_FILE | -]\n' >&2
+}
+
+_model="opus"
+declare -a _user_allow_paths=()
+declare -a _add_dirs=()
+_branch=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --allow)   _user_allow_paths+=("$2"); shift 2 ;;
+    --model)   _model="$2";              shift 2 ;;
+    --add-dir) _add_dirs+=("$2");        shift 2 ;;
+    --branch)  _branch="$2";             shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    --)        shift; break ;;
+    -*)        printf 'ralph-cc: unknown option: %s\n' "$1" >&2; usage; exit 1 ;;
+    *)         break ;;
+  esac
+done
+
+_current_branch() {
+  if [[ -d .jj ]]; then
+    jj log --no-graph -r '@' -T 'local_bookmarks.map(|b| b.name()).join("\n")' 2>/dev/null | head -1 || true
+  else
+    git branch --show-current
+  fi
+}
+
+_switch_or_create() {
+  local target="$1"
+  if [[ -d .jj ]]; then
+    if jj bookmark list 2>/dev/null | grep -q "^$target "; then
+      printf 'ralph-cc: switching to jj bookmark %s\n' "$target" >&2
+      jj new "$target" && jj bookmark set "$target"
+    else
+      printf 'ralph-cc: creating jj bookmark %s\n' "$target" >&2
+      jj new && jj bookmark set "$target"
+    fi
+  else
+    if git show-ref --verify --quiet "refs/heads/$target"; then
+      printf 'ralph-cc: switching to existing branch %s\n' "$target" >&2
+      git checkout "$target"
+    else
+      printf 'ralph-cc: creating branch %s\n' "$target" >&2
+      git checkout -b "$target"
+    fi
+  fi
+}
+
+# Branch safety check runs before reading instructions for fast failure.
+_cur="$(_current_branch)"
+if [[ "$_cur" = "master" || "$_cur" = "main" ]]; then
+  if [[ -n "$_branch" ]]; then
+    _switch_or_create "$_branch"
+    _cur="$_branch"
+  else
+    printf 'ralph-cc: refusing to run on %s — use --branch BRANCH to specify a feature branch\n' "$_cur" >&2
+    exit 1
+  fi
+fi
+printf 'ralph-cc: working branch: %s\n' "$_cur" >&2
+
+# Read instructions from file, explicit stdin (-), or implicit piped stdin.
+if [[ $# -gt 0 ]]; then
+  _instructions_arg="$1"
+  if [[ "$_instructions_arg" = "-" ]]; then
+    _user_instructions="$(cat)"
+  elif [[ -f "$_instructions_arg" ]]; then
+    _user_instructions="$(cat "$_instructions_arg")"
+  else
+    printf 'ralph-cc: instructions file not found: %s\n' "$_instructions_arg" >&2
+    exit 1
+  fi
+elif [[ ! -t 0 ]]; then
+  _user_instructions="$(cat)"
+else
+  usage
+  exit 1
+fi
+
+_preamble="$(cat "$_share_dir/preamble.md")"
+_epilogue="$(cat "$_share_dir/epilogue.md")"
+_prompt="$(printf '%s\n\n---\n\n%s\n\n---\n\n%s' "$_preamble" "$_user_instructions" "$_epilogue")"
+
+_log_dir="$PWD/.agents/ralph"
+mkdir -p "$_log_dir" "$_claude_tmp"
+
+_stop=0
+_stop_count=0
+_iter_pid=
+
+_handle_sigint() {
+  _stop_count=$((_stop_count + 1))
+  if [[ "$_stop_count" -eq 1 ]]; then
+    printf '\nralph-cc: caught SIGINT — finishing this iteration (Ctrl-C again to exit now)\n' >&2
+    _stop=1
+  else
+    printf '\nralph-cc: caught SIGINT — exiting immediately\n' >&2
+    kill %+ 2>/dev/null || true
+    exit 130
+  fi
+}
+
+trap _handle_sigint SIGINT
+
+_done_in_log() {
+  grep -q 'RALPH_DONE' "$1"
+}
+
+_nono_args=(run --profile claude-code --allow "$PWD" --allow "$_claude_tmp")
+for _p in "${_user_allow_paths[@]}"; do
+  _nono_args+=(--allow "$_p")
+done
+
+_claude_args=(--dangerously-skip-permissions --model "$_model" -p "$_prompt")
+for _d in "${_add_dirs[@]}"; do
+  _claude_args+=(--add-dir "$_d")
+done
+
+_iteration=0
+while true; do
+  _iteration=$((_iteration + 1))
+  _ts="$(date -u +%Y%m%dT%H%M%SZ)"
+  _log="$_log_dir/${_ts}-iter${_iteration}.log"
+  printf 'ralph-cc: iteration %d -> %s\n' "$_iteration" "$_log" >&2
+
+  nono "${_nono_args[@]}" -- claude "${_claude_args[@]}" 2>&1 | tee "$_log" &
+  _iter_pid=$!
+
+  # wait may be interrupted early by SIGINT; the job continues under set -m.
+  wait "$_iter_pid" 2>/dev/null || true
+
+  if [[ "$_stop" -eq 1 ]]; then
+    # SIGINT fired during wait — re-wait so the iteration finishes cleanly.
+    wait "$_iter_pid" 2>/dev/null || true
+    _iter_pid=
+    printf 'ralph-cc: stopping after iteration %d as requested\n' "$_iteration" >&2
+    exit 0
+  fi
+  _iter_pid=
+
+  if _done_in_log "$_log"; then
+    printf 'ralph-cc: RALPH_DONE — stopping after iteration %d\n' "$_iteration" >&2
+    exit 0
+  fi
+done
