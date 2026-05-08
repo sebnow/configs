@@ -217,10 +217,16 @@ def main [
             continue
         }
 
+        # Copy fixture to a per-scenario working dir so subject edits do not
+        # mutate the source fixture and pollute subsequent runs.
+        let fixture_work = ($scen_out | path join "fixture")
+        mkdir $fixture_work
+        ^cp -r $"($fixture_path)/." $fixture_work
+
         print $"running: ($sid)"
 
-        # Run subject pi inside the fixture directory
-        let subject_result = (do { cd $fixture_path; ^pi --no-skills --skill $skill_abs --session-dir $"($scen_out)/sessions" --model $effective_subject_model -p $prompt } | complete)
+        # Run subject pi inside the per-scenario fixture copy
+        let subject_result = (do { cd $fixture_work; ^pi --no-skills --skill $skill_abs --session-dir $"($scen_out)/sessions" --model $effective_subject_model -p $prompt } | complete)
         let subject_rc = $subject_result.exit_code
         $subject_result.stdout | save --force $"($scen_out)/subject.stdout"
 
