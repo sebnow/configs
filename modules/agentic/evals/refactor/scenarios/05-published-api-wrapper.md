@@ -15,8 +15,10 @@ assertions:
   - id: numbered-candidates
     text: |
       The agent presents at least one numbered candidate (e.g., "Candidate 1:"
-      or "1.") and pauses for user direction before proposing interface
-      signatures or jumping into implementation.
+      or "1.") and ends the message with a question asking which candidate
+      (or which direction within a candidate) to explore. A one-sentence
+      solution sketch within the candidate description is acceptable and
+      does not violate the pause requirement.
   - id: api-boundary-recognized
     text: |
       The agent notes that ProcessOrder is the package's public API
