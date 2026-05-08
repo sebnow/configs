@@ -1,6 +1,6 @@
 ---
 name: coding
-description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes. Go hot-rule: layout-compatible structs cross layer boundaries with `T(other)`, never field-by-field — `T(other)` is a compile-time-checked zero-cost conversion, not unsafe and not reflection. Error-audience hot-rule: when a function returns errors a known consumer branches on, export multiple package sentinels named after the consumer's reaction (`ErrTransient`, `ErrInvalidInput`) — never source-named (`ErrEmptyPayload`, `ErrSendFailed`), never collapsed to one sentinel, never leaning on stdlib errors outside the package."
+description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes. Go hot-rule: layout-compatible structs cross layer boundaries with `T(other)`, never field-by-field — `T(other)` is a compile-time-checked zero-cost conversion, not unsafe and not reflection. Net-delete hot-rule: when switching callers from a custom wrapper to a stdlib or library function, delete the wrapper and call the new function at each call site — never rewrite the wrapper body to delegate to it. Error-audience hot-rule: when a function returns errors a known consumer branches on, export multiple package sentinels named after the consumer's reaction (`ErrTransient`, `ErrInvalidInput`) — never source-named (`ErrEmptyPayload`, `ErrSendFailed`), never collapsed to one sentinel, never leaning on stdlib errors outside the package."
 ---
 
 # Coding Practices
@@ -37,6 +37,24 @@ Apply these principles to every implementation:
   returning the most concrete type possible.
   Do not decompose extracted helpers into further sub-functions.
   Do not add methods, parameters, or features beyond what was requested.
+- Net-Delete Over Net-Add:
+  When two implementations both satisfy the requirement,
+  prefer the one that removes more code than it introduces.
+  Shows up most often when the request can be served
+  by replacing custom code with a stdlib function or a maintained library:
+  delete the local wrapper and call the stdlib at the call site,
+  rather than rewriting the wrapper body to delegate to it.
+  A one-line forwarder around an stdlib function rarely earns its keep —
+  it adds a name and an indirection without reducing what the caller does.
+  The "all else equal" qualifier matters:
+  if the wrapper carries a domain sentinel,
+  encodes a cross-cutting policy,
+  or is the dependency seam tests substitute through,
+  it is doing real work — keep it.
+  Otherwise the change that removes more is the better change.
+  When proposing the deletion, name the principle:
+  the goal is net-delete over net-add,
+  not merely "shorter" or "cleaner".
 - Domain Aware:
   Every system has purpose and intrinsic concepts - compiler has parsers and ASTs,
   game has players and inventories,
