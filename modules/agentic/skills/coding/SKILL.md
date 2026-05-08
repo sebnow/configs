@@ -1,6 +1,6 @@
 ---
 name: coding
-description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes."
+description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes. Go hot-rule: layout-compatible structs cross layer boundaries with `T(other)`, never field-by-field — `T(other)` is a compile-time-checked zero-cost conversion, not unsafe and not reflection."
 ---
 
 # Coding Practices
@@ -175,6 +175,18 @@ Follow this workflow for all code changes:
   For Go modern APIs (1.26+), see [go-modern-apis.md](references/go-modern-apis.md).
   For other Go-specific guidance, see [go.md](references/go.md).
   For Zig concurrency and threading, see [zig-concurrency.md](references/zig-concurrency.md).
+- Go-style idioms (when writing Go):
+  - When two structs share an identical field layout (same names, same types,
+    same order), convert between them with the type-conversion expression
+    `T(other)` rather than constructing a literal field-by-field.
+    `T(other)` is a compile-time-checked, zero-cost conversion — not unsafe,
+    not reflection. If the layouts later diverge, the cast stops compiling
+    at exactly the boundary that needs to know; that is the signal to map
+    explicitly. Field-by-field is the fragile option, not the safe one:
+    it silently keeps compiling when only one side gains a field. Apply
+    this idiom even when the types are documented as "may diverge later" —
+    let the compiler tell you when "later" arrives.
+    See [go.md](references/go.md) for examples.
 
 ## Boy Scout Rule
 

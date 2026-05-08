@@ -129,6 +129,30 @@ Anti-patterns:
 - `InternalError`, `DatabaseError`, `TimeoutError` — leak implementation, give the caller nothing to act on
 - `return zero, err` at a layer boundary — abdicates the mapping responsibility
 
+## Go-style idioms
+
+### Type conversion between layout-compatible structs
+
+When two structs share the same field layout — same names, same types, same
+order — convert directly with `T(other)` instead of constructing a new value
+field-by-field.
+
+```go
+out, err := ProcessActivity(ctx, ActivityInput(in))
+if err != nil {
+    return WorkflowOutput{}, err
+}
+return WorkflowOutput(out), nil
+```
+
+The two types stay declared separately (each lives at a different layer and
+may diverge); only the conversion at the boundary is cheap. Field-by-field
+construction at every boundary repeats the field list and silently rots when
+fields are added on only one side.
+
+When the layouts diverge, the conversion stops compiling at exactly the
+boundary that needs to know — that is the signal to map explicitly.
+
 ## Diagnostics out-parameter
 
 Errors are control flow: `err != nil` means the function failed.
