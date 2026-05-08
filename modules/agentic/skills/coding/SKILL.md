@@ -45,6 +45,19 @@ Apply these principles to every implementation:
   rather than generic technical terms or made-up names.
   Ensure changes are cohesive with system's purpose and broader project.
   Don't use "best practices" or design patterns for the sake of it - make sure they're fit for purpose.
+  Typed primitives at boundaries:
+  at public function boundaries,
+  primitive values that carry semantic constraints
+  (a user reference, a tenant reference, a URL, an email)
+  get a named type with a `Parse*` (or `New*`) constructor
+  that takes the raw input and returns the named type and an error.
+  The validation lives in the constructor;
+  functions inside the boundary accept the named type and trust the value.
+  Name the type even when the constructor does not validate anything yet —
+  naming documents the meaning at the signature,
+  and the named type prevents silently swapping two distinct identifiers at the call site.
+  Do not introduce a named type for a value with no current or foreseeable semantic rule
+  (e.g. a free-form correlation ID).
 - Layering Direction:
   Orchestration and decisions live in business code;
   infra primitives execute.
