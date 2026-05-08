@@ -98,6 +98,36 @@ write separate test functions instead.
 
 See @go-patterns.md for examples.
 
+## Test Fidelity Tier
+
+When a test needs to substitute a collaborator,
+choose the highest-fidelity option that fits the layer under test:
+
+1. Real thing (highest fidelity).
+   Adapter and repository tests run against the real dependency:
+   real Postgres for repository tests,
+   real HTTP server (`httptest.NewServer`) for HTTP clients,
+   real filesystem under `t.TempDir()` for file-system code.
+   Pair with build tags (`//go:build integration`) when the dependency
+   is heavyweight.
+2. Generated mock at the substitution boundary (when real is infeasible).
+   Use a code generator — `moq`, `mockgen`, or equivalent — driven by a
+   `//go:generate` directive next to the interface declaration.
+   Generated mocks regenerate when the interface changes,
+   so call-count assertions and signatures cannot drift silently.
+   This is the default at the activity / use-case / handler layer
+   where the real adapter would require external infrastructure.
+3. Hand-rolled fake (last resort).
+   Only when neither real nor generated will work
+   — for example, an in-memory implementation that owns nontrivial state
+   the test must inspect.
+   A hand-rolled struct that just records calls is a generated-mock
+   in disguise; reach for the generator instead.
+
+A hand-written `type fake<Name> struct` with method receivers implementing an
+interface, used only to record calls or return canned values, is the
+anti-pattern. Replace it with a generated mock.
+
 ## Testing Concurrent Code
 
 Concurrency must be tested explicitly.
