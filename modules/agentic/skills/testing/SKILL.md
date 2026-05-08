@@ -128,6 +128,29 @@ A hand-written `type fake<Name> struct` with method receivers implementing an
 interface, used only to record calls or return canned values, is the
 anti-pattern. Replace it with a generated mock.
 
+## Parallel Test Isolation Ordering
+
+Adding `t.Parallel()` to a test that shares mutable state with another test
+introduces a race, not a speedup. A flaky test under parallelism is a
+race-condition bug. Fix the isolation; do not retry, skip, or sleep around it.
+
+When a test in a package needs to run in parallel, follow this order:
+
+1. Namespace the test fixtures.
+   Per-test stub keys, per-test temp directories (`t.TempDir()`),
+   per-test HTTP servers (`httptest.NewServer`), or per-test database schemas.
+   Each test owns its own fixture state.
+2. Remove shared mutable state.
+   Convert package-globals to per-test instances.
+   Inject collaborators through function or struct parameters
+   instead of reading them from a global.
+3. Add `t.Parallel()` to the test functions that are now isolated.
+4. Drop `-p 1` (or any other serial-execution config) from the test runner.
+
+Steps 1 and 2 are non-negotiable preconditions for step 3.
+A test that still touches a package-global is not a candidate for `t.Parallel()`,
+no matter how urgent the CI-time pressure is.
+
 ## Testing Concurrent Code
 
 Concurrency must be tested explicitly.
