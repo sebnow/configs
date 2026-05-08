@@ -1,6 +1,6 @@
 ---
 name: coding
-description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes. Go hot-rule: layout-compatible structs cross layer boundaries with `T(other)`, never field-by-field — `T(other)` is a compile-time-checked zero-cost conversion, not unsafe and not reflection."
+description: "Use when implementing code changes. Enforces production-grade principles: pragmatism, domain awareness, clarity, performance, correctness. Triggers: implementing features/fixes, refactoring, writing new code, bug fixes. Go hot-rule: layout-compatible structs cross layer boundaries with `T(other)`, never field-by-field — `T(other)` is a compile-time-checked zero-cost conversion, not unsafe and not reflection. Error-audience hot-rule: when a function returns errors a known consumer branches on, export multiple package sentinels named after the consumer's reaction (`ErrTransient`, `ErrInvalidInput`) — never source-named (`ErrEmptyPayload`, `ErrSendFailed`), never collapsed to one sentinel, never leaning on stdlib errors outside the package."
 ---
 
 # Coding Practices
@@ -196,6 +196,20 @@ Follow this workflow for all code changes:
   Distinguish permanent domain conditions (the entity does not exist)
   from temporary infrastructure failures (the operation could not complete) —
   callers need to tell these apart to decide whether to retry or give up.
+  An error is data with an audience: design it for who reads it.
+  Identify the consumer at the call boundary —
+  a Temporal worker reads a retryability category,
+  a gRPC handler reads a status code,
+  an operator reads a log severity,
+  a sibling Go function reads a sentinel through `errors.Is`.
+  Pick the discriminator (sentinel, typed error, code, category)
+  to match what that consumer must decide,
+  and name the resulting error values after the consumer's reaction —
+  `ErrTransient`, `ErrInvalidInput`, `codes.NotFound`,
+  `ApplicationErrorCategoryBenign` —
+  not after where the failure originated
+  (`ErrSendFailed`, `ErrValidateFailed`).
+  When proposing the error type, name the audience and the decision it has to make.
   Implementation details must not leak through error types.
   Errors are control flow: `err != nil` means the operation failed.
   Supplementary success-path information (e.g. a cache miss on a successful fetch) is not an error —
