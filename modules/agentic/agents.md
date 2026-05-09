@@ -106,3 +106,39 @@ For Go files:
 # Tool Guidelines
 
 - Use `jq` for manipulating JSON
+
+# Knowledge Vaults
+
+The user's Obsidian vaults are read-only knowledge bases
+holding high-level concepts, design philosophy, architecture, and tooling overviews.
+Consult before guessing on conceptual matters;
+not for API signatures, test failures, or library bug workarounds.
+
+Triggers: stuck on approach, "have I done this before",
+unfamiliar pattern or philosophy, user asks "what do we know about X".
+
+Search:
+
+- `obsidian-cli vaults verbose` to discover vaults (names may change).
+- `obsidian-cli search:context query="..." vault=<name> limit=10`
+  returns `path:line: snippet` for triage;
+  use plain `search` when paths alone suffice.
+- `obsidian-cli read path="..." vault=<name>` only on a known path
+  (auto-memory or prior search hit).
+- One targeted query, stop on first useful hit.
+  Do not enumerate via `find`, `ls`, or `obsidian-cli folders`.
+- Load the `obsidian-cli` skill only for operations beyond search and read.
+
+Memory as index:
+
+- First encounter with a vault: record a terse content-flavoured note
+  ("Notes: concepts, philosophy, architecture — search by topic").
+- Useful hit: append `path` + one-line "read when..." pointer.
+- Dead-end topic class: record so future sessions skip it.
+- Prune stale pointers.
+- Without persistent memory (e.g. pi), treat every session as first encounter.
+
+Never write to the vault.
+If a durable insight emerges, surface it verbally at end of session
+("you might want to add a note about X").
+The user is the curator.
