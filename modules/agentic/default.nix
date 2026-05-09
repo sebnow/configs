@@ -20,65 +20,6 @@
     { pkgs, config, ... }:
     let
       piThemes = inputs.pi-coding-agent-catppuccin.packages.${pkgs.system}.default;
-      vaultDebriefProcess = pkgs.writeShellScriptBin "vault-debrief-process" ''
-        set -euo pipefail
-
-        log() { printf '%s\n' "$*" >&2; }
-        skip() { log "skip $session_id: $*"; rm -f "$entry"; }
-
-        queue_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/agents/agent-vault-debrief-queue"
-
-        if [[ ! -d "$queue_dir" ]]; then
-          exit 0
-        fi
-
-        for entry in "$queue_dir"/*; do
-          session_id=$(${pkgs.coreutils}/bin/basename "$entry")
-          [[ "$session_id" = "*" ]] && break
-
-          transcript=$(${pkgs.findutils}/bin/find "$HOME/.claude/projects" -name "$session_id.jsonl" 2>/dev/null | head -1)
-          if [[ -z "$transcript" ]]; then
-            skip "no transcript under ~/.claude/projects"
-            continue
-          fi
-
-          # Skip sessions with no meaningful content (e.g. cancelled /resume).
-          # A malformed transcript is unrecoverable — log and drop it, don't abort the queue.
-          if ! msg_count=$(${pkgs.jq}/bin/jq -c 'select(.type == "user" or .type == "assistant")' "$transcript" 2>&1 | wc -l); then
-            skip "jq failed parsing transcript $transcript (exit ''${PIPESTATUS[0]})"
-            continue
-          fi
-          if [[ "$msg_count" -lt 2 ]]; then
-            skip "only $msg_count user/assistant messages in $transcript"
-            continue
-          fi
-
-          # Skip debrief sessions to avoid debriefing our own runs
-          if ! first_user_msg=$(${pkgs.jq}/bin/jq -n -r 'first(inputs | select(.type == "user")) | .message.content | if type == "string" then . else .[0].text // "" end' "$transcript" 2>&1); then
-            skip "jq failed extracting first user message from $transcript (exit $?)"
-            continue
-          fi
-          if [[ "$first_user_msg" == *"Run /agent-vault debrief for session"* ]]; then
-            skip "self-debrief session"
-            continue
-          fi
-
-          project_dir=$(${pkgs.coreutils}/bin/dirname "$transcript")
-          project_name=$(${pkgs.coreutils}/bin/basename "$project_dir" | rev | cut -d- -f1 | rev)
-
-          log "debriefing $session_id (project=$project_name)"
-          if echo "Run /agent-vault debrief for session $session_id.
-        The session transcript is at: $transcript
-        The project name is: $project_name
-        This is a non-interactive background process. Do not ask questions. If the session has no meaningful content to debrief, silently skip it." | ${pkgs.claude-code}/bin/claude --print \
-            --allowedTools 'Edit,Glob,Grep,Read,Write,Skill(agent-vault)'; then
-            rm -f "$entry"
-          else
-            log "debrief failed for $session_id (claude exit $?); leaving in queue"
-          fi
-        done
-      '';
-
       piWrapped = pkgs.writeShellScriptBin "bwrap-pi" ''
         set -euo pipefail
         (exec ${pkgs.bubblewrap}/bin/bwrap \
@@ -200,20 +141,6 @@
                   type = "command";
                   command = "$HOME/.claude/hooks/detect-vcs";
                 }
-                {
-                  type = "command";
-                  command = "$HOME/.claude/hooks/vault-context";
-                }
-              ];
-            }
-          ];
-          hooks.SessionEnd = [
-            {
-              hooks = [
-                {
-                  type = "command";
-                  command = "$HOME/.claude/hooks/vault-debrief";
-                }
               ];
             }
           ];
@@ -321,23 +248,6 @@
       home.file.".pi/agent/skills" = {
         source = ./skills;
         recursive = true;
-      };
-
-      systemd.user.services.vault-debrief = {
-        Unit.Description = "Process vault debrief queue";
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${vaultDebriefProcess}/bin/vault-debrief-process";
-        };
-      };
-
-      systemd.user.timers.vault-debrief = {
-        Unit.Description = "Process vault debrief queue periodically";
-        Timer = {
-          OnCalendar = "*-*-* 0..12,19..23:00,30:00 UTC";
-          Persistent = true;
-        };
-        Install.WantedBy = [ "timers.target" ];
       };
 
       programs.git = {
