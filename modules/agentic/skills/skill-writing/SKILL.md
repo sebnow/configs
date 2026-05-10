@@ -1,7 +1,6 @@
 ---
 name: skill-writing
 description: "Creates and edits SKILL.md files for agent skills. Use when building or refining agent configuration. Enforces red-green-refactor methodology with agent-specific requirements: frontmatter format, 500-line limit, progressive disclosure, quality gates. Triggers: 'create a skill', 'write a skill', 'new SKILL.md', 'create agent documentation'. Do NOT use for general documentation or README files."
-allowed-tools: "Bash(skills-ref validate:*)"
 ---
 
 # Skill Writing
@@ -172,16 +171,6 @@ See [writing-guidelines.md](references/writing-guidelines.md) for:
 - Persuasion principles (principle-to-type mapping)
 - Approach: Problem-First vs Tool-First
 - Workflow patterns (five patterns, plan-validate-execute)
-
-## Validation
-
-Use the skills-ref reference library to validate skills:
-
-```bash
-skills-ref validate ./my-skill
-```
-
-This checks frontmatter validity and naming conventions.
 
 ## Quality Gates
 

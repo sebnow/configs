@@ -1,9 +1,5 @@
 { inputs, lib, ... }:
 {
-  flake.overlays.skills-ref = final: prev: {
-    skills-ref = prev.python3Packages.callPackage ../../pkgs/skills-ref { };
-  };
-
   flake.overlays.pi-coding-agent = final: prev: {
     pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
   };
@@ -70,7 +66,6 @@
         pkgs.nushell
         pkgs.pi-coding-agent
         pkgs.ralph-cc
-        pkgs.skills-ref
         pkgs.tmux
         pkgs.zigdoc
       ]

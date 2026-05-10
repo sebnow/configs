@@ -48,7 +48,6 @@ automatically imported via import-tree.
 | ----------------- | -------------------------------------------- |
 | `camunda-modeler` | Camunda Modeler with token simulation plugin |
 | `pi-coding-agent` | Pi coding agent CLI (from npm)               |
-| `skills-ref`      | Agent Skills reference library CLI           |
 
 [Nix]: https://nixos.org
 [flake-parts]: https://github.com/hercules-ci/flake-parts
