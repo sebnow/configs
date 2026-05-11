@@ -1,6 +1,6 @@
 ---
 name: testing
-description: "Use when implementing automated tests. Enforces empirical testing, test pyramid, TDD practices, concurrent testing. Triggers: writing tests, test planning, implementing test cases, TDD, race conditions."
+description: "Use when implementing automated tests. Enforces empirical testing, test pyramid, TDD practices, concurrent testing. Triggers: writing tests, test planning, implementing test cases, TDD, race conditions. Go t.Context hot-rule: in test code, base contexts off `t.Context()` — never `context.Background()` or `context.TODO()`, including pre-existing scaffolding you are extending. Go test-naming hot-rule: every Go `Test*` function name carries the literal keywords `Given`, `When`, and `Then` in order — `TestGiven<context>When<action>Then<outcome>`. Snake_case sentence-fragment names are insufficient."
 ---
 
 # Testing
