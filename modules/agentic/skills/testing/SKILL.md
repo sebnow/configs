@@ -1,6 +1,6 @@
 ---
 name: testing
-description: "Use when implementing automated tests. Enforces empirical testing, test pyramid, TDD practices, concurrent testing. Triggers: writing tests, test planning, implementing test cases, TDD, race conditions. Go t.Context hot-rule: in test code, base contexts off `t.Context()` — never `context.Background()` or `context.TODO()`, including pre-existing scaffolding you are extending. Go test-naming hot-rule: every Go `Test*` function name carries the literal keywords `Given`, `When`, and `Then` in order — `TestGiven<context>When<action>Then<outcome>`. Snake_case sentence-fragment names are insufficient."
+description: "Use when implementing automated tests. Enforces empirical testing, test pyramid, TDD practices, concurrent testing. Triggers: writing tests, test planning, implementing test cases, TDD, race conditions. Go-specific patterns and rules: see references/go.md."
 ---
 
 # Testing
@@ -96,7 +96,7 @@ Patterns like `wantErr` fields are red flags.
 When test cases need different logic (success vs error, different validations),
 write separate test functions instead.
 
-See @go-patterns.md for examples.
+See [go.md](references/go.md) for examples.
 
 ## Test Fidelity Tier
 
@@ -162,16 +162,7 @@ Required practices:
 - Test synchronization primitives
 - Check for goroutine leaks
 
-See @go-patterns.md for race detection examples.
-
-## Test Context (Go 1.24+)
-
-Use `t.Context()` as the base context in all Go test code.
-Never use `context.Background()` or `context.TODO()` in tests.
-When deriving contexts (deadlines, cancellation, values),
-use `t.Context()` as the parent.
-
-See [go-patterns.md](go-patterns.md) for examples.
+See [go.md](references/go.md) for race detection examples.
 
 ## Testing I/O Operations
 
@@ -218,7 +209,7 @@ Required practices:
 - Use subtests for multiple sizes
 - Report custom metrics when relevant
 
-See @go-patterns.md for examples.
+See [go.md](references/go.md) for examples.
 
 ## TDD Workflow
 
