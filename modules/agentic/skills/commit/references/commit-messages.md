@@ -97,3 +97,32 @@ Update auth stuff
 
 Added refresh tokens, fixed some bugs, updated tests, refactored validation
 ```
+
+## Generated-Code Commit
+
+A regeneration ships in its own commit. The subject is always
+`chore: regenerate code` (an optional scope is fine). The commit
+contains only generator output — no hand-written file, not even the
+source that triggered the regeneration.
+
+Good (generated diff, isolated):
+```
+chore: regenerate code
+
+Regenerate pb/user.pb.go after the UserResponse field addition in
+proto/user.proto (committed separately).
+
+---
+
+feat(api): add GetUser endpoint
+
+Expose user lookup over HTTP. The proto change for UserResponse and
+its regenerated Go binding ship in adjacent commits.
+```
+
+Bad (generated diff mixed with intent):
+```
+feat(api): add GetUser endpoint
+
+Add handler, update proto, regenerate pb/user.pb.go and mocks.
+```
