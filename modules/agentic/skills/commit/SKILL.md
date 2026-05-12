@@ -105,6 +105,38 @@ Reviewer flow this enables: skim the `chore: regenerate code` commit to
 confirm it is mechanical output, then review the intent commit on its
 own merits.
 
+### Breaking Changes
+
+A change is breaking when it removes, renames, or alters the signature
+of a public symbol (an exported Go identifier, a published API
+endpoint or response field, a CLI flag, a proto message field, a
+configuration key) such that an existing caller will fail to compile
+or no longer interoperate. Adding optional fields, adding new
+endpoints, or deprecating without removing are not breaking.
+
+Required commit format (Conventional Commits):
+
+- Subject: `<type>(<scope>)!: <description>` — the `!` immediately
+  before the colon marks the breaking change. The scope is optional;
+  the `!` is not. Examples: `feat(api)!: rename UserResponse.name to
+  displayName`, `refactor(db)!: rename ConnectDB to OpenDB`,
+  `feat!: drop Python 3.8 support`.
+- Body: must contain a footer line beginning with the literal token
+  `BREAKING CHANGE:` (uppercase; `BREAKING-CHANGE:` with a hyphen is
+  also valid per the spec). The text after the token names the
+  migration path: what callers must change, and what to replace
+  removed symbols with.
+
+The `!` on the subject is for tooling and changelog generators; the
+`BREAKING CHANGE:` footer is for the human reading the log. Both are
+required, even when one feels redundant.
+
+Anti-pattern: describing the breakage in prose only ("this renames
+ConnectDB to OpenDB; callers should switch") without the `!` marker
+or the `BREAKING CHANGE:` token. Tooling will not detect the break,
+and downstream consumers will not learn the migration path from
+`git log --grep`.
+
 ### The Atomic Commit Test
 
 Before every commit, verify:
@@ -207,6 +239,8 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 - "refactor and fix" -> Mechanical and functional changes are separate commits
 - "ship the regenerated proto with the feature" -> Generated diff is its own `chore: regenerate code` commit
 - "feat: add endpoint (includes regenerated mocks)" -> Generated files never share a commit with hand-written intent
+- "refactor: rename Foo to Bar (callers must update)" -> Renaming a public symbol is breaking; subject needs `!` and body needs `BREAKING CHANGE:` footer
+- "the diff makes it obvious it's breaking" -> Tooling reads the `!` marker and the `BREAKING CHANGE:` token, not the diff
 
 Jujutsu-specific anti-patterns are covered in the jujutsu skill.
 

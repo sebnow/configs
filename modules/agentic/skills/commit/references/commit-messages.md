@@ -126,3 +126,40 @@ feat(api): add GetUser endpoint
 
 Add handler, update proto, regenerate pb/user.pb.go and mocks.
 ```
+
+## Breaking-Change Commit
+
+When a change removes or renames a public symbol, the subject must
+carry the Conventional Commits `!` marker and the body must include
+a `BREAKING CHANGE:` footer naming the migration path. Both are
+required.
+
+Good (subject marks the break; body names the migration):
+```
+refactor(db)!: rename ConnectDB to OpenDB
+
+Align the connection helper with the `database/sql` standard-library
+naming convention (sql.Open, sql.OpenDB).
+
+BREAKING CHANGE: ConnectDB has been removed. Callers must replace
+`db.ConnectDB(dsn)` with `db.OpenDB(dsn)`; the signature and return
+values are unchanged.
+```
+
+Good (feat with breaking proto-field rename):
+```
+feat(api)!: rename UserResponse.name to displayName
+
+Reflect the user-facing label across REST and gRPC clients.
+
+BREAKING CHANGE: the `name` field on `UserResponse` is removed.
+Consumers must read `displayName` instead. Old clients receive an
+empty string until they migrate.
+```
+
+Bad (breakage hidden in prose; no `!`, no footer):
+```
+refactor(db): rename ConnectDB to OpenDB
+
+This renames the connection helper. Callers should switch to OpenDB.
+```
