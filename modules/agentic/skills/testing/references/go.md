@@ -221,3 +221,55 @@ func BenchmarkOperation(b *testing.B) {
     }
 }
 ```
+
+## Test Fidelity Tier
+
+Real dependency tools:
+
+- `httptest.NewServer` for a real in-process HTTP server
+- `t.TempDir()` for a real filesystem under a temp directory (auto-cleaned)
+- `//go:build integration` to pair heavyweight tests with a build tag
+
+Generated mocks:
+
+```go
+//go:generate go tool moq -out user_mock.go . UserRepository
+```
+
+Use `moq`, `mockgen`, or equivalent.
+Drive generation via `//go:generate` next to the interface declaration.
+
+Hand-rolled fake anti-pattern:
+
+A hand-written `type fake<Name> struct` with method receivers implementing an
+interface, used only to record calls or return canned values, is the
+anti-pattern. Replace it with a generated mock.
+
+## Parallel Test Isolation
+
+Mark isolated test functions with `t.Parallel()`:
+
+```go
+func TestGivenUserExistsWhenFetchThenReturnsUser(t *testing.T) {
+    t.Parallel()
+    // each test gets its own server and temp dir
+    srv := httptest.NewServer(handler)
+    t.Cleanup(srv.Close)
+    dir := t.TempDir()
+    // ...
+}
+```
+
+Drop `-p 1` (or equivalent serial-execution config) from the test runner
+once tests are properly isolated.
+
+## Test Organization
+
+- Use `package name_test` for black-box testing (default)
+- Use `package name` only when testing internals
+- Create `export_test.go` to expose internals when needed
+
+## Test Quality
+
+- Race detector: run tests with `go test -race`
+- Cleanup: use `defer` or `t.Cleanup()` in all paths

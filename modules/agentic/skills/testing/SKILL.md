@@ -105,14 +105,12 @@ choose the highest-fidelity option that fits the layer under test:
 
 1. Real thing (highest fidelity).
    Adapter and repository tests run against the real dependency:
-   real Postgres for repository tests,
-   real HTTP server (`httptest.NewServer`) for HTTP clients,
-   real filesystem under `t.TempDir()` for file-system code.
-   Pair with build tags (`//go:build integration`) when the dependency
-   is heavyweight.
+   real database for repository tests,
+   real HTTP server for HTTP clients,
+   real filesystem under a temp directory for file-system code.
+   Pair with build tags when the dependency is heavyweight.
 2. Generated mock at the substitution boundary (when real is infeasible).
-   Use a code generator — `moq`, `mockgen`, or equivalent — driven by a
-   `//go:generate` directive next to the interface declaration.
+   Use a code generator driven by the interface declaration.
    Generated mocks regenerate when the interface changes,
    so call-count assertions and signatures cannot drift silently.
    This is the default at the activity / use-case / handler layer
@@ -124,43 +122,43 @@ choose the highest-fidelity option that fits the layer under test:
    A hand-rolled struct that just records calls is a generated-mock
    in disguise; reach for the generator instead.
 
-A hand-written `type fake<Name> struct` with method receivers implementing an
-interface, used only to record calls or return canned values, is the
-anti-pattern. Replace it with a generated mock.
+See [go.md](references/go.md) for Go-specific tools and the hand-rolled fake anti-pattern.
 
 ## Parallel Test Isolation Ordering
 
-Adding `t.Parallel()` to a test that shares mutable state with another test
+Adding parallelism to a test that shares mutable state with another test
 introduces a race, not a speedup. A flaky test under parallelism is a
 race-condition bug. Fix the isolation; do not retry, skip, or sleep around it.
 
 When a test in a package needs to run in parallel, follow this order:
 
 1. Namespace the test fixtures.
-   Per-test stub keys, per-test temp directories (`t.TempDir()`),
-   per-test HTTP servers (`httptest.NewServer`), or per-test database schemas.
+   Per-test stub keys, per-test temp directories,
+   per-test HTTP servers, or per-test database schemas.
    Each test owns its own fixture state.
 2. Remove shared mutable state.
    Convert package-globals to per-test instances.
    Inject collaborators through function or struct parameters
    instead of reading them from a global.
-3. Add `t.Parallel()` to the test functions that are now isolated.
-4. Drop `-p 1` (or any other serial-execution config) from the test runner.
+3. Mark the test functions as parallel once they are isolated.
+4. Drop any serial-execution configuration from the test runner.
 
 Steps 1 and 2 are non-negotiable preconditions for step 3.
-A test that still touches a package-global is not a candidate for `t.Parallel()`,
+A test that still touches a package-global is not a candidate for parallel execution,
 no matter how urgent the CI-time pressure is.
+
+See [go.md](references/go.md) for Go-specific parallel isolation APIs.
 
 ## Testing Concurrent Code
 
 Concurrency must be tested explicitly.
 
 Required practices:
-- Always run tests with `-race` flag during development
-- Test goroutine lifecycles and proper cleanup
-- Verify channels don't deadlock
+- Enable race detection during development
+- Test concurrent task lifecycles and proper cleanup
+- Verify blocking primitives don't deadlock
 - Test synchronization primitives
-- Check for goroutine leaks
+- Check for resource leaks
 
 See [go.md](references/go.md) for race detection examples.
 
@@ -172,29 +170,29 @@ Database testing:
 - Verify connection error handling
 
 Network testing:
-- Use `httptest.NewServer` for HTTP handlers
+- Use an in-process HTTP server for HTTP handlers
 - Test with random ports for parallel execution
 - Set deadlines to prevent hanging tests
 - Test timeout and retry logic
 
 File system testing:
-- Use `t.TempDir()` for automatic cleanup
+- Use temp directories with automatic cleanup
 - Test permission errors
 - Verify symlink handling
 - Test file watching with timeouts
 
 ## Test Organization
 
-Package structure:
-- Use `package name_test` for black-box testing (default)
-- Use `package name` only when testing internals
-- Create `export_test.go` to expose internals when needed
+Default to black-box testing (test via the public API).
+Use white-box testing only when testing internals requires it.
 
-Use build tags to separate integration tests from unit tests.
+Use build tags or equivalent to separate integration tests from unit tests.
+
+See [go.md](references/go.md) for Go-specific package structure.
 
 ## Test Helpers
 
-Mark helper functions with `t.Helper()` to report errors at call site.
+Mark helper functions so errors are reported at the call site, not inside the helper.
 
 ## Property-Based Testing
 
@@ -204,8 +202,8 @@ Test invariants across many inputs rather than specific cases.
 ## Benchmarking
 
 Required practices:
-- Use `b.ResetTimer()` to exclude setup
-- Use `runtime.KeepAlive()` to prevent compiler optimization
+- Exclude setup time from benchmark measurements
+- Prevent the compiler from optimizing away benchmark code
 - Use subtests for multiple sizes
 - Report custom metrics when relevant
 
@@ -228,11 +226,11 @@ Required: Run test before and after implementation to verify red-green cycle.
 
 Before considering tests complete:
 - All tests pass consistently (no flakiness)
-- Race detector passes: `go test -race`
+- Race detector passes
 - Tests run quickly (parallelize when possible)
 - Error messages clearly indicate what failed
 - No hardcoded timeouts that cause flakiness
-- Proper cleanup in all paths (use `defer` and `t.Cleanup()`)
+- Proper cleanup in all paths
 
 Goal: Create reliable,
 fast,
