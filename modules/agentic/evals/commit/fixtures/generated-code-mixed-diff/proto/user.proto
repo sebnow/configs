@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package userapi.v1;
+
+option go_package = "example.com/userapi/pb";
+
+message UserResponse {
+  string id = 1;
+  string display_name = 2;
+  string email = 3;
+}

@@ -14,8 +14,11 @@ rationale: |
 assertions:
   - id: numbered-candidates
     text: |
-      The agent presents a numbered list of refactoring candidates
-      and asks which to explore further before proposing changes.
+      The agent presents at least one numbered candidate (e.g., "Candidate 1:"
+      or "1.") and ends the message with a question asking which candidate
+      (or which direction within a candidate) to explore. A one-sentence
+      solution sketch within the candidate description is acceptable and
+      does not violate the pause requirement.
   - id: deletion-test-applied
     text: |
       The agent applies the deletion test to the wrapper module
