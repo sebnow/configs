@@ -45,6 +45,25 @@
               "jj git clone git@github.com:$1.git"
               ""
             ];
+            merge = [
+              "util"
+              "exec"
+              "--"
+              "bash"
+              "-c"
+              ''
+                set -euo pipefail
+                src="''${1:?usage: jj merge <source> <target>}"
+                tgt="''${2:?usage: jj merge <source> <target>}"
+                tmpl='bookmarks.map(|b| b.name()).join(",")'
+                src_name=$(jj log --no-graph -r "$src" -T "$tmpl" 2>/dev/null || true)
+                tgt_name=$(jj log --no-graph -r "$tgt" -T "$tmpl" 2>/dev/null || true)
+                [ -z "$src_name" ] && { echo "error: $src has no bookmark" >&2; exit 1; }
+                [ -z "$tgt_name" ] && { echo "error: $tgt has no bookmark" >&2; exit 1; }
+                jj new "$tgt" "$src" -m "Merge branch '$src_name' into $tgt_name"
+              ''
+              ""
+            ];
           };
         };
       };
