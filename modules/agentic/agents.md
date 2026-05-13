@@ -109,7 +109,10 @@ For Go files:
 
 # Knowledge Vaults
 
-The user's Obsidian vaults are read-only knowledge bases
+<knowledge-vaults>
+
+For cross-project knowledge lookups,
+the user's Obsidian vaults are read-only knowledge bases
 holding high-level concepts, design philosophy, architecture, and tooling overviews.
 Consult before guessing on conceptual matters;
 not for API signatures, test failures, or library bug workarounds.
@@ -142,3 +145,5 @@ Never write to the vault.
 If a durable insight emerges, surface it verbally at end of session
 ("you might want to add a note about X").
 The user is the curator.
+
+</knowledge-vaults>
