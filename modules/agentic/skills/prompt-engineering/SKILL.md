@@ -294,6 +294,14 @@ Required before claiming success:
 - Compare to baseline
 - Document what actually improved
 
+## Common Issues
+
+**Technique applied before failure mode identified**: skipped Red phase.
+Document what the current prompt does wrong before reaching for a fix.
+
+**Baseline not documented**: improvement can't be measured.
+Record pass/fail counts before any change.
+
 ## Integration with Other Skills
 
 - red-green-refactor: Core TDD methodology
