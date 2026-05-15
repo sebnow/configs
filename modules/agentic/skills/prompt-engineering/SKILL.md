@@ -13,26 +13,6 @@ The solution: test, don't assume.
 
 Core principle: Measure baseline, apply minimal changes, test rigorously.
 
-## When to Use
-
-Required when:
-
-- Writing new prompts for any use case
-- Improving existing prompts that underperform
-- Creating Claude configurations (skills, agents)
-- Developing applications with LLM APIs
-- Prompt seems to work inconsistently
-
-Activation trigger phrases:
-
-- "Write a prompt for..."
-- "This prompt isn't working"
-- "How do I prompt for..."
-- "Improve this prompt"
-- "The output is inconsistent"
-
-When you think any of these, apply this skill.
-
 ## TDD Methodology for Prompts
 
 Follow red-green-refactor skill for the core TDD methodology.
