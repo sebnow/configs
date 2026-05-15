@@ -339,10 +339,10 @@ Agent: Passes 5/5 test cases. Ready for your review.
 User: I need a prompt to summarize customer reviews.
 Agent: Here's a prompt using best practices:
 
-<instructions>Please think step-by-step and carefully...</instructions>
-<examples>...</examples>
+Please think step-by-step and carefully analyze the review.
+Be polite and thorough. Use structured output.
 
-I used chain of thought and politeness — these are proven techniques.
+I used chain of thought, politeness, and structure — these are proven techniques.
 
 [No baseline, no testing, assumed techniques work]
 ```
