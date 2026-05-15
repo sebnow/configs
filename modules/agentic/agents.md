@@ -113,7 +113,7 @@ For Go files:
 
 For cross-project knowledge lookups,
 the user's Obsidian vaults are read-only knowledge bases
-holding high-level concepts, design philosophy, architecture, and tooling overviews.
+holding high-level concepts, design philosophy, architecture, etc.
 Consult before guessing on conceptual matters;
 not for API signatures, test failures, or library bug workarounds.
 
