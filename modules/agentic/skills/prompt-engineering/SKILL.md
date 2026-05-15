@@ -147,7 +147,13 @@ Use:
 - Whitespace between sections
 - Consistent formatting
 
-Optional: XML tags for very complex prompts or when parsing output programmatically.
+Use XML tags when sections must not bleed into each other
+(scoped rules, multi-section instruction docs, mixed instructions + data + examples),
+or when parsing output programmatically.
+Models do not suggest XML for context bleed unprompted — apply proactively.
+
+See [structural-delimiters.md](references/structural-delimiters.md)
+for model-specific preferences (Claude, GPT, Gemini) and the rendering caveat.
 
 **5. Output Format Specification**
 
@@ -279,7 +285,7 @@ Stop immediately if you catch yourself thinking:
 
 - "Being polite always helps" → Test it
 - "Chain of thought is best practice" → Test it
-- "XML tags improve prompts" → Test it
+- "XML tags will improve this" → Identify the failure mode first (e.g., context bleed, mixed content), then test
 - "This worked on Twitter" → Test in your context
 - "I'll embed the schema in the prompt" → Check if SDK supports native schema
 - "One test run looks good" → Run multiple test cases
@@ -356,7 +362,7 @@ Agent: Here's a prompt using best practices:
 <instructions>Please think step-by-step and carefully...</instructions>
 <examples>...</examples>
 
-I used XML tags, chain of thought, and politeness - these are proven techniques.
+I used chain of thought and politeness — these are proven techniques.
 
 [No baseline, no testing, assumed techniques work]
 ```
@@ -368,7 +374,7 @@ If you output these phrases before testing:
 - "Here's a prompt using best practices..." → Test it first
 - "Chain of thought will improve..." → Measure baseline
 - "Being polite helps..." → Prove it
-- "XML tags make this clearer..." → Test with and without
+- "XML tags make this clearer" → Identify what's unclear first, then test with and without
 - "This should work..." → Run test cases
 
 When detected: Stop, measure baseline, test rigorously, then proceed.
