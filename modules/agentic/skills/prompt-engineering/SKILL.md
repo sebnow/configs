@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering
-description: "Use when writing or improving any LLM prompts. Applies TDD methodology and research-backed practices (Meincke 2025): test don't assume, measure baseline, iterate rigorously. Prevents assuming universal techniques work. Includes persuasion principles for compliance. Triggers: 'write a prompt', 'improve prompt', 'prompt not working', general prompting, application development."
+description: "Applies TDD methodology and research-backed practices (Meincke 2025) for writing or improving LLM prompts: measure baseline, test don't assume, iterate rigorously. Prevents assuming universal techniques work. Includes persuasion principles for compliance. Triggers: 'write a prompt', 'improve prompt', 'prompt not working', general prompting, application development. Not for formatting-only tasks requiring no iteration."
 ---
 
 # Prompt Engineering
