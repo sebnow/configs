@@ -354,7 +354,7 @@ If you output these phrases before testing:
 - "Here's a prompt using best practices..." → Test it first
 - "Chain of thought will improve..." → Measure baseline
 - "Being polite helps..." → Prove it
-- "XML tags make this clearer" → Identify what's unclear first, then test with and without
+- "XML tags make this clearer" → Identify the structural problem first (e.g., context bleed, mixed content), then apply and test
 - "This should work..." → Run test cases
 
 When detected: Stop, measure baseline, test rigorously, then proceed.
