@@ -294,6 +294,18 @@ Required before claiming success:
 - Compare to baseline
 - Document what actually improved
 
+### Writing Anti-Pattern Sections
+
+When writing the anti-patterns section of a prompt,
+never put a token (word, command, concept) under a "Bad" label
+when a valid use of that token exists.
+Agents avoid the token wholesale,
+even when a "Good" variant is shown nearby.
+Name the dangerous condition, not the token.
+
+See [label-poisoning.md](references/label-poisoning.md) for
+examples across tool invocation, prose, concepts, and APIs.
+
 ## Common Issues
 
 **Technique applied before failure mode identified**: skipped Red phase.
