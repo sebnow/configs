@@ -3,6 +3,10 @@ let
   inherit (config.flake.modules) homeManager;
 in
 {
+  flake.overlays.raddebugger = final: prev: {
+    raddebugger = prev.callPackage ../../pkgs/raddebugger { };
+  };
+
   configurations.homeManager."sebnow@stribog" = {
     system = "x86_64-linux";
     module =
@@ -44,6 +48,7 @@ in
           calibre
           fd
           jq
+          raddebugger
           restic
         ];
         home.sessionVariables.BROWSER = "firefox";

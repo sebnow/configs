@@ -1,0 +1,29 @@
+diff --git a/src/rdi_from_dwarf/rdi_from_dwarf.c b/src/rdi_from_dwarf/rdi_from_dwarf.c
+index 1919a722..83355fb4 100644
+--- a/src/rdi_from_dwarf/rdi_from_dwarf.c
++++ b/src/rdi_from_dwarf/rdi_from_dwarf.c
+@@ -2580,7 +2580,7 @@ d2r_convert_symbols(Arena         *arena,
+   scratch_end(scratch);
+ }
+ 
+-force_inline int
++static force_inline int
+ d2r_src_file_lookup_compar(void *raw_a, void *raw_b)
+ {
+   D2R_SrcFileLookup *a = raw_a, *b = raw_b;
+@@ -2594,13 +2594,13 @@ d2r_src_file_lookup_compar(void *raw_a, void *raw_b)
+   return cmp;
+ }
+ 
+-force_inline
++static force_inline
+ LFHT_IS_KEY_EQUAL_FUNC(d2r_src_file_lookup_is_equal)
+ {
+   return d2r_src_file_lookup_compar(a, b) == 0;
+ }
+ 
+-force_inline int
++static force_inline int
+ d2r_src_file_lfht_key_value_is_before(void *raw_a, void *raw_b)
+ {
+   return d2r_src_file_lookup_compar(*(D2R_SrcFileLookup **)raw_a, *(D2R_SrcFileLookup **)raw_b) < 0;
