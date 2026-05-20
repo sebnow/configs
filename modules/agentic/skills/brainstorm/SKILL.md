@@ -19,9 +19,7 @@ For each batch of questions, provide your recommended answer.
 If a question can be answered by exploring the codebase or other available sources,
 do that instead of asking.
 
-If `AskUserQuestion` is available, use it to ask 2-4 questions per turn
-instead of including them in your response.
-Otherwise, group related questions (2-3 per message).
+Group related questions (2-3 per message).
 
 Continue until you have a clear picture of
 what the user is trying to achieve,

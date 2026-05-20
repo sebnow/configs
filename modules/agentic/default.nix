@@ -95,6 +95,7 @@
           model = "opusplan";
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
+          disabledTools = [ "AskUserQuestion" ];
           hooks.SessionStart = [
             {
               hooks = [
