@@ -1,7 +1,7 @@
 ---
 name: md
 description: "Provides the md CLI for querying and mutating Markdown files. Prefer md over Edit for replacing or appending content between structural markers (headings, comments, nodes). Use when replacing sections, appending to sections, mutating frontmatter fields, extracting frontmatter, listing headings, finding links/wikilinks, counting words, extracting code blocks or comments, validating links, finding incoming links, format conversion (YAML/TOML), or batch processing .md files. Triggers: 'replace section', 'append content', 'edit markdown', 'update section', 'frontmatter', 'wikilinks', 'headings', 'markdown metadata', 'word count', 'broken links', 'code blocks', 'comments', 'footnotes', 'incoming links', 'backlinks', '.md files'. Do NOT use for full-text search across files (use grep/rg), non-markdown file formats, or rendering markdown to HTML."
-compatibility: Requires md >=0.2.0 on PATH.
+compatibility: Requires md >=0.3.0 on PATH.
 ---
 
 # Markdown Query and Mutation
@@ -19,16 +19,50 @@ or python3 for structured markdown extraction.
 ## Core Syntax
 
 ```bash
-md '<program>' [--json] [--dir <path>] [-i] [file]
+md '<program>' [--json] [--dir <path>] [--arg NAME=VALUE] [-i] [file]
 ```
 
 Programs are pipelines: `extractor | filter | operation`.
 Without a file argument, reads from stdin.
 
+## Named Parameters
+
+`--arg NAME=VALUE` binds a named parameter,
+referenced as `@NAME` anywhere a value is expected
+(`replace`, `append`, `set`, and `select` predicates).
+Repeat the flag to bind multiple parameters.
+
+Prefer `--arg` over inlining long, multi-line, or quote-heavy strings:
+it sidesteps shell quoting and `\n` escaping in the program.
+
+```bash
+# Inline value — no escaping inside the program string
+md 'body | replace(@content)' --arg content="New body text." -i note.md
+
+# File-backed value — VALUE starting with @ is read from that path
+md 'nodes | skip_until(.text == "begin notes") | take_until(.text == "end notes") | replace(@notes)' \
+   --arg notes=@/tmp/notes.md -i note.md
+
+# Literal value that starts with @ — double the leading @
+md 'frontmatter | set(.handle, @h)' --arg h=@@username -i note.md
+
+# Use in a filter predicate
+md 'headings | select(.text == @want)' --arg want="Beta" note.md
+```
+
+For multi-line replacement content,
+write it to a temp file and pass `--arg name=@file`
+rather than embedding `\n\n` in the program string.
+File contents are inserted verbatim,
+so include whatever leading/trailing newlines the span needs.
+
 ## Mutation
 
 Mutation programs produce the modified document.
 Use `-i` to write changes back to the file.
+For content that is long, multi-line, or contains quotes,
+pass it as a named parameter rather than inlining it
+(see [Named Parameters](#named-parameters)).
 
 | Operation | Context | Effect |
 | --- | --- | --- |
