@@ -16,6 +16,10 @@
     md = inputs.md.packages.${prev.system}.default;
   };
 
+  flake.overlays.mlflow-server = final: prev: {
+    mlflow-server = prev.callPackage ../../pkgs/mlflow-server { };
+  };
+
   flake.modules.homeManager.agentic =
     { pkgs, config, ... }:
     let
@@ -26,6 +30,7 @@
         pkgs.ast-grep
         pkgs.jq
         pkgs.md
+        pkgs.mlflow-server
         pkgs.nono
         pkgs.nushell
         pkgs.pi-coding-agent
