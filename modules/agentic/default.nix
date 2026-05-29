@@ -191,6 +191,21 @@
               "Read(./.envrc)"
             ];
           };
+          # Set MLFLOW_EXPERIMENT_NAME per project in .claude/settings.json or .claude/settings.local.json
+          env = {
+            MLFLOW_CLAUDE_TRACING_ENABLED = "true";
+            MLFLOW_TRACKING_URI = "sqlite:///${config.xdg.dataHome}/claude/mlflow.db";
+          };
+          hooks.Stop = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "mlflow autolog claude stop-hook";
+                }
+              ];
+            }
+          ];
         };
       };
 
