@@ -2,19 +2,22 @@
 
 The process for folding new inputs into an existing spec.
 
+The spec file is tracked in source control. The user iterates by editing the
+file or re-invoking this skill. The chat is for conflict resolution and a
+brief post-write report — not for previewing content the user can read on disk.
+
 ## Sequence
 
 You MUST follow this sequence on every update invocation.
 
-1. **Read the existing spec in full** before composing anything.
+1. **Read the existing spec in full** before deciding any changes.
 2. **Ingest each input source** in turn. Note the sections it touches.
 3. **Detect conflicts** — see "Conflict Detection" below.
-4. **Compose the proposed patched spec in memory.** Do not write yet.
-5. **Surface the diff.** Section-level granularity at minimum.
-6. **Surface every conflict** with resolution options. Wait for the user's decision on each.
-7. **Incorporate the user's resolutions** into the proposed patch.
-8. **Request explicit approval** for the final patched spec.
-9. **Write** only after approval.
+4. **Surface every conflict** with resolution options. Wait for the user's
+   decision on each before writing.
+5. **Apply the patch directly to the file.** Patch only sections the new inputs
+   touch; other sections stay byte-identical.
+6. **Report** the sections added or modified in one or two sentences.
 
 ## Conflict Detection
 
@@ -63,17 +66,6 @@ The skill MUST NOT proceed past a conflict without an explicit user resolution.
 
 The skill MUST NOT auto-resolve any conflict, regardless of severity.
 
-## Diff Surface
-
-The diff presented to the user MUST:
-
-- Show changes at section granularity at minimum.
-- Show structural element changes (invariants, error categories, pseudocode, inline defaults) explicitly, with old and new text both visible. See [structural-elements.md](structural-elements.md).
-- Show status line changes if the user approved a substantive change.
-- Distinguish added sections, modified sections, and unchanged-but-renumbered sections (the last is usually a defect to fix, not approve).
-
-A unified diff or section-by-section before/after presentation both satisfy the granularity requirement.
-
 ## ADR Back-References
 
 When an input is an ADR, the spec MAY incorporate a sparse back-reference at the point of the decision:
@@ -89,17 +81,16 @@ If an ADR is the source of a conflict resolution, the back-reference is appropri
 
 ## Status Line
 
-Bump the status line only when the user approves a substantive change.
+Bump the status line only on a substantive change.
 A substantive change is one that affects a MUST, MUST NOT, SHOULD, or SHOULD NOT requirement, an invariant, an error category, an inline default, or a goal.
 
 Cosmetic changes (rewording without changing normative force, fixing typos) do not bump the status.
 
 ## Hard Gates
 
-- **No write before approval.** The proposed patched spec stays in memory until the user explicitly approves.
-- **No silent conflict resolution.** Every detected contradiction reaches the user.
+- **No silent conflict resolution.** Every detected contradiction reaches the user before the write.
 - **No structural element rewrite as a side effect.** See [structural-elements.md](structural-elements.md).
-- **No changelog in the produced spec.** The diff is for the user's review; it does not get committed to the spec body.
+- **No changelog in the produced spec.** History lives in git.
 
 ## Common Failure Modes
 

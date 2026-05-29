@@ -26,7 +26,7 @@ Preservation rules:
 
 - MUST NOT rename. Callers branch on the name.
 - MAY add new categories at the end of the list.
-- MAY remove a category only with explicit user approval.
+- MAY remove a category only when the user has explicitly directed it.
 
 ### Pseudocode Blocks
 

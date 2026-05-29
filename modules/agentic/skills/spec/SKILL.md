@@ -50,15 +50,16 @@ Skipping a step is a defect, not a shortcut.
 7. **Preserve structural elements** (update flow only) —
    see [references/structural-elements.md](references/structural-elements.md).
    Numbered invariants, named error categories, pseudocode blocks, inline defaults
-   MUST survive edits unless the user explicitly approves their change.
-8. **Detect conflicts** (update flow only) — see [references/update-flow.md](references/update-flow.md).
-   Any new input contradicting an existing MUST/SHOULD MUST be surfaced.
-9. **Compose without writing** — produce the proposed spec in memory.
-10. **Surface diff and conflicts** — present a section-level diff and every detected conflict.
-    Offer resolution options for each conflict.
-    Never auto-resolve a contradiction.
-11. **Wait for explicit approval** — do not write to disk until the user approves.
-12. **Write** — replace the file atomically.
+   MUST survive edits unless the user has explicitly directed their change.
+8. **Detect and resolve conflicts** (update flow only) — see [references/update-flow.md](references/update-flow.md).
+   Any new input contradicting an existing requirement MUST be surfaced
+   with resolution options. Wait for the user's decision on each contradiction.
+   Never auto-resolve.
+9. **Write** — apply the changes to the file directly.
+   The file is tracked in source control; the user iterates via normal edits
+   and VCS, not via an in-chat preview of the full spec.
+10. **Report** — list the sections added or modified in one or two sentences.
+    Surface any open questions or gaps in the inputs.
 
 ## Flow-Specific Rules
 
@@ -66,26 +67,27 @@ Skipping a step is a defect, not a shortcut.
 
 - Output a complete spec from scratch.
 - Section selection is driven entirely by the inputs.
-- A bootstrap diff is a diff against an empty document; show the full proposed content as the preview.
-- Approval gate still applies before writing.
+- Write the file directly. The user iterates by editing the file or by re-invoking the skill with additional inputs.
 
 ### Update (existing spec present)
 
 - Read the existing spec in full first.
 - Identify which sections the new inputs touch.
 - Patch in place; do not regenerate untouched sections.
-- Status line update: bump only if the user approves a substantive change.
+- Status line update: bump only on a substantive change.
   Cosmetic edits do not bump status.
-- Every contradiction with an existing MUST/SHOULD is a conflict (see update-flow.md).
+- Every contradiction with an existing requirement is a conflict (see update-flow.md)
+  and pauses for user resolution before the write.
+  Severity-specific resolution options live in update-flow.md.
 
 ## Hard Gates
 
 The following MUST hold for every invocation:
 
-- **No write without approval.** Bootstrap and update flows both require explicit user approval before the file is written.
-- **No silent supersession.** A new input contradicting an existing requirement MUST be surfaced as a conflict. The skill MUST present the user with resolution options. The skill MUST NOT pick a side.
-- **No structural element rewrite as a side effect.** Numbered invariants, named error categories, pseudocode blocks, and inline defaults change only when the user explicitly approves the change.
+- **No silent supersession.** A new input contradicting an existing requirement MUST be surfaced as a conflict before the write. The skill MUST present the user with resolution options. The skill MUST NOT pick a side.
+- **No structural element rewrite as a side effect.** Numbered invariants, named error categories, pseudocode blocks, and inline defaults change only when the user has explicitly directed the change.
 - **No invented sections.** Only emit section types listed in [assets/spec-template.md](assets/spec-template.md). If a needed section type is missing, propose adding it to the template before using it.
+- **No in-chat preview of the full spec before writing.** The file is tracked; the chat is for conflict resolution and post-write reporting, not for previewing content the user can read on disk.
 
 ## Output Contract
 
@@ -97,22 +99,34 @@ The produced spec MUST satisfy all of:
 - Has explicit Goals and Non-Goals sections.
 - References external protocols and standards by name; does not restate them.
 - Contains no changelog, revision history, or version table.
+- Describes the system at the contract level, not the implementation level.
+  Internal packages, modules, language-specific types, DDL, and infrastructure
+  technologies MUST NOT appear in normative prose unless they are themselves
+  the public contract. See [references/voice-guide.md](references/voice-guide.md)
+  under "Level of Description".
 
 The full set of voice and structural rules lives in the references.
 
 ## Validation Checklist
 
-Before requesting approval, verify:
+Before writing, verify:
 
 - [ ] Status line present.
 - [ ] "Implementation-defined" defined once at top.
 - [ ] RFC 2119 keywords used for every normative statement; not as English synonyms.
 - [ ] Goals and Non-Goals both present.
+- [ ] No internal package, module, file, or directory path used as a canonical identifier in normative prose.
+- [ ] No language-specific types in field signatures; domain model uses language-neutral types only.
+- [ ] No DDL, table names, columns, or grants in normative prose unless the database schema is the public contract.
+- [ ] No internal infrastructure technologies named in requirements about internal coupling.
+- [ ] Test matrix and Implementation Checklist describe observable behaviors, not code-path or module deliverables.
+- [ ] Each requirement states an externally observable invariant, not the mechanism (cache ordering, upsert flag, index/constraint shape, transaction boundary) the implementation uses to satisfy it.
+- [ ] Non-functional solutions (caching, indexing, batching, queueing) appear only where the externally observable property they serve (latency, atomicity scope, ordering guarantee, throughput target) is also specified.
+- [ ] When the system has more than one component, a System Overview / Components section precedes the Core Domain Model and names components by role.
 - [ ] Every section emitted is listed in the spec template.
 - [ ] No section omitted because of laziness; only because its when-to-include criteria do not apply.
-- [ ] (Update) Every structural element from the previous spec is present in the new spec, identically identified, unless the user approved a change.
-- [ ] (Update) Section-level diff is ready to surface.
-- [ ] (Update) Every conflict between new input and existing MUST/SHOULD is surfaced with options.
+- [ ] (Update) Every structural element from the previous spec is present in the new spec, identically identified, unless the user directed a change.
+- [ ] (Update) Every conflict between new input and an existing requirement has been surfaced and resolved before the write.
 - [ ] No changelog, no version table, no in-document history.
 
 ## Anti-Patterns
@@ -124,6 +138,8 @@ Before requesting approval, verify:
 - Bumping the status line on cosmetic edits.
 - Embedding a changelog or version history in the spec body.
 - Restating an external protocol the spec only needs to reference.
+- Smuggling implementation choices into normative prose: internal package paths, language-specific types, DDL for internal storage, named internal infrastructure. The spec describes the contract; implementation belongs in code and design docs.
+- Specifying mechanism (cache ordering, upsert with flag, index/constraint shape, transaction boundary) instead of the externally observable invariant the mechanism preserves. Apply the "replace with somehow" litmus test; if the requirement still has meaning, the mechanism was incidental.
 
 ## When Not to Use
 
@@ -136,7 +152,7 @@ Before requesting approval, verify:
 
 - `brainstorm`, `product-definition`, `adr-writing` produce inputs this skill consumes.
 - `writing-clearly-and-concisely` applies to spec prose.
-- `commit` handles the commit after the user approves the write.
+- `commit` handles the commit after the user has reviewed the written file.
 
 ## Common Issues
 

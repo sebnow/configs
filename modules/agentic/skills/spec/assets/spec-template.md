@@ -78,7 +78,19 @@ Delete this entire block in the final document.
 
 ## System Overview / Components
    When: the system has more than one logical component or layer.
-   Skip for single-module libraries.
+   Skip for single-module libraries; otherwise this section is RECOMMENDED
+   and SHOULD precede the Core Domain Model so readers see the role
+   structure before the data structures.
+   Name each component by its role (for example "Workflow Loader",
+   "Request Validator", "Storage Adapter"), never by an internal
+   module, package, file, or directory path. See references/voice-guide.md
+   "Level of Description".
+   For each component: one-line responsibility, what it owns, what it
+   depends on. No implementation references.
+   MAY include a sibling "Abstraction Levels" subsection naming the
+   architectural layers (policy / configuration / coordination /
+   execution / integration / observability or equivalent) when the
+   system spans several.
 
 ## Core Domain Model
    When: the system has data structures or entities shared across components.
@@ -139,10 +151,16 @@ Delete this entire block in the final document.
      - `error_category_name`
 
 ## Reference Algorithms (Pseudocode)
-   When: non-trivial control flow (orchestration loops, retry logic, reconciliation,
-   multi-phase transactions) needs precise specification.
+   When: non-trivial control flow (orchestration loops, retry logic, reconciliation)
+   benefits from one concrete realization for implementer guidance.
    Language-agnostic pseudocode in fenced code blocks. Function-level granularity.
    Each algorithm referenced from the prose section it implements.
+   The algorithm is one mechanism that satisfies the spec's invariants.
+   An alternative mechanism MAY satisfy the same invariants.
+   The pseudocode is illustrative; the invariants in the prose control conformance.
+   Pseudocode MUST NOT use storage-specific or language-specific primitives
+   (SQL clauses, language-stdlib function names) when an abstract operation
+   conveys the same control flow.
 
 ## Extension Appendices
    When: the spec defines OPTIONAL features that an implementation MAY ship.
