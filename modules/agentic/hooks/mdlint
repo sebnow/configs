@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# PreToolUse hook: markdown linter (slice 1: emoji rule)
+# Blocks Edit/Write on *.md files that introduce unicode emoji.
+# Only new content is checked (new_string for Edit, content for Write);
+# pre-existing emoji in unchanged file regions are not re-examined.
+# See .agents/prd-markdown.md
+#
+# stdin  : Claude Code PreToolUse JSON
+# stdout : {"decision":"block","reason":string}  on violation (exit 2)
+#        | (empty)                                on no violation (exit 0)
+set -euo pipefail
+
+if ! input=$(cat); then
+  exit 0
+fi
+
+if ! file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // ""'); then
+  exit 0
+fi
+if ! tool_name=$(printf '%s' "$input" | jq -r '.tool_name // ""'); then
+  exit 0
+fi
+
+# Short-circuit for non-markdown paths.
+[[ "$file_path" == *.md ]] || exit 0
+
+case "$tool_name" in
+  Edit)  content_field="new_string" ;;
+  Write) content_field="content" ;;
+  *)     exit 0 ;;
+esac
+
+# Extract new content.
+if ! new_content=$(printf '%s' "$input" | jq -r --arg field "$content_field" '.tool_input[$field] // empty'); then
+  exit 0
+fi
+[[ -n "$new_content" ]] || exit 0
+
+# Emoji rule: block any unicode emoji codepoint.
+# Core blocks: Emoticons (U+1F600-U+1F64F), Misc Symbols and Pictographs
+# (U+1F300-U+1F5FF), Transport and Map (U+1F680-U+1F6FF), Supplemental Symbols
+# and Pictographs (U+1F900-U+1F9FF), Symbols and Pictographs Extended-A
+# (U+1FA00-U+1FAFF), Regional Indicators (U+1F1E0-U+1F1FF), Dingbats
+# (U+2700-U+27BF), Misc Symbols (U+2600-U+26FF).
+# Additional scattered codepoints: Mahjong/Joker (U+1F004, U+1F0CF), Enclosed
+# Ideographic Supplement (U+1F200-U+1F2FF), clocks and media controls
+# (U+231A-U+231B, U+23CF, U+23E9-U+23F3, U+23F8-U+23FA), geometric shapes used
+# as emoji (U+25AA-U+25AB, U+25B6, U+25C0, U+25FB-U+25FE), and arrows/stars in
+# Misc Symbols and Arrows (U+2B05-U+2B07, U+2B1B-U+2B1C, U+2B50, U+2B55).
+# See .agents/prd-markdown.md
+emoji_re='[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{1F1E0}-\x{1F1FF}\x{1F900}-\x{1F9FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{1F004}\x{1F0CF}\x{1F200}-\x{1F2FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{231A}-\x{231B}\x{23CF}\x{23E9}-\x{23F3}\x{23F8}-\x{23FA}\x{24C2}\x{25AA}-\x{25AB}\x{25B6}\x{25C0}\x{25FB}-\x{25FE}\x{2B05}-\x{2B07}\x{2B1B}-\x{2B1C}\x{2B50}\x{2B55}]'
+
+# grep exits 0 on match, 1 on no match, 2+ on error (e.g. PCRE unavailable).
+# The || prevents set -e from aborting; grep_status distinguishes the cases.
+grep_status=0
+offending_line=$(printf '%s' "$new_content" | grep -Pm1 "$emoji_re") || grep_status=$?
+if [[ $grep_status -ge 2 ]]; then
+  printf 'mdlint: grep error (exit %d)\n' "$grep_status" >&2
+  exit 0
+fi
+[[ $grep_status -eq 0 ]] || exit 0
+
+jq -n --arg reason "no-emoji rule violation: ${offending_line}" \
+  '{"decision":"block","reason":$reason}'
+exit 2
