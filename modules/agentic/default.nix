@@ -115,7 +115,6 @@
           };
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
-          disabledTools = [ "AskUserQuestion" ];
           hooks.SessionStart = [
             {
               hooks = [
@@ -216,6 +215,7 @@
               "Bash(jj squash:*)"
             ];
             deny = [
+              "AskUserQuestion"
               "Read(./.env)"
               "Read(./.env.*)"
               "Read(./.envrc)"
