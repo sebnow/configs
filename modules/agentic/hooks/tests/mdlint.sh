@@ -216,6 +216,50 @@ assert_eq "Edit .md '## Step one' (non-digit heading): exits 0" "0" "$status"
 assert_eq "Edit .md '## Step one': no output" "" "$result"
 
 # ---------------------------------------------------------------------------
+# Tests: bold-only headings → block (exit 2)
+# See .agents/prd-markdown.md
+# Acceptance criteria from .agents/issues/03-block-bold-only-headings.md
+# ---------------------------------------------------------------------------
+
+input=$(make_edit_input "README.md" "# **Introduction**")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '# **Introduction**': exits 2" "2" "$status"
+assert_eq "Edit .md '# **Introduction**': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '# **Introduction**': reason names bold-only-heading rule" \
+  "bold-only heading" "$(printf '%s' "$result" | jq -r '.reason')"
+assert_contains "Edit .md '# **Introduction**': reason shows offending line" \
+  "# **Introduction**" "$(printf '%s' "$result" | jq -r '.reason')"
+
+input=$(make_edit_input "README.md" "## __Setup__")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '## __Setup__' (underscore bold): exits 2" "2" "$status"
+assert_eq "Edit .md '## __Setup__': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '## __Setup__': reason names bold-only-heading rule" \
+  "bold-only heading" "$(printf '%s' "$result" | jq -r '.reason')"
+
+input=$(make_edit_input "README.md" "### **Step three**  ")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '### **Step three**  ' (trailing whitespace): exits 2" "2" "$status"
+assert_eq "Edit .md '### **Step three**  ': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '### **Step three**  ': reason names bold-only-heading rule" \
+  "bold-only heading" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# Heading with inline bold (partial) must not trigger the rule.
+input=$(make_edit_input "README.md" "## Step **two** is hard")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '## Step **two** is hard' (partial bold): exits 0" "0" "$status"
+assert_eq "Edit .md '## Step **two** is hard': no output" "" "$result"
+
+# Non-heading line wrapped in bold must not trigger the rule.
+input=$(make_edit_input "README.md" "**Important**")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '**Important**' (non-heading bold): exits 0" "0" "$status"
+assert_eq "Edit .md '**Important**': no output" "" "$result"
+
+# ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
 echo ""

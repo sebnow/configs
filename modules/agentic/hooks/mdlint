@@ -6,9 +6,11 @@
 # See .agents/prd-markdown.md
 #
 # Rules:
-#   emoji            — block any unicode emoji codepoint
+#   emoji              — block any unicode emoji codepoint
 #   enumerated-heading — block headings whose text starts with a digit followed by
 #                        optional dot and whitespace (e.g. "# 1. Title", "# 2 Title")
+#   bold-only-heading  — block headings whose entire visible text is wrapped in
+#                        **...** or __...__ (e.g. "# **Introduction**")
 #
 # stdin  : Claude Code PreToolUse JSON
 # stdout : {"decision":"block","reason":string}  on violation (exit 2)
@@ -58,6 +60,24 @@ if [[ $enum_status -ge 2 ]]; then
 fi
 if [[ $enum_status -eq 0 ]]; then
   jq -n --arg reason "enumerated heading rule violation: ${enum_line}" \
+    '{"decision":"block","reason":$reason}'
+  exit 2
+fi
+
+# Bold-only heading rule: block headings whose entire visible text is wrapped
+# in **...** or __...__.  Partial bold (e.g. "## Step **two** is hard") and
+# non-heading lines are unaffected because the pattern is line-anchored and
+# requires the bold markers to immediately follow the heading prefix.
+# See .agents/prd-markdown.md and .agents/issues/03-block-bold-only-headings.md
+bold_re='^#+[[:space:]]+\*\*.*\*\*[[:space:]]*$|^#+[[:space:]]+__.*__[[:space:]]*$'
+bold_status=0
+bold_line=$(printf '%s' "$new_content" | grep -Em1 "$bold_re") || bold_status=$?
+if [[ $bold_status -ge 2 ]]; then
+  printf 'mdlint: grep error (exit %d)\n' "$bold_status" >&2
+  exit 0
+fi
+if [[ $bold_status -eq 0 ]]; then
+  jq -n --arg reason "bold-only heading rule violation: ${bold_line}" \
     '{"decision":"block","reason":$reason}'
   exit 2
 fi
