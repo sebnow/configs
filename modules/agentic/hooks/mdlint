@@ -11,6 +11,7 @@
 #                        optional dot and whitespace (e.g. "# 1. Title", "# 2 Title")
 #   bold-only-heading  — block headings whose entire visible text is wrapped in
 #                        **...** or __...__ (e.g. "# **Introduction**")
+#   unescaped-dollar   — block $ not preceded by \ outside fenced code blocks
 #
 # stdin  : Claude Code PreToolUse JSON
 # stdout : {"decision":"block","reason":string}  on violation (exit 2)
@@ -68,8 +69,10 @@ fi
 # in **...** or __...__.  Partial bold (e.g. "## Step **two** is hard") and
 # non-heading lines are unaffected because the pattern is line-anchored and
 # requires the bold markers to immediately follow the heading prefix.
+# [^*]+ / [^_]+ (rather than .*) prevents matching across multiple bold spans:
+# "# **one** and **two**" would otherwise match from the first ** to the last.
 # See .agents/prd-markdown.md and .agents/issues/03-block-bold-only-headings.md
-bold_re='^#+[[:space:]]+\*\*.*\*\*[[:space:]]*$|^#+[[:space:]]+__.*__[[:space:]]*$'
+bold_re='^#+[[:space:]]+\*\*[^*]+\*\*[[:space:]]*$|^#+[[:space:]]+__[^_]+__[[:space:]]*$'
 bold_status=0
 bold_line=$(printf '%s' "$new_content" | grep -Em1 "$bold_re") || bold_status=$?
 if [[ $bold_status -ge 2 ]]; then
@@ -78,6 +81,54 @@ if [[ $bold_status -ge 2 ]]; then
 fi
 if [[ $bold_status -eq 0 ]]; then
   jq -n --arg reason "bold-only heading rule violation: ${bold_line}" \
+    '{"decision":"block","reason":$reason}'
+  exit 2
+fi
+
+# Unescaped dollar sign rule: block $ not preceded by \ outside fenced code blocks.
+# Uses a line-by-line scan to track fence state across the new content.
+# Both backtick (```) and tilde (~~~) fences are recognised. A fence is only
+# closed by the same character that opened it (CommonMark rule).
+# Inline code spans are not exempted — escape $ even inside backticks.
+# False-positive: new_string that is entirely inside a pre-existing fence looks
+# like plain text to this hook; see .agents/issues/04-block-unescaped-dollar-signs.md.
+# See .agents/prd-markdown.md
+fence_re='^[[:space:]]*(```+|~~~+)'
+fence_char=""
+in_fence=0
+dollar_line=""
+while IFS= read -r line; do
+  if [[ "$line" =~ $fence_re ]]; then
+    opening_char="${BASH_REMATCH[1]:0:1}"
+    if [[ $in_fence -eq 0 ]]; then
+      in_fence=1
+      fence_char="$opening_char"
+    elif [[ "$opening_char" == "$fence_char" ]]; then
+      in_fence=0
+      fence_char=""
+    fi
+    continue
+  fi
+  if [[ $in_fence -eq 0 ]]; then
+    dollar_exit=0
+    # Parity-aware lookbehind: match $ not preceded by an unescaped backslash.
+    # (?<!(?<!\\)\\) — outer: not preceded by an unescaped \; inner: \ not
+    # preceded by \. Correctly handles \$ (pass), \\$ (block). Known limitation:
+    # \\\$ (triple backslash + dollar) incorrectly blocks; this edge case is
+    # accepted as it does not arise in normal markdown prose.
+    printf '%s\n' "$line" | grep -qP '(?<!(?<!\\)\\)\$' || dollar_exit=$?
+    if [[ $dollar_exit -ge 2 ]]; then
+      printf 'mdlint: grep error (exit %d)\n' "$dollar_exit" >&2
+      exit 0
+    fi
+    if [[ $dollar_exit -eq 0 ]]; then
+      dollar_line="$line"
+      break
+    fi
+  fi
+done <<< "$new_content"
+if [[ -n "$dollar_line" ]]; then
+  jq -n --arg reason "unescaped dollar sign rule violation: ${dollar_line}" \
     '{"decision":"block","reason":$reason}'
   exit 2
 fi

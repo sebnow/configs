@@ -259,6 +259,108 @@ result=$(run_hook "$input") ; status=$?
 assert_eq "Edit .md '**Important**' (non-heading bold): exits 0" "0" "$status"
 assert_eq "Edit .md '**Important**': no output" "" "$result"
 
+# Heading with multiple bold spans (plain text between them) must not trigger.
+# The greedy '.*' would wrongly match from the first '**' to the last '**',
+# treating the plain text between spans as if the whole heading were wrapped.
+input=$(make_edit_input "README.md" "# **one** and **two**")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '# **one** and **two**' (multiple bold spans): exits 0" "0" "$status"
+assert_eq "Edit .md '# **one** and **two**': no output" "" "$result"
+
+# Underscore variant of the same false-positive case.
+input=$(make_edit_input "README.md" "## __one__ and __two__")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '## __one__ and __two__' (multiple underscore spans): exits 0" "0" "$status"
+assert_eq "Edit .md '## __one__ and __two__': no output" "" "$result"
+
+# ---------------------------------------------------------------------------
+# Tests: unescaped dollar sign → block (exit 2)
+# See .agents/prd-markdown.md and .agents/issues/04-block-unescaped-dollar-signs.md
+# ---------------------------------------------------------------------------
+
+input=$(make_edit_input "README.md" "The cost is \$5")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md 'The cost is \$5' (unescaped dollar): exits 2" "2" "$status"
+assert_eq "Edit .md unescaped dollar: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md unescaped dollar: reason names unescaped dollar sign rule" \
+  "unescaped dollar sign" "$(printf '%s' "$result" | jq -r '.reason')"
+assert_contains "Edit .md unescaped dollar: reason shows offending line" \
+  '$5' "$(printf '%s' "$result" | jq -r '.reason')"
+
+input=$(make_edit_input "README.md" 'The cost is \$5')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md 'The cost is \\\$5' (escaped dollar): exits 0" "0" "$status"
+assert_eq "Edit .md escaped dollar: no output" "" "$result"
+
+# \\$ means escaped backslash then bare dollar — must block.
+# The single-char lookbehind (?<!\\)\$ incorrectly passes this because the
+# char before $ is \; parity-aware matching is required.
+# See .agents/issues/04-block-unescaped-dollar-signs.md
+input=$(make_edit_input "README.md" 'The cost is \\$5')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md 'The cost is \\\\\$5' (double-escaped backslash, bare dollar): exits 2" "2" "$status"
+assert_eq "Edit .md double-escaped backslash dollar: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md double-escaped backslash dollar: reason names rule" \
+  "unescaped dollar sign" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# Fenced code block: $ inside the fence is exempt.
+input=$(make_edit_input "README.md" "$(printf '```bash\necho $HOME\n```')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md dollar inside fenced block: exits 0" "0" "$status"
+assert_eq "Edit .md dollar inside fenced block: no output" "" "$result"
+
+# $ outside a closed fence triggers the block.
+input=$(make_edit_input "README.md" "$(printf '```bash\necho $HOME\n```\nThe price is $5')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md dollar outside closed fence: exits 2" "2" "$status"
+assert_eq "Edit .md dollar outside closed fence: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md dollar outside closed fence: reason names unescaped dollar sign rule" \
+  "unescaped dollar sign" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# False-positive case: entire new_string looks like a fenced block body.
+# The hook has no context and treats $HOME as outside a fence.
+# See .agents/issues/04-block-unescaped-dollar-signs.md (accepted trade-off).
+input=$(make_edit_input "README.md" 'echo $HOME')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md standalone 'echo \$HOME' (false-positive): exits 2" "2" "$status"
+assert_eq "Edit .md standalone dollar: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+
+# ---------------------------------------------------------------------------
+# Tests: tilde fences — $ inside ~~~ block is exempt
+# See .agents/prd-markdown.md
+# ---------------------------------------------------------------------------
+
+# Pure tilde fence: $ inside is exempt.
+input=$(make_edit_input "README.md" "$(printf '~~~bash\necho $HOME\n~~~')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md dollar inside tilde-fenced block: exits 0" "0" "$status"
+assert_eq "Edit .md dollar inside tilde-fenced block: no output" "" "$result"
+
+# Dollar outside a closed tilde fence must be flagged.
+input=$(make_edit_input "README.md" "$(printf '~~~bash\necho $HOME\n~~~\nThe price is $5')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md dollar outside closed tilde fence: exits 2" "2" "$status"
+assert_eq "Edit .md dollar outside closed tilde fence: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md dollar outside closed tilde fence: reason names rule" \
+  "unescaped dollar sign" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# Backtick fence line inside a tilde fence must not close the tilde fence.
+input=$(make_edit_input "README.md" "$(printf '~~~\necho $HOME\n```\nstill fenced $VAR\n~~~')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md backtick line inside tilde fence does not close it: exits 0" "0" "$status"
+assert_eq "Edit .md backtick inside tilde fence: no output" "" "$result"
+
+# Tilde fence line inside a backtick fence must not close the backtick fence.
+input=$(make_edit_input "README.md" "$(printf '```\necho $HOME\n~~~\nstill fenced $VAR\n```')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md tilde line inside backtick fence does not close it: exits 0" "0" "$status"
+assert_eq "Edit .md tilde inside backtick fence: no output" "" "$result"
+
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
