@@ -216,9 +216,13 @@ After committing, review message and diff. Verify:
 - [ ] Only intended changes included
 - [ ] No debug statements committed
 
-If check fails:
-Amend if not pushed (per safety practices in agents.md),
-else create fixup commit.
+If check fails: `git commit --fixup=<sha>` against the specific commit.
+Run `git rebase --autosquash` before pushing if the commit is
+unpublished; otherwise leave the fixup as a follow-up.
+
+Never `git commit --amend`. It modifies whatever HEAD points to and
+silently clobbers commits added by concurrent processes
+(e.g. a parallel agent).
 
 ## Cleaning Up Unpublished History
 
@@ -241,7 +245,7 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 - "commit all changes" / "git add ." / "add all files" -> Stage selectively
 - "fixes A, B, and C" / "adds X and fixes Y" -> Split into atomic commits
 - "skip checking conventions" -> Check conventions first
-- "amend this commit" -> Check if pushed first
+- "amend this commit" / "git commit --amend" -> Use `git commit --fixup=<sha>`; amend follows HEAD blindly and can clobber a concurrent commit
 - "Quick commit" / "WIP commit" -> Not without user request
 - "I'll commit everything at the end" -> Commit after each logical change
 - "These are related so I'll commit them together" -> Apply the atomic commit test
