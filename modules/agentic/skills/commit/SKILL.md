@@ -220,6 +220,18 @@ If check fails:
 Amend if not pushed (per safety practices in agents.md),
 else create fixup commit.
 
+## Cleaning Up Unpublished History
+
+Before pushing, rewrite local history so it reads as if planned
+from the start.
+
+- Fold fix-ups into the commit that introduced the issue,
+  so each commit stays atomic and self-explanatory.
+- Keep commits that capture a significant decision or step in
+  the reasoning — those belong in the history, not compressed away.
+- Only rewrite unpublished commits. Once pushed, create a
+  follow-up commit per fix (atomic, never batched).
+
 ## Anti-Patterns
 
 If you are about to say or think any of these phrases, STOP IMMEDIATELY:
@@ -234,7 +246,7 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 - "I'll commit everything at the end" -> Commit after each logical change
 - "These are related so I'll commit them together" -> Apply the atomic commit test
 - "add X and Y parsers/modules" -> Each independent module is a separate commit
-- "review fixes" / "various improvements" -> Each fix is a separate commit
+- "review fixes" / "various improvements" / "address review findings" / "post-review fixes" -> Each fix is a separate atomic commit
 - "refactor and fix" -> Mechanical and functional changes are separate commits
 - "ship the regenerated proto with the feature" -> Generated diff is its own `chore: regenerate code` commit
 - "feat: add endpoint (includes regenerated mocks)" -> Generated files never share a commit with hand-written intent
