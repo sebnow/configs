@@ -167,6 +167,55 @@ result=$(run_hook "$input") ; status=$?
 assert_eq "Write .md missing content: exits 0" "0" "$status"
 
 # ---------------------------------------------------------------------------
+# Tests: enumerated headings → block (exit 2)
+# See .agents/prd-markdown.md
+# Acceptance criteria from .agents/issues/02-block-enumerated-headings.md
+# ---------------------------------------------------------------------------
+
+input=$(make_edit_input "README.md" "# 1. Introduction")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '# 1. Introduction': exits 2" "2" "$status"
+assert_eq "Edit .md '# 1. Introduction': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '# 1. Introduction': reason names enumerated-heading rule" \
+  "enumerated heading" "$(printf '%s' "$result" | jq -r '.reason')"
+assert_contains "Edit .md '# 1. Introduction': reason shows offending line" \
+  "# 1. Introduction" "$(printf '%s' "$result" | jq -r '.reason')"
+
+input=$(make_edit_input "README.md" "## 2 Setup")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '## 2 Setup' (no period): exits 2" "2" "$status"
+assert_eq "Edit .md '## 2 Setup': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '## 2 Setup': reason names enumerated-heading rule" \
+  "enumerated heading" "$(printf '%s' "$result" | jq -r '.reason')"
+
+input=$(make_edit_input "README.md" "### 3. Step three")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '### 3. Step three': exits 2" "2" "$status"
+assert_eq "Edit .md '### 3. Step three': decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md '### 3. Step three': reason names enumerated-heading rule" \
+  "enumerated heading" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# Body line with digits must not trigger the rule.
+input=$(make_edit_input "README.md" "Item 1. is the first item.")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md body line 'Item 1. is the first item.': exits 0" "0" "$status"
+assert_eq "Edit .md body line with digits: no output" "" "$result"
+
+# Headings whose text starts with a non-digit must not trigger the rule.
+input=$(make_edit_input "README.md" "# Introduction")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '# Introduction' (non-digit heading): exits 0" "0" "$status"
+assert_eq "Edit .md '# Introduction': no output" "" "$result"
+
+input=$(make_edit_input "README.md" "## Step one")
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md '## Step one' (non-digit heading): exits 0" "0" "$status"
+assert_eq "Edit .md '## Step one': no output" "" "$result"
+
+# ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
 echo ""
