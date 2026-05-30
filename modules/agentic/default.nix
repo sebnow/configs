@@ -225,6 +225,7 @@
           env = {
             MLFLOW_CLAUDE_TRACING_ENABLED = "true";
             MLFLOW_TRACKING_URI = "sqlite:///${config.xdg.dataHome}/claude/mlflow.db";
+            ENABLE_CLAUDEAI_MCP_SERVERS = false;
           };
           hooks.Stop = [
             {
