@@ -108,6 +108,10 @@
                   type = "command";
                   command = "$HOME/.claude/hooks/detect-vcs";
                 }
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/inject-agents-md";
+                }
               ];
             }
           ];
