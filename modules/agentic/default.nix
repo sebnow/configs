@@ -98,6 +98,21 @@
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
           model = "opusplan";
+          skillOverrides = {
+            claude-api = "off";
+            code-review = "off";
+            fewer-permission-prompts = "off";
+            init = "off";
+            keybindings-help = "off";
+            loop = "off";
+            review = "off";
+            run = "off";
+            schedule = "off";
+            security-review = "off";
+            simplify = "off";
+            update-config = "off";
+            verify = "off";
+          };
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
           disabledTools = [ "AskUserQuestion" ];
