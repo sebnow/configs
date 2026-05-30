@@ -236,6 +236,7 @@
         ignores = [
           ".agents/"
           ".claude/settings.local.json"
+          "/mlruns"
         ];
       };
     };
