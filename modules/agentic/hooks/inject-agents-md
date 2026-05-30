@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cwd=$(jq -r '.cwd // empty')
+if [[ -z "$cwd" || ! -d "$cwd" ]]; then
+  exit 0
+fi
+
+# Walk up from cwd looking for a VCS marker; fall back to cwd if none found.
+root="$cwd"
+dir="$cwd"
+while [[ "$dir" != "/" ]]; do
+  if [[ -e "$dir/.git" || -e "$dir/.jj" || -e "$dir/.hg" ]]; then
+    root="$dir"
+    break
+  fi
+  dir=$(dirname "$dir")
+done
+
+agents="$root/AGENTS.md"
+claude="$root/CLAUDE.md"
+
+if [[ ! -f "$agents" ]]; then
+  exit 0
+fi
+
+# Skip when AGENTS.md and CLAUDE.md resolve to the same file — Claude already
+# auto-injects project-root CLAUDE.md, so a symlink would double-inject.
+if [[ -f "$claude" ]]; then
+  agents_real=$(readlink -f "$agents")
+  claude_real=$(readlink -f "$claude")
+  if [[ "$agents_real" == "$claude_real" ]]; then
+    exit 0
+  fi
+fi
+
+# Skip empty / whitespace-only files.
+if [[ ! -s "$agents" ]] || ! grep -q '[^[:space:]]' "$agents"; then
+  exit 0
+fi
+
+total_lines=$(awk 'END{print NR}' "$agents")
+content=$(head -n 200 "$agents")
+if (( total_lines > 200 )); then
+  content="$content
+
+[truncated — use Read with offset to see more]"
+fi
+
+jq -n --arg path "$agents" --arg content "$content" '{
+  hookSpecificOutput: {
+    hookEventName: "SessionStart",
+    additionalContext: "Contents of \($path) (project AGENTS.md, injected by hook):\n\n\($content)"
+  }
+}'
