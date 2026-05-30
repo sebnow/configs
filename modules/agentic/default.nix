@@ -58,7 +58,7 @@
                 # Trailing `|| true` swallows non-zero exits from two benign
                 # cases: head closes its pipe early (SIGPIPE 141) and fzf
                 # returns 1 when the filter has no matches.
-                ${pkgs.fd}/bin/fd --type f --hidden --exclude .git --color=never \
+                ${pkgs.fd}/bin/fd --type f -H --no-ignore-vcs -E .git -E .jj -E node_modules --color=never \
                   | ${pkgs.fzf}/bin/fzf --filter="$query" \
                   | head -n 15 \
                   || true
