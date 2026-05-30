@@ -140,6 +140,17 @@
                 }
               ];
             }
+            # Blocks emoji (and future rules) in new markdown content.
+            # See .agents/prd-markdown.md
+            {
+              matcher = "Edit|Write";
+              hooks = [
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/mdlint";
+                }
+              ];
+            }
           ];
           hooks.PostToolUse = [
             {
