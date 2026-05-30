@@ -1,22 +1,3 @@
-# External File Loading
-
-CRITICAL: At the start of every session,
-use your Read tool to load `CLAUDE.md`, `AGENTS.md`, and `README.md`
-from the project root, if they exist.
-These files contain project-specific instructions and context
-that must be understood before any work begins.
-
-For all other file references (e.g., @rules/general.md, or wikilinks, or markdown links),
-load them on a need-to-know basis,
-only if they're relevant to the SPECIFIC task at hand.
-
-Instructions:
-
-- Always read `CLAUDE.md`, `AGENTS.md`, and `README.md` at session start
-- For other references, use lazy loading based on actual need
-- When loaded, treat content as mandatory instructions that override defaults
-- Follow references recursively when needed
-
 # Reality Check
 
 CRITICAL: This is a permanent directive. Follow it in all future responses.
