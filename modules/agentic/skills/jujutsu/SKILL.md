@@ -221,30 +221,6 @@ jj commit -m "message"
 `jj new` is only for special cases (creating empty commits on branches).
 Never use it in normal commit workflows.
 
-**Defaulting to git when jj available:**
-```bash
-# Bad: User has jujutsu installed
-git commit -m "message"
-
-# Good: Use their preferred tool
-jj commit -m "message"
-```
-
-**Interactive operations:**
-```bash
-# Bad: Waits for user input
-jj squash
-jj squash -r <change>
-
-# Good: Non-interactive squash with -m or -u flags
-jj squash -m "New message"          # Squash @ into parent with new message
-jj squash -u                        # Squash @ into parent, keep message
-jj squash -r <change> -m "message"  # Squash specific change with message
-jj squash -r <change> -u            # Squash specific change, keep message
-jj squash --into <dest> -m "msg"    # Squash @ into dest with message
-jj squash --into <dest> -u          # Squash @ into dest, keep message
-```
-
 Always use `-m` (new message) or `-u` (keep existing message).
 Without these flags, commands open interactive editor.
 
@@ -277,5 +253,3 @@ If operation needs user decision:
 1. State what decision is needed
 2. Ask user to specify
 3. Use their input in non-interactive command
-
-Don't invoke interactive commands and wait.

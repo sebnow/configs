@@ -111,6 +111,17 @@
               ];
             }
           ];
+          hooks.PreToolUse = [
+            {
+              matcher = "Bash";
+              hooks = [
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/vcs-guard";
+                }
+              ];
+            }
+          ];
           hooks.PostToolUse = [
             {
               matcher = "Edit|Write";

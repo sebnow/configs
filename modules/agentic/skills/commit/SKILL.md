@@ -230,7 +230,6 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 - "fixes A, B, and C" / "adds X and fixes Y" -> Split into atomic commits
 - "skip checking conventions" -> Check conventions first
 - "amend this commit" -> Check if pushed first
-- "force push" -> Never without explicit user request
 - "Quick commit" / "WIP commit" -> Not without user request
 - "I'll commit everything at the end" -> Commit after each logical change
 - "These are related so I'll commit them together" -> Apply the atomic commit test

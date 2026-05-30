@@ -1,0 +1,253 @@
+#!/usr/bin/env bash
+# PreToolUse hook: VCS guard
+# (1) Deny git write commands inside jj repos; allow read-only git.
+# (2) Deny jj commands that would open $EDITOR and hang the agent.
+#
+# stdin  : {"tool_name":"Bash","tool_input":{"command":string},"cwd":string,...}
+# stdout : {"hookSpecificOutput":{"hookEventName":"PreToolUse",
+#            "permissionDecision":"allow"|"ask"|"deny",
+#            "permissionDecisionReason":string}}
+#          | {}   // no decision; defer to permissions
+# exit   : 0 on every invocation
+set -euo pipefail
+
+emit_decision() {
+  local decision="$1" reason="$2"
+  jq -n --arg d "$decision" --arg r "$reason" \
+    '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:$d,permissionDecisionReason:$r}}'
+  exit 0
+}
+
+emit_defer() {
+  printf '{}\n'
+  exit 0
+}
+
+main() {
+  # Read stdin once
+  if ! input=$(cat); then
+    emit_defer
+  fi
+
+  # Extract command and cwd
+  if ! cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty'); then
+    emit_defer
+  fi
+  if ! cwd=$(printf '%s' "$input" | jq -r '.cwd // empty'); then
+    emit_defer
+  fi
+
+  trimmed="${cmd#"${cmd%%[! ]*}"}"  # strip leading whitespace
+
+  # Block jj commands that would open $EDITOR and hang the agent.
+  # NOTE: only matches literal "jj ..." — full-path invocations like
+  # /usr/bin/jj squash bypass this block (same limitation as the git guard below).
+  if [[ "$trimmed" == jj\ * ]]; then
+    # NOTE: read -ra splits on IFS; shell-quoted flag values containing spaces
+    # are split incorrectly. Acceptable here: we only inspect flag names,
+    # never flag values. See the same note in the git block below.
+    read -ra argv <<< "$trimmed"
+
+    has_flag() {
+      local flag="$1" arg
+      for arg in "${argv[@]}"; do
+        [[ "$arg" == "$flag" || "$arg" == "$flag="* ]] && return 0
+      done
+      return 1
+    }
+
+    # Extract subcommand: first non-flag positional after "jj"
+    jj_subcmd=""
+    for arg in "${argv[@]:1}"; do
+      if [[ "$arg" != -* ]]; then
+        jj_subcmd="$arg"
+        break
+      fi
+    done
+
+    # --help / -h is always informational and never opens $EDITOR.
+    if has_flag "--help" || has_flag "-h"; then
+      emit_defer
+    fi
+
+    case "$jj_subcmd" in
+      describe|commit|split|metaedit)
+        if ! has_flag "-m" && ! has_flag "--message"; then
+          emit_decision "deny" \
+            "jj $jj_subcmd needs -m/--message; running interactively will hang the agent."
+        fi
+        ;;
+      squash)
+        # -r and --into are mutually exclusive in jj itself; catch the combo
+        # before the agent hits the terse jj error, and name the alternative.
+        if { has_flag "-r" || has_flag "--revision"; } \
+           && { has_flag "--into" || has_flag "-t" || has_flag "--to"; }; then
+          emit_decision "deny" \
+            "jj squash: -r/--revision is incompatible with --into. Use \`jj squash --from SRC --into DEST\` instead of \`-r SRC --into DEST\`."
+        fi
+        # Covers both plain squash and squash --into <dest>; the subcommand is
+        # always "squash" regardless of --into.
+        if ! has_flag "-m" && ! has_flag "--message" \
+           && ! has_flag "-u" && ! has_flag "--use-destination-message"; then
+          emit_decision "deny" \
+            "jj squash needs -m/-u (running interactively will hang the agent). Valid forms: \`jj squash {-u|-m MSG}\` (@ → parent), \`jj squash -r REV {-u|-m MSG}\` (REV → REV's parent), \`jj squash --from SRC --into DEST {-u|-m MSG}\` (SRC → DEST). Do not mix -r with --into."
+        fi
+        ;;
+      diffedit|arrange)
+        emit_decision "deny" \
+          "jj $jj_subcmd is always interactive and will hang the agent."
+        ;;
+      resolve)
+        if ! has_flag "--tool"; then
+          emit_decision "deny" \
+            "jj resolve needs --tool; running interactively will hang the agent."
+        fi
+        ;;
+    esac
+
+    emit_defer
+  fi
+
+  # Non-git commands: defer to existing permission system
+  if [[ "$trimmed" != git\ * && "$trimmed" != "git" ]]; then
+    emit_defer
+  fi
+
+  # Parse argv into a Bash array.
+  # Handles simple quoting by word-splitting the trimmed command.
+  # git global options that consume the next token (-c key=val, -C path) are
+  # accounted for during subcommand extraction so they are not mistaken for
+  # the subcommand itself.
+  # NOTE: read -ra splits on IFS (space/tab/newline); arguments that contain
+  # spaces inside shell quotes are split incorrectly. This is acceptable for
+  # the current scope (subcommand and simple flag detection) but would need
+  # a shlex-based parser (e.g. python3 -c 'import shlex...') if flag-value
+  # inspection is added in a future slice.
+  read -ra argv <<< "$trimmed"
+
+  # Check whether a flag appears anywhere in argv.
+  has_flag() {
+    local flag="$1" arg
+    for arg in "${argv[@]}"; do
+      [[ "$arg" == "$flag" ]] && return 0
+    done
+    return 1
+  }
+
+  # Extract the git subcommand: first non-flag positional argument after "git".
+  # Skips single-char flags and accounts for -c/-C consuming the next token.
+  subcmd=""
+  skip_next=false
+  for arg in "${argv[@]:1}"; do
+    if $skip_next; then
+      skip_next=false
+      continue
+    fi
+    if [[ "$arg" == "-c" || "$arg" == "-C" ]]; then
+      skip_next=true
+      continue
+    fi
+    if [[ "$arg" != -* ]]; then
+      subcmd="$arg"
+      break
+    fi
+  done
+
+  # git reset --hard: ask regardless of jj context.
+  # In pure-git repos this is the only gate; in jj repos the deny below fires
+  # for all other write commands, but reset --hard is surfaced as ask so the
+  # user can confirm the intent in either context.
+  if [[ "$subcmd" == "reset" ]] && has_flag "--hard"; then
+    emit_decision "ask" "git reset --hard is destructive; confirm before proceeding"
+  fi
+
+  # Walk cwd upward to detect a jj-colocated repo, matching how jj itself
+  # locates a repository.
+  jj_root=""
+  if [[ -n "$cwd" ]]; then
+    dir="$cwd"
+    while [[ "$dir" != "/" ]]; do
+      if [[ -d "$dir/.jj" ]]; then
+        jj_root="$dir"
+        break
+      fi
+      new_dir="$(dirname "$dir")"
+      [[ "$new_dir" == "$dir" ]] && break
+      dir="$new_dir"
+    done
+  fi
+
+  # Outside a jj repo: defer all git commands to the existing permission system.
+  if [[ -z "$jj_root" ]]; then
+    emit_defer
+  fi
+
+  # Bare 'git' with no subcommand: deny with a clean message.
+  if [[ -z "$subcmd" ]]; then
+    emit_decision "deny" "This repo uses jj; use jj commands instead of git"
+  fi
+
+  # Inside a jj repo: classify the git subcommand.
+  case "$subcmd" in
+    # Read-only allowlist: always permit
+    log|diff|show|blame|status|rev-parse|ls-files)
+      emit_decision "allow" "read-only git command; permitted in jj repo"
+      ;;
+    config)
+      if has_flag "--get" || has_flag "--list" || has_flag "-l"; then
+        emit_decision "allow" "read-only git config; permitted in jj repo"
+      else
+        emit_decision "deny" "This repo uses jj; for config writes use \`jj config\` instead"
+      fi
+      ;;
+    # Write commands: deny with the jj equivalent
+    push)
+      emit_decision "deny" "This repo uses jj; use \`jj git push\` instead"
+      ;;
+    fetch)
+      emit_decision "deny" "This repo uses jj; use \`jj git fetch\` instead"
+      ;;
+    pull)
+      emit_decision "deny" "This repo uses jj; use \`jj git fetch\` then merge via jj instead"
+      ;;
+    commit)
+      emit_decision "deny" "This repo uses jj; use \`jj commit\` instead"
+      ;;
+    checkout|switch)
+      emit_decision "deny" "This repo uses jj; use \`jj edit\` or \`jj new\` instead"
+      ;;
+    rebase)
+      emit_decision "deny" "This repo uses jj; use \`jj rebase\` instead"
+      ;;
+    stash)
+      emit_decision "deny" "This repo uses jj; stash conflicts with jj — use \`jj new\` to set aside work"
+      ;;
+    reset)
+      # reset without --hard (caught above as ask)
+      emit_decision "deny" "This repo uses jj; use \`jj abandon\` or \`jj restore\` instead"
+      ;;
+    merge)
+      emit_decision "deny" "This repo uses jj; use \`jj rebase\` or merge bookmarks via jj instead"
+      ;;
+    branch)
+      emit_decision "deny" "This repo uses jj; use \`jj bookmark\` instead"
+      ;;
+    cherry-pick)
+      emit_decision "deny" "This repo uses jj; use \`jj rebase -r\` instead"
+      ;;
+    tag)
+      emit_decision "deny" "This repo uses jj; use \`jj tag\` instead"
+      ;;
+    add|rm|restore)
+      emit_decision "deny" "This repo uses jj; files are always tracked — use \`jj file track\` or \`jj file untrack\` if needed"
+      ;;
+    *)
+      emit_decision "deny" "This repo uses jj; use the jj equivalent of \`git $subcmd\`"
+      ;;
+  esac
+}
+
+# Run main; on any unexpected failure, still exit 0 as the hook contract requires.
+# Output may be absent if stdout is closed; Claude Code treats no output as defer.
+main || printf '{}\n'
+exit 0
