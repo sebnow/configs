@@ -95,6 +95,7 @@
               type = "command";
               command = "${cmd}";
             };
+          tui = "fullscreen";
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
           model = "opusplan";
