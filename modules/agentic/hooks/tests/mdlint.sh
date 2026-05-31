@@ -362,6 +362,91 @@ assert_eq "Edit .md tilde line inside backtick fence does not close it: exits 0"
 assert_eq "Edit .md tilde inside backtick fence: no output" "" "$result"
 
 # ---------------------------------------------------------------------------
+# Tests: verbose-constructions soft rule → exit 0, additionalContext warning
+# See .agents/prd-markdown.md
+# ---------------------------------------------------------------------------
+
+# "the fact that" must warn (not block).
+input=$(make_edit_input "README.md" "The fact that this works is surprising")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'the fact that': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'the fact that': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'the fact that': additionalContext names phrase" \
+  "the fact that" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'the fact that': additionalContext shows offending line" \
+  "The fact that this works is surprising" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# "very" must warn (not block).
+input=$(make_edit_input "README.md" "It is very fast")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'very': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'very': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'very': additionalContext names phrase" \
+  "very" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# "owing to the fact that" must warn; full phrase takes priority over sub-phrase "the fact that".
+input=$(make_edit_input "README.md" "Owing to the fact that we cached the result")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'owing to the fact that': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'owing to the fact that': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'owing to the fact that': additionalContext names phrase" \
+  "owing to the fact that" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# "in many cases" must warn.
+input=$(make_edit_input "README.md" "In many cases this is sufficient")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'in many cases': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'in many cases': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'in many cases': additionalContext names phrase" \
+  "in many cases" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# "character of" must warn.
+input=$(make_edit_input "README.md" "The character of the solution matters")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'character of': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'character of': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'character of': additionalContext names phrase" \
+  "character of" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# "nature of" must warn.
+input=$(make_edit_input "README.md" "The nature of the problem is complex")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'nature of': exits 0" "0" "$status"
+assert_contains "verbose-constructions 'nature of': additionalContext names rule" \
+  "verbose-constructions" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "verbose-constructions 'nature of': additionalContext names phrase" \
+  "nature of" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# Case-insensitive: "VERY" must warn.
+input=$(make_edit_input "README.md" "This is VERY important")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions case-insensitive 'VERY': exits 0" "0" "$status"
+assert_contains "verbose-constructions case-insensitive 'VERY': additionalContext names canonical phrase" \
+  "very" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# Clean content: no verbose construction, no warning output.
+input=$(make_edit_input "README.md" "This is a clear and direct sentence.")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions clean content: exits 0" "0" "$status"
+assert_eq "verbose-constructions clean content: no output" "" "$result"
+
+# Word-boundary check: "every" must not match "very".
+input=$(make_edit_input "README.md" "Not every solution works")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions 'every' does not match 'very': exits 0" "0" "$status"
+assert_eq "verbose-constructions 'every' does not match 'very': no output" "" "$result"
+
+# Verbose construction does not block — the edit is not rejected.
+input=$(make_edit_input "README.md" "The fact that this works is surprising")
+result=$(run_hook "$input") ; status=$?
+assert_eq "verbose-constructions does not block (exit is 0, not 2):" "0" "$status"
+
+# ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
 echo ""

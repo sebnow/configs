@@ -12,10 +12,18 @@
 #   bold-only-heading  — block headings whose entire visible text is wrapped in
 #                        **...** or __...__ (e.g. "# **Introduction**")
 #   unescaped-dollar   — block $ not preceded by \ outside fenced code blocks
+#   verbose-constructions (soft) — warn on wordy phrases without blocking
+#
+# Warn-only mechanism (resolved from Open Question 1 in .agents/prd-markdown.md):
+#   Soft rules write {"hookSpecificOutput":{"hookEventName":"PreToolUse",
+#   "additionalContext":"..."}} to stdout and exit 0. Claude sees additionalContext
+#   as a system reminder in subsequent turns; the tool call is not blocked.
 #
 # stdin  : Claude Code PreToolUse JSON
-# stdout : {"decision":"block","reason":string}  on violation (exit 2)
-#        | (empty)                                on no violation (exit 0)
+# stdout : {"decision":"block","reason":string}             on hard violation (exit 2)
+#        | {"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":string}}
+#                                                           on soft match (exit 0)
+#        | (empty)                                          on no violation (exit 0)
 set -euo pipefail
 
 if ! input=$(cat); then
@@ -157,4 +165,34 @@ if [[ $grep_status -eq 0 ]]; then
   jq -n --arg reason "no-emoji rule violation: ${offending_line}" \
     '{"decision":"block","reason":$reason}'
   exit 2
+fi
+
+# Verbose-constructions rule (soft): warn on wordy phrases without blocking.
+# Phrases (case-insensitive, \b-anchored): "the fact that", "in many cases",
+# "very", "owing to the fact that", "character of", "nature of".
+# If a shorter phrase is a word-boundary-aligned prefix of a longer one,
+# list the longer phrase first so the full phrase is captured by grep -o.
+# Emits hookSpecificOutput.additionalContext and exits 0 — the tool call proceeds.
+# See .agents/prd-markdown.md
+verbose_re='\b(owing to the fact that|the fact that|in many cases|character of|nature of|very)\b'
+verbose_match=""
+verbose_phrase=""
+while IFS= read -r line; do
+  v_exit=0
+  matched=$(printf '%s\n' "$line" | grep -ioPm1 "$verbose_re") || v_exit=$?
+  if [[ $v_exit -ge 2 ]]; then
+    printf 'mdlint: grep error (exit %d)\n' "$v_exit" >&2
+    break
+  fi
+  if [[ $v_exit -eq 0 ]]; then
+    verbose_match="$line"
+    # Lowercase so the warning names the canonical phrase regardless of input case.
+    verbose_phrase=$(printf '%s' "$matched" | tr '[:upper:]' '[:lower:]')
+    break
+  fi
+done <<< "$new_content"
+if [[ -n "$verbose_match" ]]; then
+  jq -n \
+    --arg ctx "verbose-constructions rule: phrase '${verbose_phrase}' in: ${verbose_match}" \
+    '{"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":$ctx}}'
 fi
