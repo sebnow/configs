@@ -108,6 +108,54 @@ main() {
         fi
         emit_defer
         ;;
+      new)
+        # Deny bare "jj new" — it creates an empty commit on @ with no
+        # deliberate intent signal, and is the giveaway of the
+        # describe-then-new anti-pattern.  Any of the following indicates
+        # intent and passes through:
+        #   - a non-flag positional (the target revision)
+        #   - -m / --message  (sets commit description)
+        #   - -A / --insert-after / --after
+        #   - -B / --insert-before / --before
+        # Value-consuming flags that must be skipped so their value token is
+        # not mistaken for a positional revision:
+        #   -R --repository --at-operation --at-op --color --config --config-file
+        # Intent flags (-m/-A/-B) are also value-consuming but are checked
+        # before the skip so they short-circuit to defer.
+        has_revision=false
+        skip_next=false
+        for arg in "${argv[@]:2}"; do
+          if $skip_next; then
+            skip_next=false
+            continue
+          fi
+          # Intent flags: presence alone is sufficient to defer
+          if [[ "$arg" == "-m"  || "$arg" == "--message" \
+             || "$arg" == "-A"  || "$arg" == "--insert-after"  || "$arg" == "--after" \
+             || "$arg" == "-B"  || "$arg" == "--insert-before" || "$arg" == "--before" ]]; then
+            has_revision=true
+            break
+          fi
+          # Global value-consuming flags: skip the next token
+          if [[ "$arg" == "-R"  || "$arg" == "--repository" \
+             || "$arg" == "--at-operation" || "$arg" == "--at-op" \
+             || "$arg" == "--color" \
+             || "$arg" == "--config" \
+             || "$arg" == "--config-file" ]]; then
+            skip_next=true
+            continue
+          fi
+          if [[ "$arg" != -* ]]; then
+            has_revision=true
+            break
+          fi
+        done
+        if ! $has_revision; then
+          emit_decision "deny" \
+            "bare 'jj new' creates an empty commit with no intent signal. Use 'jj commit -m MSG' to finalize current work, or 'jj new <rev>' to position on a specific revision."
+        fi
+        emit_defer
+        ;;
       describe|commit|metaedit)
         if ! has_flag "-m" && ! has_flag "--message"; then
           emit_decision "deny" \

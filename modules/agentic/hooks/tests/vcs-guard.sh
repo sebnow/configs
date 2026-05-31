@@ -456,6 +456,61 @@ assert_eq "jj resolve --tool kdiff3: defer" "{}" "$result"
 result=$(run_hook "$(make_input "jj resolve --tool=kdiff3" "$JJ_REPO")" | compact)
 assert_eq "jj resolve --tool=kdiff3: defer" "{}" "$result"
 
+# ---------------------------------------------------------------------------
+# Tests: jj new bare-command guard
+# Bare jj new (no positional revision, no -m, no -A, no -B) creates an empty
+# commit on @ and is the giveaway of the describe-then-new anti-pattern.
+# Any deliberate-intent indicator defers to the normal permission system.
+# ---------------------------------------------------------------------------
+
+# jj new with no arguments → deny; reason must name both jj commit -m and jj new <rev>
+result=$(run_hook "$(make_input "jj new" "$JJ_REPO")")
+assert_eq "jj new bare: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "jj new bare: reason names jj commit -m" \
+  "jj commit -m" "$reason"
+assert_contains "jj new bare: reason names jj new <rev>" \
+  "jj new <rev>" "$reason"
+
+# jj new abc123 → defer (positional revision provided)
+result=$(run_hook "$(make_input "jj new abc123" "$JJ_REPO")" | compact)
+assert_eq "jj new abc123: defer" "{}" "$result"
+
+# jj new -m "msg" → defer (-m flag present)
+result=$(run_hook "$(make_input 'jj new -m "msg"' "$JJ_REPO")" | compact)
+assert_eq "jj new -m msg: defer" "{}" "$result"
+
+# jj new --message "msg" → defer (--message long form)
+result=$(run_hook "$(make_input 'jj new --message "msg"' "$JJ_REPO")" | compact)
+assert_eq "jj new --message msg: defer" "{}" "$result"
+
+# jj new -A @- → defer (-A/--insert-after flag present; value token @- is skipped)
+result=$(run_hook "$(make_input "jj new -A @-" "$JJ_REPO")" | compact)
+assert_eq "jj new -A @-: defer" "{}" "$result"
+
+# jj new -B @- → defer (-B/--insert-before flag present; value token @- is skipped)
+result=$(run_hook "$(make_input "jj new -B @-" "$JJ_REPO")" | compact)
+assert_eq "jj new -B @-: defer" "{}" "$result"
+
+# jj new --insert-after @- → defer (long form of -A)
+result=$(run_hook "$(make_input "jj new --insert-after @-" "$JJ_REPO")" | compact)
+assert_eq "jj new --insert-after @-: defer" "{}" "$result"
+
+# jj new --insert-before @- → defer (long form of -B)
+result=$(run_hook "$(make_input "jj new --insert-before @-" "$JJ_REPO")" | compact)
+assert_eq "jj new --insert-before @-: defer" "{}" "$result"
+
+# jj new -R /path/to/repo → deny (global -R flag value must not be counted as positional)
+result=$(run_hook "$(make_input "jj new -R /path/to/repo" "$JJ_REPO")")
+assert_eq "jj new -R /repo (global flag, no revision): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj new --no-edit → deny (--no-edit is a boolean flag, not a revision)
+result=$(run_hook "$(make_input "jj new --no-edit" "$JJ_REPO")")
+assert_eq "jj new --no-edit (no revision): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
 # jj log → defer (non-interactive, not in deny list)
 result=$(run_hook "$(make_input "jj log" "$JJ_REPO")" | compact)
 assert_eq "jj log: defer" "{}" "$result"
