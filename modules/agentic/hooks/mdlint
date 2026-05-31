@@ -13,6 +13,7 @@
 #                        **...** or __...__ (e.g. "# **Introduction**")
 #   unescaped-dollar   — block $ not preceded by \ outside fenced code blocks
 #   verbose-constructions (soft) — warn on wordy phrases without blocking
+#   all-caps (soft)      — warn on lines that are entirely uppercase and longer than 20 chars
 #
 # Warn-only mechanism (resolved from Open Question 1 in .agents/prd-markdown.md):
 #   Soft rules write {"hookSpecificOutput":{"hookEventName":"PreToolUse",
@@ -165,6 +166,92 @@ if [[ $grep_status -eq 0 ]]; then
   jq -n --arg reason "no-emoji rule violation: ${offending_line}" \
     '{"decision":"block","reason":$reason}'
   exit 2
+fi
+
+# ALL-CAPS shouting rule (soft): warn on lines that are predominantly ALL-CAPS.
+# A line qualifies when: it contains ≥1 alphabetic char, all alpha chars are
+# uppercase, and its length is >20 chars.
+# Exclusions applied in order:
+#   label prefix — lines beginning with TODO/NOTE/WARNING/IMPORTANT/CRITICAL/UNVERIFIED
+#   bare acronyms — all alpha tokens ≤5 chars (covers the short RFC 2119 keywords MUST, SHALL, MAY, NOT
+#                   and common abbreviations: HTTP, JSON, API, URL, XML, REST, …)
+# Mixed-case RFC 2119 text (e.g. "The server MUST return…") and mixed-case
+# sentences containing acronyms are naturally excluded because the lowercase
+# letters fail the all-alpha-uppercase check before any exclusion is tested.
+# See .agents/prd-markdown.md
+fence_char=""
+in_fence=0
+caps_match=""
+while IFS= read -r line; do
+  if [[ "$line" =~ $fence_re ]]; then
+    opening_char="${BASH_REMATCH[1]:0:1}"
+    if [[ $in_fence -eq 0 ]]; then
+      in_fence=1
+      fence_char="$opening_char"
+    elif [[ "$opening_char" == "$fence_char" ]]; then
+      in_fence=0
+      fence_char=""
+    fi
+    continue
+  fi
+  [[ $in_fence -eq 0 ]] || continue
+
+  # Short-line exclusion: lines ≤20 chars cannot be predominantly ALL-CAPS.
+  [[ ${#line} -gt 20 ]] || continue
+
+  # Must contain at least one alphabetic character.
+  has_alpha_exit=0
+  printf '%s\n' "$line" | grep -qP '[[:alpha:]]' || has_alpha_exit=$?
+  if [[ $has_alpha_exit -ge 2 ]]; then
+    printf 'mdlint: grep error (exit %d)\n' "$has_alpha_exit" >&2
+    break
+  fi
+  if [[ $has_alpha_exit -ne 0 ]]; then
+    continue
+  fi
+
+  # All alphabetic characters must be uppercase (no lowercase allowed).
+  lc_exit=0
+  printf '%s\n' "$line" | grep -qP '[a-z]' || lc_exit=$?
+  if [[ $lc_exit -ge 2 ]]; then
+    printf 'mdlint: grep error (exit %d)\n' "$lc_exit" >&2
+    break
+  fi
+  if [[ $lc_exit -eq 0 ]]; then
+    continue
+  fi
+
+  # Label keyword exclusion.
+  label_exit=0
+  printf '%s\n' "$line" | grep -qP '^(TODO|NOTE|WARNING|IMPORTANT|CRITICAL|UNVERIFIED)([^[:alpha:]]|$)' || label_exit=$?
+  if [[ $label_exit -ge 2 ]]; then
+    printf 'mdlint: grep error (exit %d)\n' "$label_exit" >&2
+    break
+  fi
+  if [[ $label_exit -eq 0 ]]; then
+    continue
+  fi
+
+  # Bare-acronym exclusion: skip if every alpha token is ≤5 characters.
+  all_acronyms=1
+  while IFS= read -r token; do
+    if [[ ${#token} -gt 5 ]]; then
+      all_acronyms=0
+      break
+    fi
+  done < <(printf '%s\n' "$line" | grep -oP '[[:alpha:]]+')
+  if [[ $all_acronyms -eq 1 ]]; then
+    continue
+  fi
+
+  caps_match="$line"
+  break
+done <<< "$new_content"
+if [[ -n "$caps_match" ]]; then
+  jq -n \
+    --arg ctx "all-caps rule: shouting detected in: ${caps_match}" \
+    '{"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":$ctx}}'
+  exit 0
 fi
 
 # Verbose-constructions rule (soft): warn on wordy phrases without blocking.

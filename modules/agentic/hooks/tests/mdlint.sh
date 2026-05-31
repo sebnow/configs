@@ -447,6 +447,82 @@ result=$(run_hook "$input") ; status=$?
 assert_eq "verbose-constructions does not block (exit is 0, not 2):" "0" "$status"
 
 # ---------------------------------------------------------------------------
+# Tests: ALL-CAPS shouting soft rule → exit 0, additionalContext warning
+# See .agents/prd-markdown.md
+# ---------------------------------------------------------------------------
+
+# Long all-caps line must warn (not block).
+input=$(make_edit_input "README.md" "THIS IS A LONG WARNING THAT IS SHOUTING AT THE USER")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps long shouting line: exits 0" "0" "$status"
+assert_contains "all-caps long shouting line: additionalContext names rule" \
+  "all-caps" "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+assert_contains "all-caps long shouting line: additionalContext shows offending line" \
+  "THIS IS A LONG WARNING THAT IS SHOUTING AT THE USER" \
+  "$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')"
+
+# All-caps does not block — exit is 0, not 2.
+input=$(make_edit_input "README.md" "THIS IS A LONG WARNING THAT IS SHOUTING AT THE USER")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps does not block (exit is 0, not 2)" "0" "$status"
+
+# Label exclusion: TODO line has lowercase — all-caps check does not fire.
+input=$(make_edit_input "README.md" "TODO: rewrite this section once the API stabilises")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps label exclusion (lowercase TODO line): exits 0" "0" "$status"
+assert_eq "all-caps label exclusion (lowercase TODO line): no output" "" "$result"
+
+# RFC 2119 in mixed-case sentence — lowercase chars prevent the all-caps check.
+input=$(make_edit_input "README.md" "The server MUST return a 200 status on success")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps RFC 2119 in mixed-case sentence: exits 0" "0" "$status"
+assert_eq "all-caps RFC 2119 in mixed-case sentence: no output" "" "$result"
+
+# Bare acronyms in mixed-case sentence — lowercase chars prevent the all-caps check.
+input=$(make_edit_input "README.md" "HTTP responses include a JSON body")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps bare acronyms in mixed-case sentence: exits 0" "0" "$status"
+assert_eq "all-caps bare acronyms in mixed-case sentence: no output" "" "$result"
+
+# Short line 'STOP' (4 chars) — short-line exclusion.
+input=$(make_edit_input "README.md" "STOP")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps 'STOP' (4 chars, short-line exclusion): exits 0" "0" "$status"
+assert_eq "all-caps 'STOP': no output" "" "$result"
+
+# 'WARNING' standalone (7 chars) — short-line exclusion.
+input=$(make_edit_input "README.md" "WARNING")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps 'WARNING' standalone (7 chars, short-line exclusion): exits 0" "0" "$status"
+assert_eq "all-caps 'WARNING': no output" "" "$result"
+
+# ALL-CAPS line inside a fenced code block must not warn.
+input=$(make_edit_input "README.md" "$(printf '```\nTHIS IS ALL CAPS INSIDE A FENCED CODE BLOCK\n```')")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps inside fenced code block: exits 0" "0" "$status"
+assert_eq "all-caps inside fenced code block: no output" "" "$result"
+
+# Label keyword prefix in an all-caps line — label exclusion applies.
+input=$(make_edit_input "README.md" "TODO: THIS IS A LONG ALL-CAPS REMINDER THAT SHOULD NOT WARN")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps TODO: prefix in all-caps line (label exclusion): exits 0" "0" "$status"
+assert_eq "all-caps TODO: prefix in all-caps line: no output" "" "$result"
+
+# Bare-acronym-only all-caps line (>20 chars, every token ≤5 chars).
+input=$(make_edit_input "README.md" "HTTP JSON XML YAML REST API")
+result=$(run_hook "$input") ; status=$?
+assert_eq "all-caps all-acronym line (bare-acronym exclusion): exits 0" "0" "$status"
+assert_eq "all-caps all-acronym line: no output" "" "$result"
+
+# Content matching both all-caps and verbose-constructions must produce a
+# single valid JSON object — not two concatenated objects.
+input=$(make_edit_input "README.md" "THIS IS VERY CLEARLY AN ALL CAPS SHOUTING LINE")
+result=$(run_hook "$input") ; status=$?
+assert_eq "dual-soft-rule match: exits 0" "0" "$status"
+json_count=$(printf '%s' "$result" | jq -s 'length')
+assert_eq "dual-soft-rule match: output is exactly one JSON object" "1" "$json_count"
+
+# ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
 echo ""
