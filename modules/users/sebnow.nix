@@ -51,6 +51,8 @@ in
 
         fonts.fontconfig.enable = true;
 
+        catppuccin.accent = "blue";
+
         programs.k9s.enable = true;
         programs.kitty.enable = true;
         programs.ghostty.enable = true;

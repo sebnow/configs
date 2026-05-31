@@ -1,3 +1,9 @@
+// Catppuccin theme, flavor/accent driven by config.catppuccin.{flavor,accent}.
+// Deployed alongside this file by the home-manager module from inputs.catppuccin-niri.
+// Owns focus-ring, border, tab-indicator, insert-hint, background-color, and shadow colors.
+// optional=true so source-tree `niri validate` passes without the deployed theme present.
+include optional=true "theme.kdl"
+
 input {
     keyboard {
         xkb {}

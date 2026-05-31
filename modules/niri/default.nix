@@ -7,6 +7,13 @@
     { config, lib, pkgs, ... }:
     let
       inherit (config.catppuccin) flavor accent;
+      # Upstream theme files include `# Theme: ...` lines that aren't valid
+      # KDL. Strip them before deploying.
+      themeFile = pkgs.runCommand "catppuccin-niri-${flavor}-${accent}.kdl" { } ''
+        sed '/^[[:space:]]*#/d' \
+          ${inputs.catppuccin-niri}/themes/${flavor}/catppuccin-${flavor}-${accent}.kdl \
+          > $out
+      '';
       palette = (lib.importJSON "${config.catppuccin.sources.palette}/palette.json").${flavor}.colors;
       hex = name: palette.${name}.hex;
       noctaliaColors = {
@@ -46,6 +53,7 @@
       };
 
       xdg.configFile."niri/config.kdl".source = ./config.kdl;
+      xdg.configFile."niri/theme.kdl".source = themeFile;
 
       home.packages = with pkgs; [
         brightnessctl

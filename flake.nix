@@ -27,6 +27,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    catppuccin-niri = {
+      url = "github:ninetailedtori/catppuccin-niri";
+      flake = false;
+    };
     import-tree.url = "github:vic/import-tree";
     md = {
       url = "github:sebnow/md";

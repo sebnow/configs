@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "catppuccin-niri": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770487336,
+        "narHash": "sha256-X6z4gcRhTzVKsmgWmigDhIyxQnzzoRso58PbzNwLxug=",
+        "owner": "ninetailedtori",
+        "repo": "catppuccin-niri",
+        "rev": "5655f52d4a06b1de06ac4b9dfb27eca9c0b2bc44",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ninetailedtori",
+        "repo": "catppuccin-niri",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -253,6 +269,7 @@
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
+        "catppuccin-niri": "catppuccin-niri",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
         "import-tree": "import-tree",
