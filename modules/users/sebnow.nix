@@ -17,6 +17,7 @@ in
           homeManager.go
           homeManager.ipfs
           homeManager.neovim
+          homeManager.niri
           homeManager.obsidian
           homeManager.shell
           homeManager.source-control
@@ -46,9 +47,11 @@ in
           jq
           restic
         ];
-        home.sessionVariables.BROWSER = "firefox";
+        home.sessionVariables.BROWSER = "zen-browser";
 
         fonts.fontconfig.enable = true;
+
+        catppuccin.accent = "blue";
 
         programs.k9s.enable = true;
         programs.kitty.enable = true;

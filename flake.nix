@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     catppuccin = {
-      url = "github:catppuccin/nix";
+      url = "github:catppuccin/nix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixgl = {
@@ -22,6 +22,14 @@
     pi-coding-agent-catppuccin = {
       url = "github:otahontas/pi-coding-agent-catppuccin";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia-shell = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    catppuccin-niri = {
+      url = "github:ninetailedtori/catppuccin-niri";
+      flake = false;
     };
     import-tree.url = "github:vic/import-tree";
     md = {
