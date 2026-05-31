@@ -15,6 +15,24 @@ Apply the configuration:
 nix run home-manager/master -- switch --flake .
 ```
 
+### niri session setup
+
+Install the system-level packages from Arch's `extra` repository:
+
+```sh
+sudo pacman -S niri xwayland-satellite
+```
+
+`niri` ships the compositor binary, `niri-session`, the GDM session entry,
+the systemd user units, and the xdg-desktop-portal config.
+`xwayland-satellite` provides XWayland support for X11 apps running under niri.
+Both packages come from pacman rather than home-manager:
+GDM and other multi-user services discover their artifacts via `/usr/share/`,
+which is outside the user scope home-manager manages.
+
+The runtime config lives in `modules/niri/config.kdl`.
+Edit that file in the repo, then run `home-manager switch` to deploy the change.
+
 ## Structure
 
 The flake uses the [Dendritic Pattern][]:
@@ -35,6 +53,7 @@ automatically imported via import-tree.
 | `home-manager`    | Home Manager configuration scaffolding                                                   |
 | `ipfs`            | Kubo IPFS daemon as a systemd user service                                               |
 | `neovim`          | Neovim nightly with per-language tooling                                                 |
+| `niri`            | niri Wayland compositor config and noctalia-shell integration                            |
 | `obsidian`        | Obsidian with nixGL wrapping                                                             |
 | `overlays`        | nixGL overlay                                                                            |
 | `shell`           | Bash, Zsh, bat, eza, fzf, starship                                                       |
