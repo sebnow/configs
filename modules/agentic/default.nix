@@ -248,6 +248,14 @@
                 }
               ];
             }
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/vcs-working-copy-guard";
+                }
+              ];
+            }
           ];
         };
       };
