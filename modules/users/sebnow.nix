@@ -47,7 +47,7 @@ in
           jq
           restic
         ];
-        home.sessionVariables.BROWSER = "firefox";
+        home.sessionVariables.BROWSER = "zen-browser";
 
         fonts.fontconfig.enable = true;
 

@@ -51,8 +51,10 @@ window-rule {
 }
 
 window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"zen$"# title="^Picture-in-Picture$"
     open-floating true
+    default-floating-position x=16 y=16 relative-to="top-right"
+    default-column-width { proportion 0.3; }
 }
 
 window-rule {
