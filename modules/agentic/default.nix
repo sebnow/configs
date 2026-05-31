@@ -21,9 +21,15 @@
   };
 
   flake.modules.homeManager.agentic =
-    { pkgs, config, ... }:
+    { pkgs, config, lib, ... }:
     let
       piThemes = inputs.pi-coding-agent-catppuccin.packages.${pkgs.system}.default;
+      catppuccinFlavor = config.catppuccin.flavor;
+      catppuccinAccent = config.catppuccin.accent;
+      catppuccinPalette =
+        (lib.importJSON "${config.catppuccin.sources.palette}/palette.json").${catppuccinFlavor}.colors;
+      hex = name: catppuccinPalette.${name}.hex;
+      claudeThemeName = "catppuccin-${catppuccinFlavor}-${catppuccinAccent}";
     in
     {
       home.packages = [
@@ -96,6 +102,7 @@
               command = "${cmd}";
             };
           tui = "fullscreen";
+          theme = claudeThemeName;
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
           model = "opusplan";
@@ -262,6 +269,32 @@
 
       home.file.".pi/agent/themes/catppuccin-${config.catppuccin.flavor}.json".source =
         "${piThemes}/share/pi/themes/catppuccin-${config.catppuccin.flavor}.json";
+
+      home.file.".claude/themes/${claudeThemeName}.json".text = builtins.toJSON {
+        name = claudeThemeName;
+        base = if catppuccinFlavor == "latte" then "light" else "dark";
+        overrides = {
+          claude = hex catppuccinAccent;
+          primary = hex catppuccinAccent;
+          accent = hex catppuccinAccent;
+          secondary = hex "mauve";
+          tertiary = hex "teal";
+          background = hex "base";
+          foreground = hex "text";
+          text = hex "text";
+          muted = hex "overlay1";
+          border = hex "surface1";
+          surface = hex "surface0";
+          overlay = hex "overlay0";
+          highlight = hex "surface1";
+          selection = hex "surface2";
+          cursor = hex "rosewater";
+          error = hex "red";
+          warning = hex "yellow";
+          success = hex "green";
+          info = hex "sapphire";
+        };
+      };
 
       home.file.".pi/agent/settings.json".text = builtins.toJSON {
         quietStartup = true;
