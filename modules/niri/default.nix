@@ -15,13 +15,18 @@
   # configuration and tooling. niri-flake is intentionally excluded to avoid
   # its gnome-keyring forced-enable, which conflicts with KeePassXC.
   flake.modules.homeManager.niri =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       inherit (config.catppuccin) flavor accent;
       # Upstream theme files include `# Theme: ...` lines that aren't valid
       # KDL. Strip them before deploying.
       themeFile = pkgs.runCommand "catppuccin-niri-${flavor}-${accent}.kdl" { } ''
-        sed '/^[[:space:]]*#/d' \
+        sed -e '/^[[:space:]]*#/d' -e '/empty-workspace-above-first/d' \
           ${inputs.catppuccin-niri}/themes/${flavor}/catppuccin-${flavor}-${accent}.kdl \
           > $out
       '';
