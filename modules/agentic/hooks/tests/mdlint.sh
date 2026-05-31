@@ -362,6 +362,42 @@ assert_eq "Edit .md tilde line inside backtick fence does not close it: exits 0"
 assert_eq "Edit .md tilde inside backtick fence: no output" "" "$result"
 
 # ---------------------------------------------------------------------------
+# Tests: inline code spans exempt from unescaped-dollar rule
+# See .agents/issues/04-block-unescaped-dollar-signs.md
+# CommonMark: backslash escapes and math-mode rendering do not apply inside
+# code spans, so the unescaped-dollar rule has no failure mode to defend against there.
+# ---------------------------------------------------------------------------
+
+# $ inside a single-backtick inline code span must pass.
+input=$(make_edit_input "README.md" 'Run `$PWD` to show the directory')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md dollar inside inline code span: exits 0" "0" "$status"
+assert_eq "Edit .md dollar inside inline code span: no output" "" "$result"
+
+# Line with inline $HOME (exempt) and bare $BARE (not exempt): must block.
+# Verifies the strip is per-line and does not mask violations outside the span.
+input=$(make_edit_input "README.md" 'Use `$HOME` as a reference and set price to $BARE')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md inline \$HOME exempt, bare \$BARE still blocks: exits 2" "2" "$status"
+assert_eq "Edit .md inline exempt, bare blocks: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+assert_contains "Edit .md inline exempt, bare blocks: reason names rule" \
+  "unescaped dollar sign" "$(printf '%s' "$result" | jq -r '.reason')"
+
+# Escaped $ inside backticks must pass (degenerate but must not regress).
+input=$(make_edit_input "README.md" 'Use `\$5` for the price')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md escaped dollar inside inline code span: exits 0" "0" "$status"
+assert_eq "Edit .md escaped dollar inside inline code span: no output" "" "$result"
+
+# Regression guard: bare $ outside any backticks still blocks.
+input=$(make_edit_input "README.md" 'The price is $10')
+result=$(run_hook "$input") ; status=$?
+assert_eq "Edit .md bare dollar outside inline code (regression guard): exits 2" "2" "$status"
+assert_eq "Edit .md bare dollar regression guard: decision is block" \
+  "block" "$(printf '%s' "$result" | jq -r '.decision')"
+
+# ---------------------------------------------------------------------------
 # Tests: verbose-constructions soft rule → exit 0, additionalContext warning
 # See .agents/prd-markdown.md
 # ---------------------------------------------------------------------------

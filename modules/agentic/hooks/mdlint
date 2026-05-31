@@ -98,7 +98,10 @@ fi
 # Uses a line-by-line scan to track fence state across the new content.
 # Both backtick (```) and tilde (~~~) fences are recognised. A fence is only
 # closed by the same character that opened it (CommonMark rule).
-# Inline code spans are not exempted — escape $ even inside backticks.
+# Inline code spans (single backticks) are exempt: CommonMark does not process
+# backslash escapes or math-mode rendering inside code spans, so the rule has no
+# failure mode to defend against there.
+# Limitation: escaped backticks (\`) in prose are not handled — rare in practice.
 # False-positive: new_string that is entirely inside a pre-existing fence looks
 # like plain text to this hook; see .agents/issues/04-block-unescaped-dollar-signs.md.
 # See .agents/prd-markdown.md
@@ -120,12 +123,19 @@ while IFS= read -r line; do
   fi
   if [[ $in_fence -eq 0 ]]; then
     dollar_exit=0
+    # Strip single-backtick inline code spans before checking. `[^`]*` covers
+    # the common case; cross-line spans and double-backtick spans are not handled.
+    # See .agents/issues/04-block-unescaped-dollar-signs.md
+    if ! stripped_line=$(printf '%s' "$line" | sed "s/\`[^\`]*\`//g"); then
+      printf 'mdlint: sed error stripping inline code spans\n' >&2
+      exit 0
+    fi
     # Parity-aware lookbehind: match $ not preceded by an unescaped backslash.
     # (?<!(?<!\\)\\) — outer: not preceded by an unescaped \; inner: \ not
     # preceded by \. Correctly handles \$ (pass), \\$ (block). Known limitation:
     # \\\$ (triple backslash + dollar) incorrectly blocks; this edge case is
     # accepted as it does not arise in normal markdown prose.
-    printf '%s\n' "$line" | grep -qP '(?<!(?<!\\)\\)\$' || dollar_exit=$?
+    printf '%s\n' "$stripped_line" | grep -qP '(?<!(?<!\\)\\)\$' || dollar_exit=$?
     if [[ $dollar_exit -ge 2 ]]; then
       printf 'mdlint: grep error (exit %d)\n' "$dollar_exit" >&2
       exit 0
