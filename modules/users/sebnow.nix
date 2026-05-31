@@ -17,6 +17,7 @@ in
           homeManager.go
           homeManager.ipfs
           homeManager.neovim
+          homeManager.niri
           homeManager.obsidian
           homeManager.shell
           homeManager.source-control
