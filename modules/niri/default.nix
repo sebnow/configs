@@ -17,6 +17,8 @@
         package = config.lib.nixGL.wrap (
           inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default
         );
+        settings = ./noctalia/settings.json;
+        plugins = ./noctalia/plugins.json;
       };
 
       xdg.configFile."niri/config.kdl".source = ./config.kdl;
