@@ -23,6 +23,10 @@
       url = "github:otahontas/pi-coding-agent-catppuccin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    noctalia-shell = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     import-tree.url = "github:vic/import-tree";
     md = {
       url = "github:sebnow/md";
