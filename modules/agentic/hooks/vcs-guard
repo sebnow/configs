@@ -71,7 +71,44 @@ main() {
     fi
 
     case "$jj_subcmd" in
-      describe|commit|split|metaedit)
+      split)
+        # Check for at least one non-flag positional (fileset argument).
+        # Skip the value token of any known value-consuming flag of jj split.
+        # Attached forms (--flag=VAL, -f=VAL) start with '-' and are already
+        # excluded by the leading-dash check below.
+        has_fileset=false
+        skip_next=false
+        for arg in "${argv[@]:2}"; do
+          if $skip_next; then
+            skip_next=false
+            continue
+          fi
+          if [[ "$arg" == "-r" || "$arg" == "--revision" \
+             || "$arg" == "-m" || "$arg" == "--message" \
+             || "$arg" == "-o" || "$arg" == "--onto" \
+             || "$arg" == "-A" || "$arg" == "--insert-after" \
+             || "$arg" == "-B" || "$arg" == "--insert-before" \
+             || "$arg" == "--tool" \
+             || "$arg" == "-R" || "$arg" == "--repository" \
+             || "$arg" == "--at-operation" \
+             || "$arg" == "--color" \
+             || "$arg" == "--config" \
+             || "$arg" == "--config-file" ]]; then
+            skip_next=true
+            continue
+          fi
+          if [[ "$arg" != -* ]]; then
+            has_fileset=true
+            break
+          fi
+        done
+        if ! $has_fileset; then
+          emit_decision "deny" \
+            "jj split requires FILESETS to be non-interactive. Use: jj split FILESETS (e.g. jj split path/to/file). Without filesets, jj split opens an interactive diff editor that will hang the agent."
+        fi
+        emit_defer
+        ;;
+      describe|commit|metaedit)
         if ! has_flag "-m" && ! has_flag "--message"; then
           emit_decision "deny" \
             "jj $jj_subcmd needs -m/--message; running interactively will hang the agent."

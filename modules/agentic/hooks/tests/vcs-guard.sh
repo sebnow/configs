@@ -378,9 +378,51 @@ result=$(run_hook "$(make_input "jj split" "$JJ_REPO")")
 assert_eq "jj split without flags: deny" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
-# jj split -m foo → defer
-result=$(run_hook "$(make_input "jj split -m foo" "$JJ_REPO")" | compact)
-assert_eq "jj split -m foo: defer" "{}" "$result"
+# jj split -m foo has no fileset — still opens interactive split-point editor
+result=$(run_hook "$(make_input "jj split -m foo" "$JJ_REPO")")
+assert_eq "jj split -m foo (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj split path/foo → defer (fileset provided)
+result=$(run_hook "$(make_input "jj split path/foo" "$JJ_REPO")" | compact)
+assert_eq "jj split path/foo (fileset provided): defer" "{}" "$result"
+
+# jj split -r @- → deny (flag-only; -r value does not count as fileset positional)
+result=$(run_hook "$(make_input "jj split -r @-" "$JJ_REPO")")
+assert_eq "jj split -r @-: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "jj split -r @-: reason mentions FILESETS" \
+  "FILESETS" "$reason"
+
+# jj split -r @- path/foo → defer (fileset provided alongside revision flag)
+result=$(run_hook "$(make_input "jj split -r @- path/foo" "$JJ_REPO")" | compact)
+assert_eq "jj split -r @- path/foo: defer" "{}" "$result"
+
+# jj split --tool vimdiff → deny (tool name is a value token, not a fileset)
+result=$(run_hook "$(make_input "jj split --tool vimdiff" "$JJ_REPO")")
+assert_eq "jj split --tool vimdiff (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj split --tool=vimdiff (attached form) → deny
+result=$(run_hook "$(make_input "jj split --tool=vimdiff" "$JJ_REPO")")
+assert_eq "jj split --tool=vimdiff (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj split -o abc123 → deny (-o/--onto value does not count as fileset)
+result=$(run_hook "$(make_input "jj split -o abc123" "$JJ_REPO")")
+assert_eq "jj split -o abc123 (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj split --onto abc123 → deny (space form)
+result=$(run_hook "$(make_input "jj split --onto abc123" "$JJ_REPO")")
+assert_eq "jj split --onto abc123 (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj split --revision abc123 → deny (long form of -r)
+result=$(run_hook "$(make_input "jj split --revision abc123" "$JJ_REPO")")
+assert_eq "jj split --revision abc123 (no fileset): deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
 
 # jj metaedit without flags → deny
 result=$(run_hook "$(make_input "jj metaedit" "$JJ_REPO")")
