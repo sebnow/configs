@@ -1,5 +1,16 @@
 { inputs, ... }:
 {
+  perSystem =
+    { pkgs, ... }:
+    {
+      # config.kdl uses `include optional=true "theme.kdl"`, so validation
+      # passes without the theme file present in the source tree.
+      checks.niri-config = pkgs.runCommand "niri-config-valid" { } ''
+        ${pkgs.niri}/bin/niri validate -c ${./config.kdl}
+        touch $out
+      '';
+    };
+
   # niri binary is installed via pacman; this module manages only user-scoped
   # configuration and tooling. niri-flake is intentionally excluded to avoid
   # its gnome-keyring forced-enable, which conflicts with KeePassXC.
