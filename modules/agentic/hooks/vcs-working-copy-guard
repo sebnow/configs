@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Stop-event hook: warn when the session ends with an unclean working copy.
+#
+# If the agent forgets to commit or squash @ before stopping, the user's
+# next file edit will auto-commit into the dirty @ without any warning.
+# This hook fires at session end and emits a systemMessage so the user sees
+# the warning before their next session begins.
+#
+# stdin  : Claude Code Stop event JSON (consumed and discarded)
+# stdout : {"systemMessage": string}   on unclean working copy
+#        | (empty)                     on clean or no-repo cwd
+# exit   : 0 always
+set -euo pipefail
+
+emit_warning() {
+  local msg="$1"
+  jq -n --arg m "$msg" '{systemMessage: $m}'
+  exit 0
+}
+
+main() {
+  # Consume stdin; no fields needed from the Stop event.
+  cat > /dev/null
+
+  # Probe jj first. jj walks up from $PWD to find the repo, so no manual
+  # directory traversal is needed. Any non-zero exit means no jj repo here.
+  if jj_out=$(jj status 2>/dev/null); then
+    # @ is clean when its working-copy line contains "(empty)".
+    # Untracked-only changes still show "(empty)" here; that matches jj's
+    # own model where untracked files are not part of @.
+    wc_line=$(printf '%s' "$jj_out" | grep "^Working copy.*(@)" || true)
+    if [[ -n "$wc_line" ]] && ! printf '%s' "$wc_line" | grep -q "(empty)"; then
+      emit_warning "Working copy @ is not empty. Run \`jj status\` to inspect. Squash or commit before ending the session to avoid surprising auto-commits on the next file edit."
+    fi
+    exit 0
+  fi
+
+  # Fall back to git. git also walks up from $PWD.
+  if git_out=$(git status --porcelain 2>/dev/null); then
+    if [[ -n "$git_out" ]]; then
+      emit_warning "Git working tree is not clean. Run \`git status\` to inspect. Commit or stash before ending the session."
+    fi
+  fi
+  # No repo found or clean state: emit nothing.
+}
+
+# On any unexpected failure still exit 0 — the hook contract requires it.
+main || true
+exit 0
