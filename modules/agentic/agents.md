@@ -39,19 +39,6 @@ plan the commit sequence before starting.
 List changes, identify dependencies,
 and complete commits in order.
 
-# Markdown Guidelines
-
-For Markdown files:
-
-- Do not add emojis unless explicitly asked for.
-- Do not enumerate headings.
-- Do not make headings bold, or add any other stylized formatting.
-- Use [semantic line breaks][sembr],
-  if the file already follows this convention.
-- Escape dollar signs, as they could be interpreted as inline LaTeX
-
-[sembr]: https://sembr.org/
-
 # Go Guidelines
 
 For Go files:
