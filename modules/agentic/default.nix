@@ -1,9 +1,5 @@
-{ inputs, lib, ... }:
+{ inputs, ... }:
 {
-  flake.overlays.pi-coding-agent = final: prev: {
-    pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
-  };
-
   flake.overlays.ralph-cc = final: prev: {
     ralph-cc = prev.callPackage ../../pkgs/ralph-cc { };
   };
@@ -17,9 +13,13 @@
   };
 
   flake.modules.homeManager.agentic =
-    { pkgs, config, lib, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     let
-      piThemes = inputs.pi-coding-agent-catppuccin.packages.${pkgs.system}.default;
       catppuccinFlavor = config.catppuccin.flavor;
       catppuccinAccent = config.catppuccin.accent;
       catppuccinPalette =
@@ -34,7 +34,6 @@
         pkgs.md
         pkgs.nono
         pkgs.nushell
-        pkgs.pi-coding-agent
         pkgs.ralph-cc
         pkgs.tmux
         pkgs.zigdoc
@@ -251,9 +250,6 @@
         };
       };
 
-      home.file.".pi/agent/themes/catppuccin-${config.catppuccin.flavor}.json".source =
-        "${piThemes}/share/pi/themes/catppuccin-${config.catppuccin.flavor}.json";
-
       home.file.".claude/themes/${claudeThemeName}.json".text = builtins.toJSON {
         name = claudeThemeName;
         base = if catppuccinFlavor == "latte" then "light" else "dark";
@@ -278,26 +274,6 @@
           success = hex "green";
           info = hex "sapphire";
         };
-      };
-
-      home.file.".pi/agent/settings.json".text = builtins.toJSON {
-        quietStartup = true;
-        editorPaddingX = 1;
-        theme = "catppuccin-${config.catppuccin.flavor}";
-        defaultProvider = "github-copilot";
-        defaultModel = "claude-sonnet.6";
-        enabledModels = [
-          "github-copilot/claude-opus-4.6"
-          "github-copilot/claude-sonnet-4.6"
-          "github-copilot/gpt-5.3-codex"
-        ];
-      };
-
-      home.file.".pi/agent/AGENTS.md".source = ./agents.md;
-
-      home.file.".pi/agent/skills" = {
-        source = ./skills;
-        recursive = true;
       };
 
       programs.git = {
