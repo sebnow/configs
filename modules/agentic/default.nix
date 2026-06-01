@@ -1,9 +1,5 @@
 { ... }:
 {
-  flake.overlays.zigdoc = final: prev: {
-    zigdoc = prev.callPackage ../../pkgs/zigdoc { };
-  };
-
   flake.modules.homeManager.agentic =
     {
       pkgs,
@@ -26,7 +22,6 @@
         pkgs.nono
         pkgs.nushell
         pkgs.tmux
-        pkgs.zigdoc
       ];
 
       programs.claude-code = {
