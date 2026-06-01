@@ -49,6 +49,14 @@ in
         ];
         home.sessionVariables.BROWSER = "zen-browser";
 
+        # GTK4 apps on Wayland (ghostty, gedit, ...) don't use libxkbcommon's
+        # compose layer; they require an input method. fcitx5 provides compose
+        # via the Wayland text-input protocol.
+        i18n.inputMethod = {
+          enable = true;
+          type = "fcitx5";
+        };
+
         fonts.fontconfig.enable = true;
 
         catppuccin.accent = "blue";
