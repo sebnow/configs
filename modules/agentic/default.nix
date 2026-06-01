@@ -16,10 +16,6 @@
     md = inputs.md.packages.${prev.system}.default;
   };
 
-  flake.overlays.mlflow-server = final: prev: {
-    mlflow-server = prev.callPackage ../../pkgs/mlflow-server { };
-  };
-
   flake.modules.homeManager.agentic =
     { pkgs, config, lib, ... }:
     let
@@ -36,7 +32,6 @@
         pkgs.ast-grep
         pkgs.jq
         pkgs.md
-        pkgs.mlflow-server
         pkgs.nono
         pkgs.nushell
         pkgs.pi-coding-agent
@@ -240,21 +235,10 @@
               "Read(./.envrc)"
             ];
           };
-          # Set MLFLOW_EXPERIMENT_NAME per project in .claude/settings.json or .claude/settings.local.json
           env = {
-            MLFLOW_CLAUDE_TRACING_ENABLED = "true";
-            MLFLOW_TRACKING_URI = "sqlite:///${config.xdg.dataHome}/claude/mlflow.db";
             ENABLE_CLAUDEAI_MCP_SERVERS = false;
           };
           hooks.Stop = [
-            {
-              hooks = [
-                {
-                  type = "command";
-                  command = "mlflow autolog claude stop-hook";
-                }
-              ];
-            }
             {
               hooks = [
                 {
@@ -319,9 +303,7 @@
       programs.git = {
         ignores = [
           ".agents/"
-          ".claude/mlflow/"
           ".claude/settings.local.json"
-          "/mlruns"
         ];
       };
     };
