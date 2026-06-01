@@ -1,9 +1,5 @@
 { inputs, ... }:
 {
-  flake.overlays.ralph-cc = final: prev: {
-    ralph-cc = prev.callPackage ../../pkgs/ralph-cc { };
-  };
-
   flake.overlays.zigdoc = final: prev: {
     zigdoc = prev.callPackage ../../pkgs/zigdoc { };
   };
@@ -34,7 +30,6 @@
         pkgs.md
         pkgs.nono
         pkgs.nushell
-        pkgs.ralph-cc
         pkgs.tmux
         pkgs.zigdoc
       ];
