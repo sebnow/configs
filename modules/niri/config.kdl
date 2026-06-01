@@ -6,7 +6,9 @@ include optional=true "theme.kdl"
 
 input {
     keyboard {
-        xkb {}
+        xkb {
+            options "compose:rwin"
+        }
         numlock
     }
     touchpad {
