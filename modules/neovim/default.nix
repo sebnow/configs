@@ -45,33 +45,35 @@
           nvim-lspconfig
           nvim-nio # Required for neotest, nvim-dap-ui
           nvim-treesitter-context
-          (nvim-treesitter.withPlugins (p: with p; [
-            bash
-            beancount
-            c
-            comment
-            go
-            gomod
-            gosum
-            gowork
-            javascript
-            jsdoc
-            lua
-            luadoc
-            luap
-            markdown
-            markdown_inline
-            nix
-            proto
-            query
-            regex
-            tsx
-            typescript
-            vim
-            vimdoc
-            yaml
-            zig
-          ]))
+          (nvim-treesitter.withPlugins (
+            p: with p; [
+              bash
+              beancount
+              c
+              comment
+              go
+              gomod
+              gosum
+              gowork
+              javascript
+              jsdoc
+              lua
+              luadoc
+              luap
+              markdown
+              markdown_inline
+              nix
+              proto
+              query
+              regex
+              tsx
+              typescript
+              vim
+              vimdoc
+              yaml
+              zig
+            ]
+          ))
           nvim-web-devicons
           oil-nvim
           plenary-nvim # Required for neogit, neotest

@@ -3,11 +3,7 @@
   flake.modules.homeManager.obsidian =
     { config, pkgs, ... }:
     let
-      obsidian =
-        if pkgs.stdenv.isLinux then
-          config.lib.nixGL.wrap pkgs.obsidian
-        else
-          pkgs.obsidian;
+      obsidian = if pkgs.stdenv.isLinux then config.lib.nixGL.wrap pkgs.obsidian else pkgs.obsidian;
     in
     {
       home.packages = [ obsidian ];

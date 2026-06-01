@@ -1,4 +1,8 @@
-{ fetchurl, unzip, python3Packages }:
+{
+  fetchurl,
+  unzip,
+  python3Packages,
+}:
 
 # Override of nixpkgs `mlflow-server`.
 #
