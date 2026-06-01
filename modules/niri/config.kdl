@@ -7,6 +7,7 @@ include optional=true "theme.kdl"
 input {
     keyboard {
         xkb {
+            layout "pl"
             options "compose:rwin"
         }
         numlock
