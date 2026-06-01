@@ -319,6 +319,7 @@
       programs.git = {
         ignores = [
           ".agents/"
+          ".claude/mlflow/"
           ".claude/settings.local.json"
           "/mlruns"
         ];
