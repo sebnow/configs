@@ -87,10 +87,13 @@ echo "hello" > "$JJ_REPO/dirty.txt"
 (cd "$JJ_REPO" && jj file track dirty.txt 2>/dev/null)
 
 result=$(run_hook "$JJ_REPO")
+decision=$(printf '%s' "$result" | jq -r '.decision // empty' 2>/dev/null)
+reason=$(printf '%s' "$result" | jq -r '.reason // empty' 2>/dev/null)
 system_message=$(printf '%s' "$result" | jq -r '.systemMessage // empty' 2>/dev/null)
-assert_contains "dirty jj repo: output contains systemMessage" \
-  "systemMessage" "$result"
-assert_contains "dirty jj repo: systemMessage mentions jj" \
+assert_eq "dirty jj repo: decision is block" "block" "$decision"
+assert_contains "dirty jj repo: reason mentions jj commit" \
+  "jj commit" "$reason"
+assert_contains "dirty jj repo: systemMessage is non-empty" \
   "jj" "$system_message"
 
 (cd "$JJ_REPO" && printf '{"hook_event_name":"Stop","stop_hook_active":false}' | "$HOOK") >/dev/null 2>&1
@@ -114,10 +117,13 @@ echo "hello" > "$GIT_REPO/dirty.txt"
 git -C "$GIT_REPO" add dirty.txt 2>/dev/null
 
 result=$(run_hook "$GIT_REPO")
+decision=$(printf '%s' "$result" | jq -r '.decision // empty' 2>/dev/null)
+reason=$(printf '%s' "$result" | jq -r '.reason // empty' 2>/dev/null)
 system_message=$(printf '%s' "$result" | jq -r '.systemMessage // empty' 2>/dev/null)
-assert_contains "dirty git repo: output contains systemMessage" \
-  "systemMessage" "$result"
-assert_contains "dirty git repo: systemMessage mentions git" \
+assert_eq "dirty git repo: decision is block" "block" "$decision"
+assert_contains "dirty git repo: reason mentions git commit" \
+  "git commit" "$reason"
+assert_contains "dirty git repo: systemMessage is non-empty" \
   "git" "$system_message"
 
 (cd "$GIT_REPO" && printf '{"hook_event_name":"Stop","stop_hook_active":false}' | "$HOOK") >/dev/null 2>&1

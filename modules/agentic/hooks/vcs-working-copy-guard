@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
-# Stop-event hook: warn when the session ends with an unclean working copy.
+# Stop-event hook: block session end when the working copy is not clean.
 #
 # If the agent forgets to commit or squash @ before stopping, the user's
 # next file edit will auto-commit into the dirty @ without any warning.
-# This hook fires at session end and emits a systemMessage so the user sees
-# the warning before their next session begins.
+# This hook fires at session end and, when the working copy is dirty, emits
+# decision:"block" so Claude Code re-fires the agent's turn with an
+# actionable prompt before the session actually ends.
+#
+# decision:"block" is required because a bare systemMessage is advisory
+# (terminal-only); only block causes the reason to be injected into the
+# agent's conversation so it can correct the state.
 #
 # stdin  : Claude Code Stop event JSON (consumed and discarded)
-# stdout : {"systemMessage": string}   on unclean working copy
-#        | (empty)                     on clean or no-repo cwd
+# stdout : {"decision":"block","reason":string,"systemMessage":string}
+#        |   on unclean working copy
+#        | (empty)   on clean or no-repo cwd
 # exit   : 0 always
 set -euo pipefail
 
-emit_warning() {
-  local msg="$1"
-  jq -n --arg m "$msg" '{systemMessage: $m}'
+emit_block() {
+  local reason="$1" status="$2"
+  jq -n --arg r "$reason" --arg s "$status" \
+    '{decision:"block", reason:$r, systemMessage:$s}'
   exit 0
 }
 
@@ -30,7 +37,9 @@ main() {
     # own model where untracked files are not part of @.
     wc_line=$(printf '%s' "$jj_out" | grep "^Working copy.*(@)" || true)
     if [[ -n "$wc_line" ]] && ! printf '%s' "$wc_line" | grep -q "(empty)"; then
-      emit_warning "Working copy @ is not empty. Run \`jj status\` to inspect. Squash or commit before ending the session to avoid surprising auto-commits on the next file edit."
+      emit_block \
+        "Working copy @ has uncommitted changes. Run \`jj status\` to inspect, then \`jj commit -m MSG\` to seal the change (or \`jj squash\` to fold it into an existing description) before ending the session. Otherwise the user's next file edit will auto-commit into the dirty @." \
+        "vcs-working-copy-guard: jj @ not empty"
     fi
     exit 0
   fi
@@ -38,7 +47,9 @@ main() {
   # Fall back to git. git also walks up from $PWD.
   if git_out=$(git status --porcelain 2>/dev/null); then
     if [[ -n "$git_out" ]]; then
-      emit_warning "Git working tree is not clean. Run \`git status\` to inspect. Commit or stash before ending the session."
+      emit_block \
+        "Git working tree is not clean. Run \`git status\` to inspect, then \`git commit -m MSG\` to seal the change (or \`git stash\` to set it aside) before ending the session. Otherwise uncommitted work will remain exposed." \
+        "vcs-working-copy-guard: git working tree not clean"
     fi
   fi
   # No repo found or clean state: emit nothing.
