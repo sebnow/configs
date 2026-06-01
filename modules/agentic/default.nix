@@ -1,11 +1,7 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.overlays.zigdoc = final: prev: {
     zigdoc = prev.callPackage ../../pkgs/zigdoc { };
-  };
-
-  flake.overlays.md = final: prev: {
-    md = inputs.md.packages.${prev.system}.default;
   };
 
   flake.modules.homeManager.agentic =
@@ -27,7 +23,6 @@
       home.packages = [
         pkgs.ast-grep
         pkgs.jq
-        pkgs.md
         pkgs.nono
         pkgs.nushell
         pkgs.tmux
