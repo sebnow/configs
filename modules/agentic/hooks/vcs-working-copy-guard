@@ -11,10 +11,15 @@
 # (terminal-only); only block causes the reason to be injected into the
 # agent's conversation so it can correct the state.
 #
-# stdin  : Claude Code Stop event JSON (consumed and discarded)
+# To keep the block from being coercive, the hook honors stop_hook_active:
+# when Claude Code re-fires Stop after a previous block, the model has
+# already seen the reason once and chose to stop again. A second block
+# would override that choice, so the hook passes through silently.
+#
+# stdin  : Claude Code Stop event JSON ({stop_hook_active: bool, ...})
 # stdout : {"decision":"block","reason":string,"systemMessage":string}
-#        |   on unclean working copy
-#        | (empty)   on clean or no-repo cwd
+#        |   on unclean working copy, first stop attempt
+#        | (empty)   on clean cwd, no-repo cwd, or stop_hook_active=true
 # exit   : 0 always
 set -euo pipefail
 
@@ -26,8 +31,13 @@ emit_block() {
 }
 
 main() {
-  # Consume stdin; no fields needed from the Stop event.
-  cat > /dev/null
+  # Read the Stop event payload. stop_hook_active=true means this Stop is
+  # a re-fire after a previous block; treat the prior warning as enough
+  # and let the session end.
+  payload=$(cat)
+  if printf '%s' "$payload" | jq -e '.stop_hook_active == true' >/dev/null 2>&1; then
+    exit 0
+  fi
 
   # Probe jj first. jj walks up from $PWD to find the repo, so no manual
   # directory traversal is needed. Any non-zero exit means no jj repo here.

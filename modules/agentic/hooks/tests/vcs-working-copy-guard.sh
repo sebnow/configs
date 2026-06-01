@@ -17,9 +17,8 @@ FAIL=0
 # ---------------------------------------------------------------------------
 
 run_hook() {
-  local cwd="$1"
-  # The hook reads and discards stdin; supply a minimal Stop event payload.
-  printf '{"hook_event_name":"Stop","stop_hook_active":false}' \
+  local cwd="$1" active="${2:-false}"
+  printf '{"hook_event_name":"Stop","stop_hook_active":%s}' "$active" \
     | (cd "$cwd" && "$HOOK")
 }
 
@@ -128,6 +127,19 @@ assert_contains "dirty git repo: systemMessage is non-empty" \
 
 (cd "$GIT_REPO" && printf '{"hook_event_name":"Stop","stop_hook_active":false}' | "$HOOK") >/dev/null 2>&1
 assert_eq "dirty git repo: exits 0" "0" "$?"
+
+# ---------------------------------------------------------------------------
+# Tests: stop_hook_active=true suppresses the block
+# When Claude Code re-fires Stop after a previous block, the model has
+# already seen the warning and chose to stop again. The hook must not
+# block a second time. Both repos are still dirty from the tests above.
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$JJ_REPO" true)
+assert_eq "dirty jj repo + stop_hook_active: no output" "" "$result"
+
+result=$(run_hook "$GIT_REPO" true)
+assert_eq "dirty git repo + stop_hook_active: no output" "" "$result"
 
 # ---------------------------------------------------------------------------
 # Tests: non-repo cwd emits nothing
