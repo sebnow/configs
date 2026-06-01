@@ -65,6 +65,13 @@ window-rule {
 }
 
 window-rule {
+    match app-id="^Zotero$" title="^Citation Dialog$"
+    open-floating true
+    default-window-height { fixed 320; }
+    default-column-width { proportion 0.25; }
+}
+
+window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
 }
