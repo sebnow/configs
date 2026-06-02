@@ -124,6 +124,10 @@
                   type = "command";
                   command = "$HOME/.claude/hooks/vcs-guard";
                 }
+                {
+                  type = "command";
+                  command = "$HOME/.claude/hooks/block-test-output-filtering";
+                }
               ];
             }
             # Blocks emoji (and future rules) in new markdown content.

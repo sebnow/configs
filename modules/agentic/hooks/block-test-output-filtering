@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# PreToolUse hook: block piping test/typecheck/lint output through filters
+# that discard data (head, tail, grep, etc.).
+#
+# Rationale: the Bash tool spools large output to disk automatically and
+# returns a <persisted-output> path with a 2KB preview. Filtering during
+# the run discards information (panics, summaries, stack traces) before
+# the agent can inspect it. Run the full command, then filter the persisted
+# file with the path returned in the tool result if needed.
+#
+# Detection: matches one of the guarded source commands at the start of a
+# pipeline segment (start of command, or after `;`, `&&`, `||`, or `(`)
+# followed by a filter on the right-hand side of the next pipe. Multi-stage
+# pipelines like `pytest | tee /tmp/log | head` are NOT caught: this hook
+# only inspects the first pipe segment following the source command. Tee is
+# the documented escape hatch for full capture, so the simpler pattern is
+# enough.
+#
+# stdin  : {"tool_name":"Bash","tool_input":{"command":string},...}
+# stdout : {"hookSpecificOutput":{"hookEventName":"PreToolUse",
+#            "permissionDecision":"deny",
+#            "permissionDecisionReason":string}}
+#          | {}   // no decision; defer to permissions
+# exit   : 0 on every invocation
+set -euo pipefail
+
+emit_decision() {
+  local decision="$1" reason="$2"
+  jq -n --arg d "$decision" --arg r "$reason" \
+    '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:$d,permissionDecisionReason:$r}}'
+  exit 0
+}
+
+emit_defer() {
+  printf '{}\n'
+  exit 0
+}
+
+main() {
+  if ! input=$(cat); then
+    emit_defer
+  fi
+  if ! cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty'); then
+    emit_defer
+  fi
+  [[ -n "$cmd" ]] || emit_defer
+
+  # Fast path: no pipe → nothing to filter.
+  [[ "$cmd" == *"|"* ]] || emit_defer
+
+  # Sources whose full output must be preserved. Word-boundary anchored so
+  # `biomechanics` does not match `biome` and `pytestify` does not match
+  # `pytest`.
+  #
+  # Single-word: pytest jest vitest mocha tsc mypy pyright biome eslint ruff
+  # Two-word:    go test, cargo {test,check,clippy}, bun test, deno test
+  # Package mgr: {npm,yarn,pnpm} {test,typecheck} and
+  #              {npm,yarn,pnpm} run {test,typecheck,check,lint,tsc,biome}
+  local source_alt='go\s+test|cargo\s+(?:test|check|clippy)|bun\s+test|deno\s+test|(?:npm|yarn|pnpm)\s+(?:run\s+(?:test|typecheck|check|lint|tsc|biome)|test|typecheck)|pytest|jest|vitest|mocha|tsc|mypy|pyright|biome|eslint|ruff'
+
+  # Filters that discard output. `tee` and `cat` preserve everything and are
+  # the recommended escape hatches, so they are not in this list.
+  local filter_alt='head|tail|grep|rg|egrep|fgrep|awk|sed|cut|wc|less|more|tr'
+
+  # The source must be at the start of a pipeline segment so commands like
+  # `echo "go test"` (where the source name is inside a quoted string after
+  # `echo`) are not flagged. `(?:^|[;(]|&&|\|\|)` covers the segment-start
+  # positions; the leading optional whitespace is consumed before the source.
+  #
+  # `[^|]*` between source and pipe: source's own args. This deliberately
+  # rejects multi-stage pipelines (`source | tee | filter`) — those are
+  # allowed because the tee escape hatch preserves the data.
+  #
+  # `\|&?` matches both `|` and `|&` (bash shorthand for `2>&1 |`). The
+  # explicit `2>&1` form is already covered: `2>&1 ` is matched by `[^|]*`.
+  local pattern="(?:^|[;(]|&&|\\|\\|)\\s*(?:${source_alt})\\b[^|]*\\|&?\\s*(?:${filter_alt})\\b"
+
+  if printf '%s' "$cmd" | grep -qP "$pattern"; then
+    emit_decision "deny" "Do not pipe test, typecheck, or lint output to head/tail/grep/etc. The Bash tool spools large output to disk automatically. Run the full command without filtering so the complete output is captured. If the output is too long, use the <persisted-output> path from the tool result and filter that file instead. Escape hatch: pipe through \`tee /tmp/out.log\` to capture the full stream while still filtering downstream."
+  fi
+
+  emit_defer
+}
+
+main || printf '{}\n'
+exit 0
