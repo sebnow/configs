@@ -270,6 +270,53 @@ assert_contains "deny-reason (name+path dot): mentions nesting or directory" "ne
 assert_contains "deny-reason (name+path dot): corrective guidance uses path=" "path=" "$reason"
 
 # ---------------------------------------------------------------------------
+# Deny: obsidian-cli delete with no target argument (path= or file=)
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli delete" \
+  "obsidian-cli delete 2>&1 | head" \
+  "cd /tmp && obsidian-cli delete"
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (delete no target): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: obsidian-cli delete with a recognised target argument
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli delete path="Notes/Foo.md"' \
+  'obsidian-cli delete file="Foo"' \
+  'obsidian-cli delete file=Foo'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (delete has target): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: delete no-target message must name the active-note failure mode
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input "obsidian-cli delete")")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (delete no target): mentions active note" "active note" "$reason"
+assert_contains "deny-reason (delete no target): mentions path=" "path=" "$reason"
+
+# ---------------------------------------------------------------------------
+# Argument-position discipline: path= or file= inside a quoted value of
+# another argument must NOT count as a target.  Without the (?:^|\s) anchor
+# before the key names, the \b word-boundary inside a negative lookahead
+# would find "path=" inside content="path=fake" and incorrectly defer —
+# leaving the agent free to run a targetless delete that trashes the active note.
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input 'obsidian-cli delete content="path=fake"')" )
+assert_eq "deny (delete arg-position: path= inside quoted value is not a target)" "deny" \
+  "$(printf '%s' "$result" | decision_of)"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 

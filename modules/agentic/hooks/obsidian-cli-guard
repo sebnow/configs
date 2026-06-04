@@ -88,6 +88,22 @@ main() {
     emit_decision "deny" "combining name= and path= with a dot in either value causes directory nesting: the CLI treats path= as a directory prefix and name= as the filename, so a dot-bearing name like Foo.md becomes a subdirectory, producing paths such as Notes/Foo.md/Foo.md. Pass path= alone with the full vault-relative path (e.g. path=Notes/Foo.md) to avoid this."
   fi
 
+  # When `obsidian-cli delete` is called without a target argument (path= or
+  # file=), the CLI silently deletes whichever note is currently active in the
+  # running Obsidian instance. The deletion is not surfaced until missing content
+  # is noticed — a serious, invisible data-loss footgun.
+  #
+  # The negative lookahead uses `(?:^|\s)` before each key name rather than `\b`
+  # to enforce argument-position: `\b` matches at the start of `path=` even
+  # inside a quoted value like content="path=fake", because the preceding `"` is
+  # a non-word character. Requiring whitespace (or start-of-string) ensures only
+  # standalone `path=` and `file=` tokens count as targets.
+  local delete_no_target_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+delete\b(?![^|><;&]*(?:^|\s)(?:path|file)=)"
+
+  if printf '%s' "$cmd" | grep -qP "$delete_no_target_pattern"; then
+    emit_decision "deny" "obsidian-cli delete requires a target argument: pass path=<vault-relative-path> (e.g. path=Notes/Foo.md) or file=<name>. Without path= or file=, the CLI silently deletes the active note in the running Obsidian instance — the deletion is invisible until missing content surfaces."
+  fi
+
   emit_defer
 }
 
