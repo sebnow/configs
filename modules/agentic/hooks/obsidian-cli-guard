@@ -62,12 +62,15 @@ main() {
 
   # When `obsidian-cli create` is called without any of the recognised target
   # arguments (path=, name=, or file=), the CLI silently writes Untitled.md
-  # instead of failing. The negative lookahead `(?![^|><;&]*\b(?:path|name|file)=)`
+  # instead of failing. The negative lookahead `(?![^|><;&]*(?:^|\s)(?:path|name|file)=)`
   # scans only to the first shell operator boundary (`[^|><;&]*`) so that target
   # tokens on a chained command (e.g. `obsidian-cli create | grep path=X`) are
   # not mistaken for a target on this create call. `2>&1` contains `>` which
   # terminates the scan correctly — that redirection is not a target token.
-  local no_target_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?![^|><;&]*\b(?:path|name|file)=)"
+  # `(?:^|\s)` is used instead of `\b` because `\b` matches at a quote-letter
+  # transition, so `path=` inside a quoted value like content="path=fake" would
+  # be mistaken for a real target argument.
+  local no_target_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?![^|><;&]*(?:^|\s)(?:path|name|file)=)"
 
   if printf '%s' "$cmd" | grep -qP "$no_target_pattern"; then
     emit_decision "deny" "obsidian-cli create requires a target argument: pass path=<vault-relative-path> (e.g. path=Notes/Foo.md). Without path=, name=, or file=, the CLI writes Untitled.md to the vault root and reports success, causing a spurious file that must be manually deleted."

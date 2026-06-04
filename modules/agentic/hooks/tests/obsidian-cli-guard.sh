@@ -317,6 +317,35 @@ assert_eq "deny (delete arg-position: path= inside quoted value is not a target)
   "$(printf '%s' "$result" | decision_of)"
 
 # ---------------------------------------------------------------------------
+# Argument-position discipline: path=, name=, or file= inside a quoted value
+# of another argument must NOT count as a create target.  The same \b bypass
+# that was fixed in the delete pattern applies here: content="path=fake" must
+# not satisfy the no-target negative lookahead and cause the hook to defer.
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli create content="path=fake"' \
+  'obsidian-cli create content="name=fake"' \
+  'obsidian-cli create content="file=fake"'
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (create arg-position: key= inside quoted value is not a target): $cmd" "deny" \
+    "$(printf '%s' "$result" | decision_of)"
+done
+
+# These remain defers: the target keys appear at argument position, not inside
+# a quoted value of a different argument.
+for cmd in \
+  'obsidian-cli create path="Notes/Foo.md" content="..."' \
+  'obsidian-cli create path=Notes/Foo.md content="name=bar"' \
+  'obsidian-cli create file=Foo.md' \
+  'obsidian-cli create name=Foo'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (create arg-position: real target key): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
