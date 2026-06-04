@@ -61,7 +61,7 @@ obsidian-cli rename file="Note Title" name="New Title.md"
 
 Always include the `.md` suffix in `name=`.
 Without it, obsidian-cli treats the segment after the last dot as the extension —
-renaming to `Ficus carica var. Brown Turkey` produces a file without `.md`.
+renaming to `Notes v1.draft` produces a file with extension `draft`, not `.md`.
 
 ### Read
 

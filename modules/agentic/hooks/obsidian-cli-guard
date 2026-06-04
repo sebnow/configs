@@ -109,9 +109,9 @@ main() {
 
   # When `obsidian-cli rename` is called with a name= value that does not end
   # in `.md`, the CLI treats the segment after the last dot as the file
-  # extension — so "Ficus carica var. Brown Turkey" yields extension
-  # "Brown Turkey", and "Bar" (no dot) yields no extension at all. Obsidian
-  # cannot index files without the .md extension, and backlinks break silently.
+  # extension — so "Notes v1.draft" yields extension "draft", and "Bar"
+  # (no dot) yields no extension at all. Obsidian cannot index files without
+  # the .md extension, and backlinks break silently.
   #
   # The three value alternatives handle double-quoted, single-quoted, and bare
   # unquoted forms separately. The unquoted alternative uses [^"'\s]* rather
@@ -125,7 +125,7 @@ main() {
   local rename_name_md_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+rename\b[^|><;&]*(?:^|\s)name=(?:\"[^\"]*(?<!\.md)\"|'[^']*(?<!\.md)'|[^\"'\s]*(?<!\.md)(?=\s|$))"
 
   if printf '%s' "$cmd" | grep -qP "$rename_name_md_pattern"; then
-    emit_decision "deny" "obsidian-cli rename requires name= to end with .md. The CLI treats the segment after the last dot as the file extension, so a name like \"Ficus carica var. Brown Turkey\" produces extension \"Brown Turkey\", and a name with no dot at all produces no extension. Without the .md extension Obsidian cannot index the file and backlinks break. Always end the name= value with .md, for example name=\"Ficus carica var. Brown Turkey.md\"."
+    emit_decision "deny" "obsidian-cli rename requires name= to end with .md. The CLI treats the segment after the last dot as the file extension, so a name like \"Notes v1.draft\" produces extension \"draft\", and a name with no dot at all produces no extension. Without the .md extension Obsidian cannot index the file and backlinks break. Always end the name= value with .md, for example name=\"Notes v1.draft.md\"."
   fi
 
   emit_defer

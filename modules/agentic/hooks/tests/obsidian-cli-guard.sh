@@ -351,7 +351,7 @@ done
 
 for cmd in \
   'obsidian-cli rename file="Foo" name="Bar"' \
-  'obsidian-cli rename file="Foo" name="Ficus carica var. Brown Turkey"' \
+  'obsidian-cli rename file="Foo" name="Notes v1.draft"' \
   'obsidian-cli rename file=Foo name=Bar' \
   'cd /tmp && obsidian-cli rename file="Foo" name="Bar"' \
   'obsidian-cli rename file="Foo" name="Bar.md.tmp"'
@@ -366,7 +366,7 @@ done
 
 for cmd in \
   'obsidian-cli rename file="Foo" name="Bar.md"' \
-  'obsidian-cli rename file="Foo" name="Ficus carica var. Brown Turkey.md"' \
+  'obsidian-cli rename file="Foo" name="Notes v1.draft.md"' \
   'obsidian-cli rename file="Foo" name=Bar.md' \
   'obsidian-cli tag name="#project"' \
   'obsidian-cli rename file="Foo" name="Bar.md" content="name=ignored"'
