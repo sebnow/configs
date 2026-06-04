@@ -186,6 +186,77 @@ printf '{}' | "$HOOK" >/dev/null 2>&1
 assert_eq "exit-0: missing command field" "0" "$?"
 
 # ---------------------------------------------------------------------------
+# Deny: obsidian-cli create with no target argument (path=, name=, or file=)
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create" \
+  "obsidian-cli create 2>&1 | head" \
+  "cd /tmp && obsidian-cli create"
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (no target): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: obsidian-cli create with a recognised target argument
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create path=\"Notes/Foo.md\" content=\"x\"" \
+  "obsidian-cli create file=Foo.md" \
+  "obsidian-cli create name=Foo"
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (has target): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: no-target message must name the Untitled.md failure mode
+# and supply the corrective path= form
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input "obsidian-cli create")")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (no target): mentions path=" "path=" "$reason"
+assert_contains "deny-reason (no target): names Untitled.md failure mode" "Untitled.md" "$reason"
+
+# ---------------------------------------------------------------------------
+# Deny: obsidian-cli create with both name= and path= where a value has a dot
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create name=\"Foo.md\" path=\"Notes/\"" \
+  "obsidian-cli create name=Foo path=Notes.dir/"
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (name+path dot): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: name= and path= together but no dot; or only one of the two present
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create name=\"Foo\" path=\"Notes\"" \
+  "obsidian-cli create path=\"Notes/Foo.md\"" \
+  "obsidian-cli create name=\"Foo.md\""
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (name+path safe): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: name+path dot message must explain directory nesting and
+# direct the agent to use path= alone
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input "obsidian-cli create name=\"Foo.md\" path=\"Notes/\"")")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (name+path dot): mentions nesting or directory" "nest" "$reason"
+assert_contains "deny-reason (name+path dot): corrective guidance uses path=" "path=" "$reason"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 

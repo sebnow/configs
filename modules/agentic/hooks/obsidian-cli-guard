@@ -60,6 +60,34 @@ main() {
     emit_decision "deny" "obsidian-cli does not parse GNU-style flags — dash-prefixed tokens such as --help or --vault are silently ignored, not treated as options. On the create subcommand this causes the CLI to create Untitled.md in the vault and return a misleading success message instead of failing. Use positional key=value arguments for all options (e.g. vault=MyVault path=Notes/Foo.md). Run obsidian-cli help <subcommand> to see the accepted key=value parameters for a given subcommand."
   fi
 
+  # When `obsidian-cli create` is called without any of the recognised target
+  # arguments (path=, name=, or file=), the CLI silently writes Untitled.md
+  # instead of failing. The negative lookahead `(?![^|><;&]*\b(?:path|name|file)=)`
+  # scans only to the first shell operator boundary (`[^|><;&]*`) so that target
+  # tokens on a chained command (e.g. `obsidian-cli create | grep path=X`) are
+  # not mistaken for a target on this create call. `2>&1` contains `>` which
+  # terminates the scan correctly — that redirection is not a target token.
+  local no_target_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?![^|><;&]*\b(?:path|name|file)=)"
+
+  if printf '%s' "$cmd" | grep -qP "$no_target_pattern"; then
+    emit_decision "deny" "obsidian-cli create requires a target argument: pass path=<vault-relative-path> (e.g. path=Notes/Foo.md). Without path=, name=, or file=, the CLI writes Untitled.md to the vault root and reports success, causing a spurious file that must be manually deleted."
+  fi
+
+  # When both name= and path= are supplied and either value contains a dot,
+  # the CLI treats path= as a directory prefix and name= as the filename.
+  # A dot in the name= value (typical of Foo.md) then nests the file inside a
+  # directory whose name is the dot-bearing string, producing unexpected paths
+  # like Notes/Foo.md/Foo.md. The same nesting occurs when path= itself contains
+  # a dot. The value-with-dot pattern uses alternation to handle quoted values
+  # ("Foo.md"), single-quoted values, and bare unquoted values separately so
+  # that the leading quote character is consumed before scanning for a dot,
+  # avoiding false matches on the quote itself.
+  local name_path_dot_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?=[^|><;&]*\bname=)(?=[^|><;&]*\bpath=)(?=[^|><;&]*(?:\bname=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)|path=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)))"
+
+  if printf '%s' "$cmd" | grep -qP "$name_path_dot_pattern"; then
+    emit_decision "deny" "combining name= and path= with a dot in either value causes directory nesting: the CLI treats path= as a directory prefix and name= as the filename, so a dot-bearing name like Foo.md becomes a subdirectory, producing paths such as Notes/Foo.md/Foo.md. Pass path= alone with the full vault-relative path (e.g. path=Notes/Foo.md) to avoid this."
+  fi
+
   emit_defer
 }
 
