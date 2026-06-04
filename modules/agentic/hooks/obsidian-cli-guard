@@ -128,6 +128,50 @@ main() {
     emit_decision "deny" "obsidian-cli rename requires name= to end with .md. The CLI treats the segment after the last dot as the file extension, so a name like \"Notes v1.draft\" produces extension \"draft\", and a name with no dot at all produces no extension. Without the .md extension Obsidian cannot index the file and backlinks break. Always end the name= value with .md, for example name=\"Notes v1.draft.md\"."
   fi
 
+  # When the first token after `obsidian-cli` is not a recognised subcommand,
+  # the CLI silently does nothing useful (or errors in an opaque way). Agents
+  # have historically invented subcommands that look plausible but do not exist
+  # (e.g. `headings` instead of `outline`, `wikilinks` instead of `links`).
+  # Each such invocation wastes one full tool-call turn.
+  #
+  # A token of the form `[a-z][a-z0-9_]*=` is a key=value argument, which means
+  # the subcommand was omitted entirely — that is a different (out-of-scope) case;
+  # defer so the agent sees the CLI's own error message.
+  #
+  # `obsidian-cli` with no following token (help printed by CLI) also defers.
+  #
+  # The allow-list is space-padded so membership tests use bash substring matching:
+  #   [[ " $KNOWN_SUBCOMMANDS " == *" $token "* ]]
+  # Sorted alphabetically; reproduced verbatim from `obsidian-cli help` output.
+  local KNOWN_SUBCOMMANDS=" aliases append backlinks base:create base:query base:views bases command commands create deadends delete dev:cdp dev:console dev:css dev:debug dev:dom dev:errors dev:mobile dev:screenshot devtools diff eval file files folder folders help history history:list history:open history:read history:restore homepage homepage:read hotkey hotkeys links move open orphans outline plugin plugin:disable plugin:enable plugin:install plugin:reload plugins plugins:enabled plugins:restrict plugin:uninstall prepend properties property:read property:remove property:set random random:read read recents reload rename restart search search:context search:open snippet:disable snippet:enable snippets snippets:enabled tab:open tabs tag tags task tasks theme theme:install themes theme:set theme:uninstall unique unresolved vault vaults version wordcount workspace "
+
+  # Extract the first subcommand-shaped token after `obsidian-cli` at a segment
+  # start. Tokens matching `[a-z][a-z0-9:_-]*` are subcommand-shaped; key=value
+  # pairs contain `=` and are excluded by the character class. If the first token
+  # is key=value (subcommand omitted), grep yields nothing and the block is skipped.
+  # Synonym table: known agent footguns mapped to the correct subcommand.
+  # Additions here should be paired with a new deny-reason test above.
+  local candidate suggested_subcommand
+  local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+([a-z][a-z0-9:_-]*)"
+  if candidate=$(printf '%s' "$cmd" | grep -oP "$segment_pattern" | grep -oP '(?<=obsidian-cli\s{1,99})[a-z][a-z0-9:_-]*' | head -1) \
+      && [[ -n "$candidate" ]] \
+      && [[ " $KNOWN_SUBCOMMANDS " != *" $candidate "* ]]; then
+    case "$candidate" in
+      list-vaults)  suggested_subcommand="vaults" ;;
+      headings)     suggested_subcommand="outline" ;;
+      wikilinks)    suggested_subcommand="links" ;;
+      frontmatter)  suggested_subcommand="properties" ;;
+      tag:files)    suggested_subcommand="tag" ;;
+      *)            suggested_subcommand="" ;;
+    esac
+
+    if [[ -n "$suggested_subcommand" ]]; then
+      emit_decision "deny" "\"$candidate\" is not a recognised obsidian-cli subcommand. Did you mean \"$suggested_subcommand\"? Use: obsidian-cli $suggested_subcommand"
+    else
+      emit_decision "deny" "\"$candidate\" is not a recognised obsidian-cli subcommand. Use: obsidian-cli <subcommand>. Run \`obsidian-cli help\` for the full list."
+    fi
+  fi
+
   emit_defer
 }
 

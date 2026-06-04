@@ -385,6 +385,70 @@ assert_contains "deny-reason (rename name not .md): contains .md" ".md" "$reason
 assert_contains "deny-reason (rename name not .md): mentions extension" "extension" "$reason"
 
 # ---------------------------------------------------------------------------
+# Deny: unknown subcommand (not in allow-list)
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli headings path="Notes/Foo.md"' \
+  'obsidian-cli list-vaults' \
+  'obsidian-cli wikilinks path="Notes/Foo.md"' \
+  'obsidian-cli frontmatter path="Notes/Foo.md"' \
+  'obsidian-cli tag:files' \
+  'obsidian-cli totallymadeup foo=bar' \
+  'cd /tmp && obsidian-cli headings path="Notes/Foo.md"'
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (unknown subcommand): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: valid subcommands (in allow-list), key=value first token, no token,
+# or obsidian-cli not at segment start
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli search query="foo"' \
+  'obsidian-cli outline path="Notes/Foo.md"' \
+  'obsidian-cli search:context query="foo"' \
+  'obsidian-cli help create' \
+  'obsidian-cli vaults' \
+  'obsidian-cli base:create file="Foo" view=Default' \
+  'obsidian-cli vault=Knowledge' \
+  'echo "obsidian-cli headings"'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (valid subcommand / edge case): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: synonym suggestions and generic fallback
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input 'obsidian-cli headings path="Notes/Foo.md"')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (headings -> outline): contains outline" "outline" "$reason"
+
+result=$(run_hook "$(make_input 'obsidian-cli list-vaults')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (list-vaults -> vaults): contains vaults" "vaults" "$reason"
+
+result=$(run_hook "$(make_input 'obsidian-cli wikilinks path="Notes/Foo.md"')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (wikilinks -> links): contains links" "links" "$reason"
+
+result=$(run_hook "$(make_input 'obsidian-cli frontmatter path="Notes/Foo.md"')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (frontmatter -> properties): contains properties" "properties" "$reason"
+
+result=$(run_hook "$(make_input 'obsidian-cli tag:files')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (tag:files -> tag): contains tag" "tag" "$reason"
+
+result=$(run_hook "$(make_input 'obsidian-cli totallymadeup foo=bar')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (unknown, no synonym): contains obsidian-cli help" "obsidian-cli help" "$reason"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
