@@ -414,6 +414,7 @@ for cmd in \
   'obsidian-cli vaults' \
   'obsidian-cli base:create file="Foo" view=Default' \
   'obsidian-cli vault=Knowledge' \
+  'obsidian-cli unknownkey=value' \
   'echo "obsidian-cli headings"'
 do
   result=$(run_hook "$(make_input "$cmd")" | compact)
