@@ -46,7 +46,14 @@ main() {
     # NOTE: read -ra splits on IFS; shell-quoted flag values containing spaces
     # are split incorrectly. Acceptable here: we only inspect flag names,
     # never flag values. See the same note in the git block below.
-    read -ra argv <<< "$trimmed"
+    #
+    # Strip command-chain separators so flags from later commands in a chain
+    # (e.g. "&& jj log -r ...") do not bleed into has_flag checks for the
+    # first command.
+    jj_first="${trimmed%% &&*}"
+    jj_first="${jj_first%% ||*}"
+    jj_first="${jj_first%% ;*}"
+    read -ra argv <<< "$jj_first"
 
     has_flag() {
       local flag="$1" arg

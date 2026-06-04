@@ -331,6 +331,11 @@ assert_contains "jj squash -r + -t: reason names --from" \
 result=$(run_hook "$(make_input "jj squash --from X --into Y -u" "$JJ_REPO")" | compact)
 assert_eq "jj squash --from X --into Y -u: defer" "{}" "$result"
 
+# jj squash valid chain: -r from a later chained command must not bleed into
+# the squash check and trigger the -r/--into incompatibility denial.
+result=$(run_hook "$(make_input "jj squash --from @ --into pvoosxnx --use-destination-message && jj status && jj log -r '::@ & ~root()' --limit 5" "$JJ_REPO")" | compact)
+assert_eq "jj squash valid chain with downstream -r: defer" "{}" "$result"
+
 # jj squash --from X --into Y -m foo → defer
 result=$(run_hook "$(make_input "jj squash --from X --into Y -m foo" "$JJ_REPO")" | compact)
 assert_eq "jj squash --from X --into Y -m foo: defer" "{}" "$result"
