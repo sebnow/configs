@@ -598,6 +598,30 @@ result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "grep foo /tmp/
 assert_eq "defer P9 (empty vault roots override)" "{}" "$result"
 
 # ---------------------------------------------------------------------------
+# P10: obsidian-cli format=json piped to jq .path extraction on array elements
+# ---------------------------------------------------------------------------
+
+# Deny: .[].path extraction after obsidian-cli format=json
+result=$(run_hook "$(make_input "obsidian-cli search query=\"foo\" format=json | jq -r '.[].path'")")
+assert_eq "deny P10 (.[].path after format=json)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason P10: mentions correct form '.[]'" "'.[]'" "$reason"
+
+# Deny: .[] | .path extraction after obsidian-cli format=json
+result=$(run_hook "$(make_input "obsidian-cli search query=\"foo\" format=json | jq -r '.[] | .path'")")
+assert_eq "deny P10 (.[] | .path after format=json)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Permit: .[] without .path extraction (correct usage)
+result=$(run_hook "$(make_input "obsidian-cli search query=\"foo\" format=json | jq -r '.[]'")" | compact)
+assert_eq "defer P10 (.[] without .path — correct form)" "{}" "$result"
+
+# Permit: .path extraction when upstream is not obsidian-cli format=json
+result=$(run_hook "$(make_input "some-other-tool --json | jq -r '.[].path'")" | compact)
+assert_eq "defer P10 (.[].path but upstream not obsidian-cli format=json)" "{}" "$result"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 

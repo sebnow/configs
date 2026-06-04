@@ -336,6 +336,22 @@ main() {
     done
   fi
 
+  # P10: obsidian-cli format=json output piped to jq .path extraction on array
+  # elements. obsidian-cli search format=json returns a flat array of path
+  # strings, not objects — extracting .path yields null for every entry, causing
+  # the agent to proceed as if the search returned no results.
+  # See .agents/prd-obsidian.md pattern P10.
+  #
+  # The pattern requires both conditions on the same pipeline:
+  # - left of the pipe: obsidian-cli ... format=json
+  # - right of the pipe: jq ... with a .path reference on an array element
+  #   (.[].path or .[] | .path or .[] | .["path"])
+  local p10_pattern
+  p10_pattern='(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b[^|]*\bformat=json\b[^|]*\|[^|]*\bjq\b[^|]*(?:\.\[\]\.path|\.\[\]\s*\|\s*\.path|\.\[\]\s*\|\s*\.\["path"\])'
+  if printf '%s' "$cmd" | grep -qP "$p10_pattern"; then
+    emit_decision "deny" "\`obsidian-cli format=json\` returns a flat array of path strings, not objects. Use \`jq -r '.[]'\` instead of \`jq -r '.[].path'\` — extracting .path from a string element yields null and the agent proceeds as if the search returned no results."
+  fi
+
   emit_defer
 }
 
