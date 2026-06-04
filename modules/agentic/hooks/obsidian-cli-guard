@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# PreToolUse hook: block obsidian-cli invocations that pass GNU-style flags.
+#
+# obsidian-cli takes positional key=value arguments and does not parse
+# dash-prefixed tokens. Unknown flags are silently ignored. On the `create`
+# subcommand this causes the CLI to write Untitled.md and return a misleading
+# "Created" message instead of failing with an error. This hook intercepts
+# the misuse deterministically before the tool runs.
+#
+# Detection: matches `obsidian-cli` at the start of a pipeline segment
+# (start of command, or after `;`, `&&`, `||`, or `(`) followed by a
+# subcommand token and then any token beginning with `-`. The segment-start
+# anchor prevents false positives where `obsidian-cli` is a quoted string
+# inside `echo`/`printf`. The `\b` word boundary prevents `obsidian-cli-guard`
+# or other hyphenated names from tripping the pattern.
+#
+# stdin  : {"tool_name":"Bash","tool_input":{"command":string},...}
+# stdout : {"hookSpecificOutput":{"hookEventName":"PreToolUse",
+#            "permissionDecision":"deny",
+#            "permissionDecisionReason":string}}
+#          | {}   // no decision; defer to permissions
+# exit   : 0 on every invocation
+set -euo pipefail
+
+emit_decision() {
+  local decision="$1" reason="$2"
+  jq -n --arg d "$decision" --arg r "$reason" \
+    '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:$d,permissionDecisionReason:$r}}'
+  exit 0
+}
+
+emit_defer() {
+  printf '{}\n'
+  exit 0
+}
+
+main() {
+  if ! input=$(cat); then
+    emit_defer
+  fi
+  if ! cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty'); then
+    emit_defer
+  fi
+  [[ -n "$cmd" ]] || emit_defer
+
+  # obsidian-cli must appear at a segment start so quoted uses like
+  # `echo "obsidian-cli create --help"` (where it is an argument to another
+  # command) are not matched. `\b` prevents `obsidian-cli-guard` or any
+  # other hyphenated binary from triggering the pattern.
+  #
+  # After the subcommand token (`\S+`), `.*` allows key=value arguments
+  # before the offending flag. `\s+-` anchors the dash-prefixed token to a
+  # whitespace boundary so a flag embedded in a key=value string is not caught.
+  local pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\S+.*\s+-"
+
+  if printf '%s' "$cmd" | grep -qP "$pattern"; then
+    emit_decision "deny" "obsidian-cli does not parse GNU-style flags — dash-prefixed tokens such as --help or --vault are silently ignored, not treated as options. On the create subcommand this causes the CLI to create Untitled.md in the vault and return a misleading success message instead of failing. Use positional key=value arguments for all options (e.g. vault=MyVault path=Notes/Foo.md). Run obsidian-cli help <subcommand> to see the accepted key=value parameters for a given subcommand."
+  fi
+
+  emit_defer
+}
+
+main || printf '{}\n'
+exit 0
