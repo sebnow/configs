@@ -1,18 +1,16 @@
 ---
 name: obsidian-cli
-description: "Provides obsidian-cli for Obsidian vault operations. Use when creating, moving, renaming, or deleting vault notes; searching vault content; querying or setting frontmatter properties; or working with tags. Always prefer obsidian-cli over Write, Edit, Bash mv/mkdir, grep, find, or rg for vault files. Triggers: 'create note', 'move note', 'rename note', 'delete note', 'search vault', 'find notes', 'obsidian', 'vault', 'tag search', 'property query', 'frontmatter'. Do NOT use for non-vault markdown files."
+description: "Provides obsidian-cli for Obsidian vault operations. Use when creating, moving, renaming, or deleting vault notes; searching vault content; querying or setting frontmatter properties; or working with tags. Covers composition guidance and operator reference for obsidian-cli subcommands. Triggers: 'create note', 'move note', 'rename note', 'delete note', 'search vault', 'find notes', 'obsidian', 'vault', 'tag search', 'property query', 'frontmatter'. Do NOT use for non-vault markdown files."
 compatibility: Requires obsidian-cli on PATH and a running Obsidian instance.
 ---
 
 # Obsidian CLI
 
 Use `obsidian-cli` for all Obsidian vault operations.
-Never use Write, Edit, Bash `mv`, `mkdir`, or filesystem tools to create or move vault files.
 `obsidian-cli` uses Obsidian's index, handles backlink updates,
 and applies Templater folder rules automatically.
 
-Get command usage via `obsidian-cli <command>` with no arguments,
-never via `--help` (unrecognized flag — runs the command instead).
+Get command usage via `obsidian-cli <command>` with no arguments.
 
 ## File Operations
 
@@ -23,9 +21,6 @@ obsidian-cli create path="Notes/Note Title.md" content="..."
 ```
 
 Pass `path=` alone to `create`.
-Do not combine `name=` and `path=` when either contains a dot —
-obsidian-cli treats the path as a directory and nests the file inside it.
-
 Pass the full body in the same `create` call via `content=`.
 Use `\n` for newlines and `\t` for tabs inside the content value.
 Creating an empty file then filling it is two operations that can desync.
@@ -59,10 +54,6 @@ obsidian-cli move file="Note Title" to="Projects/"
 obsidian-cli rename file="Note Title" name="New Title.md"
 ```
 
-Always include the `.md` suffix in `name=`.
-Without it, obsidian-cli treats the segment after the last dot as the extension —
-renaming to `Notes v1.draft` produces a file with extension `draft`, not `.md`.
-
 ### Read
 
 ```bash
@@ -75,13 +66,7 @@ obsidian-cli read path="Notes/Note Title.md"
 obsidian-cli delete path="Notes/Note Title.md"
 ```
 
-Always supply `path=` or `file=` to `delete`.
-Running `delete` with no arguments silently trashes the active file.
-
 ## Searching
-
-Prefer `obsidian-cli` over `find`, `grep`, or `rg` for vault text searches.
-It uses Obsidian's index and handles Unicode paths without escaping quirks.
 
 ```bash
 obsidian-cli search query="phrase" limit=20
@@ -178,12 +163,3 @@ obsidian-cli files path="Notes"
 obsidian-cli folders
 ```
 
-## Anti-Patterns
-
-Never:
-- Use Write, Edit, Bash `mv`, `mkdir`, or `echo >` for vault files (bypasses backlinks, templates, index)
-- Use `grep`, `find`, or `rg` for vault text search (use `obsidian-cli search`)
-- Run `obsidian-cli create` or `obsidian-cli delete` with no arguments (`create` silently creates `Untitled.md`; `delete` silently trashes the active file)
-- Use `--help` flag with any subcommand (unrecognized — runs the command instead)
-- Omit `.md` suffix in `name=` argument to `rename`
-- Combine `name=` and `path=` when either contains a dot in `create`
