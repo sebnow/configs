@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PreToolUse hook: block obsidian-cli misuse and direct filesystem manipulation
-# of vault paths. See .agents/prd-obsidian.md for the full pattern catalogue.
+# of vault paths.
 #
 # stdin  : {"tool_name":"Bash","tool_input":{"command":string},"cwd":string,...}
 # stdout : {"hookSpecificOutput":{"hookEventName":"PreToolUse",
@@ -33,7 +33,6 @@ _VAULT_ROOTS_CACHE=""
 # so that in_vault calls in token loops do not re-spawn obsidian-cli per token.
 # When OBSIDIAN_GUARD_VAULT_ROOTS is set (even empty), it wins.
 # Otherwise shells out to obsidian-cli; on any failure leaves the cache empty.
-# See .agents/prd-obsidian.md "vault-roots" contract.
 load_vault_roots() {
   local raw_roots
   if [[ -v OBSIDIAN_GUARD_VAULT_ROOTS ]]; then
@@ -270,10 +269,9 @@ main() {
     fi
   done < <(printf '%s' "$cmd" | grep -oP "$segment_pattern" || true)
 
-  # P7: filesystem mutation commands whose first non-flag argument lies inside
-  # a vault root. The tools listed here — mv, cp, rm, mkdir, rmdir, touch, ln
-  # — bypass Obsidian's index and break backlinks when applied to vault files.
-  # See .agents/prd-obsidian.md pattern P7.
+  # Filesystem mutation commands whose first non-flag argument lies inside a
+  # vault root. The tools listed here — mv, cp, rm, mkdir, rmdir, touch, ln —
+  # bypass Obsidian's index and break backlinks when applied to vault files.
   local mutation_tools="mv cp rm mkdir rmdir touch ln"
   for tool in $mutation_tools; do
     # Match `<tool>` at a segment start; \K resets so only the argument string
@@ -300,9 +298,8 @@ main() {
     fi
   done
 
-  # P8: redirect operators (> or >>) or tee whose target lies inside a vault root.
+  # Redirect operators (> or >>) or tee whose target lies inside a vault root.
   # Writing directly to vault paths bypasses Obsidian's indexing pipeline.
-  # See .agents/prd-obsidian.md pattern P8.
 
   # Check >>/> redirects: extract the path token following >> or >.
   # The pattern captures the first non-whitespace token after the redirect operator.
@@ -339,9 +336,8 @@ main() {
     fi
   fi
 
-  # P9: text search commands whose search root lies inside a vault root.
-  # These bypass Obsidian's index and do not handle Unicode paths or search
-  # operators. See .agents/prd-obsidian.md pattern P9.
+  # Text search commands whose search root lies inside a vault root. These
+  # bypass Obsidian's index and do not handle Unicode paths or search operators.
 
   # grep/rg: positional 1 is the pattern, every subsequent non-flag positional
   # is a search root. Checking only one slot lets an agent bypass the guard by
@@ -392,19 +388,18 @@ main() {
     done
   fi
 
-  # P10: obsidian-cli format=json output piped to jq .path extraction on array
+  # obsidian-cli format=json output piped to jq .path extraction on array
   # elements. obsidian-cli search format=json returns a flat array of path
   # strings, not objects — extracting .path yields null for every entry, causing
   # the agent to proceed as if the search returned no results.
-  # See .agents/prd-obsidian.md pattern P10.
   #
   # The pattern requires both conditions on the same pipeline:
   # - left of the pipe: obsidian-cli ... format=json
   # - right of the pipe: jq ... with a .path reference on an array element
   #   (.[].path or .[] | .path or .[] | .["path"])
-  local p10_pattern
-  p10_pattern='(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b[^|]*\bformat=json\b[^|]*\|[^|]*\bjq\b[^|]*(?:\.\[\]\.path|\.\[\]\s*\|\s*\.path|\.\[\]\s*\|\s*\.\["path"\])'
-  if printf '%s' "$cmd" | grep -qP "$p10_pattern"; then
+  local json_jq_pattern
+  json_jq_pattern='(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b[^|]*\bformat=json\b[^|]*\|[^|]*\bjq\b[^|]*(?:\.\[\]\.path|\.\[\]\s*\|\s*\.path|\.\[\]\s*\|\s*\.\["path"\])'
+  if printf '%s' "$cmd" | grep -qP "$json_jq_pattern"; then
     emit_decision "deny" "\`obsidian-cli format=json\` returns a flat array of path strings, not objects. Use \`jq -r '.[]'\` instead of \`jq -r '.[].path'\` — extracting .path from a string element yields null and the agent proceeds as if the search returned no results."
   fi
 
