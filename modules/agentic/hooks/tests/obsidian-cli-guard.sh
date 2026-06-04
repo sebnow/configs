@@ -123,6 +123,22 @@ do
 done
 
 # ---------------------------------------------------------------------------
+# Defer: valid obsidian-cli chained with another command that uses flags —
+# the .* in the pattern must not cross shell operator boundaries, otherwise
+# flags on the chained command trigger a false positive denial.
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create path=Notes/Foo.md && cat -n /tmp/output" \
+  "obsidian-cli search query=foo && ls -la" \
+  "obsidian-cli read path=Foo.md vault=K || echo -n failed" \
+  "obsidian-cli create path=Notes/Foo.md ; ls -la"
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (chained cmd with flags): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
 # Defer: obsidian-cli as quoted string inside echo — segment-start anchoring
 # prevents matching when the binary name follows another command's argument.
 # We accept the documented limitation (same as block-test-output-filtering):
