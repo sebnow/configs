@@ -421,6 +421,13 @@ do
   assert_eq "defer (valid subcommand / edge case): $cmd" "{}" "$result"
 done
 
+# Cross-segment: first obsidian-cli uses an unknown subcommand; a second obsidian-cli
+# on the same command line uses the same word as a key. The detection must deny on
+# the first segment, not be confused by the second segment's key=value form.
+result=$(run_hook "$(make_input 'obsidian-cli headings && obsidian-cli headings=foo')")
+assert_eq "deny (cross-segment: unknown subcommand not masked by later key=value)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
 # ---------------------------------------------------------------------------
 # Deny-reason: synonym suggestions and generic fallback
 # ---------------------------------------------------------------------------

@@ -146,19 +146,17 @@ main() {
   local KNOWN_SUBCOMMANDS=" aliases append backlinks base:create base:query base:views bases command commands create deadends delete dev:cdp dev:console dev:css dev:debug dev:dom dev:errors dev:mobile dev:screenshot devtools diff eval file files folder folders help history history:list history:open history:read history:restore homepage homepage:read hotkey hotkeys links move open orphans outline plugin plugin:disable plugin:enable plugin:install plugin:reload plugins plugins:enabled plugins:restrict plugin:uninstall prepend properties property:read property:remove property:set random random:read read recents reload rename restart search search:context search:open snippet:disable snippet:enable snippets snippets:enabled tab:open tabs tag tags task tasks theme theme:install themes theme:set theme:uninstall unique unresolved vault vaults version wordcount workspace "
 
   # Extract the first subcommand-shaped token after `obsidian-cli` at a segment
-  # start. \K resets the match start so grep -oP returns only the token itself,
-  # avoiding a variable-length lookbehind and its 99-char cap. The character class
-  # [a-z][a-z0-9:_-]* cannot contain `=`, so a bare `key=value` first argument
-  # yields only the key portion (e.g. `vault` from `vault=Knowledge`). A follow-up
-  # check detects that shape by testing whether the candidate is immediately followed
-  # by `=` in the original command; if so the subcommand was omitted — defer.
+  # start. \K resets the match start so grep -oP returns only the token itself.
+  # (?=\s|$) asserts the token ends at whitespace or end-of-string: this excludes
+  # key=value first arguments (e.g. `vault=Knowledge` → no match because `vault`
+  # is not followed by \s or $, it is followed by `=`) without a second subprocess
+  # and without cross-segment ambiguity.
   # Synonym table: known agent footguns mapped to the correct subcommand.
   # Additions here should be paired with a new deny-reason test above.
   local candidate suggested_subcommand
-  local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*"
+  local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*(?=\s|$)"
   if candidate=$(printf '%s' "$cmd" | grep -oP "$segment_pattern" | head -1) \
       && [[ -n "$candidate" ]] \
-      && ! printf '%s' "$cmd" | grep -qP "obsidian-cli\b\s+${candidate}=" \
       && [[ " $KNOWN_SUBCOMMANDS " != *" $candidate "* ]]; then
     case "$candidate" in
       list-vaults)  suggested_subcommand="vaults" ;;
