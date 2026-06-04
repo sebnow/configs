@@ -519,10 +519,11 @@ result=$(run_with_vault "/tmp/vault" "$(make_input "cp /tmp/elsewhere/foo.md /tm
 assert_eq "deny P7 (cp to vault): cp /tmp/elsewhere/foo.md /tmp/vault/foo.md" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
-# Deny: mkdir inside vault
+# Permit: mkdir inside vault — directory creation does not touch a .md file,
+# so the index-bypass rationale does not apply.
 result=$(run_with_vault "/tmp/vault" "$(make_input "mkdir /tmp/vault/subdir")")
-assert_eq "deny P7 (mkdir in vault): mkdir /tmp/vault/subdir" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
+assert_eq "defer P7 (mkdir in vault — no .md): mkdir /tmp/vault/subdir" \
+  "{}" "$(printf '%s' "$result" | compact)"
 
 # Deny: touch inside vault
 result=$(run_with_vault "/tmp/vault" "$(make_input "touch /tmp/vault/new.md")")
@@ -840,6 +841,78 @@ assert_eq "deny L1 (real vault root matches symlinked candidate)" \
 
 rm -f /tmp/symlink_vault_link
 rm -rf /tmp/symlink_real_vault
+
+# ---------------------------------------------------------------------------
+# Scope: vault path predicate only fires when the candidate is a .md file
+# (mutation/redirect rules) or any path outside a dot-prefixed vault subdir
+# (search rules). Operations on non-.md files and on paths inside .tmp-*,
+# .agents/, .claude/, .obsidian/, .git/ must pass through — the index-bypass
+# rationale only applies to real notes.
+# ---------------------------------------------------------------------------
+
+# Mutation tools: non-.md token in vault must defer.
+for cmd in \
+  "rm -rf /tmp/vault/.tmp-transcript-XYZ" \
+  "rm /tmp/vault/attachment.png" \
+  "mv /tmp/vault/foo.txt /tmp/vault/bar.txt" \
+  "touch /tmp/vault/scratch" \
+  "cp /tmp/elsewhere/asset.png /tmp/vault/asset.png"
+do
+  result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)
+  assert_eq "defer scope (mutation non-.md token): $cmd" "{}" "$result"
+done
+
+# Mutation tools: .md token inside a dot-prefixed vault subdir must defer.
+# Each top-level dot-directory recognised by vault-rules-guard is exercised so
+# regressions in any one of them surface independently.
+for cmd in \
+  "rm /tmp/vault/.tmp-transcript-XYZ/intermediate.md" \
+  "rm /tmp/vault/.agents/log.md" \
+  "mv /tmp/vault/.claude/skills/foo.md /tmp/vault/.claude/skills/bar.md" \
+  "touch /tmp/vault/.git/notes/new.md"
+do
+  result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)
+  assert_eq "defer scope (mutation .md in dot-prefix subdir): $cmd" "{}" "$result"
+done
+
+# Mutation tools: .md token at vault root (non-dot path) must still deny.
+result=$(run_with_vault "/tmp/vault" "$(make_input "rm /tmp/vault/Notes/Foo.md")")
+assert_eq "deny scope (mutation .md in non-dot vault path): rm /tmp/vault/Notes/Foo.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Redirects: target inside dot-prefixed vault subdir must defer.
+for cmd in \
+  "echo log > /tmp/vault/.tmp-transcript-XYZ/out.txt" \
+  "printf '%s' x >> /tmp/vault/.tmp-transcript-XYZ/notes.md"
+do
+  result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)
+  assert_eq "defer scope (redirect inside dot-prefix subdir): $cmd" "{}" "$result"
+done
+
+# Redirects: non-.md target inside vault must defer.
+result=$(run_with_vault "/tmp/vault" "$(make_input "echo body > /tmp/vault/log.txt")" | compact)
+assert_eq "defer scope (redirect non-.md in vault): echo body > /tmp/vault/log.txt" \
+  "{}" "$result"
+
+# tee: target inside dot-prefixed vault subdir must defer.
+result=$(run_with_vault "/tmp/vault" "$(make_input "tee /tmp/vault/.tmp-transcript-XYZ/log.md")" | compact)
+assert_eq "defer scope (tee inside dot-prefix subdir)" "{}" "$result"
+
+# Search tools: search root inside dot-prefixed vault subdir must defer.
+for cmd in \
+  "find /tmp/vault/.tmp-transcript-XYZ -name '*.md'" \
+  "grep -r foo /tmp/vault/.tmp-transcript-XYZ" \
+  "rg foo /tmp/vault/.tmp-transcript-XYZ" \
+  "find /tmp/vault/.claude/skills -name '*.md'"
+do
+  result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)
+  assert_eq "defer scope (search root in dot-prefix subdir): $cmd" "{}" "$result"
+done
+
+# Search tools: vault root itself remains denied — it contains real notes.
+result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault -name '*.md'")")
+assert_eq "deny scope (search root at vault root)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
 
 # ---------------------------------------------------------------------------
 # Summary

@@ -97,22 +97,65 @@ normalise_path() {
   realpath -m -- "$raw" 2>/dev/null || printf '%s' "$raw"
 }
 
-# in_vault returns 0 (true) when the given absolute path lies inside any of the
-# vault roots. Containment requires equality or prefix <root>/ to avoid
-# false-positives on sibling directories that share a name prefix.
+# _vault_relpath returns 0 (true) when the given absolute path lies inside any
+# vault root, and prints the path relative to that root on stdout. Returns the
+# empty string when the candidate equals the root exactly. Returns 1 (false)
+# without printing when the candidate is outside every vault root.
+#
+# Containment requires equality or prefix <root>/ so sibling directories that
+# share a name prefix (e.g. /tmp/vault-backup vs /tmp/vault) do not match.
 # Reads from the script-level _VAULT_ROOTS_CACHE populated by load_vault_roots;
 # never spawns a subprocess.
-in_vault() {
+_vault_relpath() {
   local candidate="$1"
   [[ -z "$_VAULT_ROOTS_CACHE" ]] && return 1
   local root
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
-    if [[ "$candidate" == "$root" || "$candidate" == "$root/"* ]]; then
+    if [[ "$candidate" == "$root" ]]; then
+      printf ''
+      return 0
+    fi
+    if [[ "$candidate" == "$root/"* ]]; then
+      printf '%s' "${candidate#"$root/"}"
       return 0
     fi
   done <<< "$_VAULT_ROOTS_CACHE"
   return 1
+}
+
+# is_protected_vault_md returns 0 when candidate is a vault path that names a
+# real note: the path ends in .md and is not inside a dot-prefixed top-level
+# subdirectory of vault root (.tmp-*, .agents/, .claude/, .obsidian/, .git/).
+# These dot-directories hold transient or tooling files Obsidian does not
+# index, so mutations there do not break backlinks.
+#
+# Used by the mutation-tool, redirect, and tee rules so that operations on
+# directories, non-.md files, and dot-subdir content pass through.
+is_protected_vault_md() {
+  local candidate="$1"
+  [[ "$candidate" == *.md ]] || return 1
+  local rel
+  rel=$(_vault_relpath "$candidate") || return 1
+  case "$rel" in
+    .*) return 1 ;;
+  esac
+  return 0
+}
+
+# is_protected_vault_search_root returns 0 when candidate is a vault path that
+# could plausibly host real notes: anywhere inside a vault root except a
+# dot-prefixed top-level subdirectory. Search tools (grep/rg/find) are
+# redirected to obsidian-cli search only when they target a region that
+# Obsidian indexes.
+is_protected_vault_search_root() {
+  local candidate="$1"
+  local rel
+  rel=$(_vault_relpath "$candidate") || return 1
+  case "$rel" in
+    .*) return 1 ;;
+  esac
+  return 0
 }
 
 main() {
@@ -292,8 +335,8 @@ main() {
         [[ "$token" == -* ]] && continue
         local norm
         norm=$(normalise_path "$token" "$cmd_cwd")
-        if in_vault "$norm"; then
-          emit_decision "deny" "Do not use $tool on vault paths — it bypasses Obsidian's index and breaks backlinks. Use \`obsidian-cli\` (\`move\`, \`rename\`, \`delete\`) so backlinks and Templater rules apply."
+        if is_protected_vault_md "$norm"; then
+          emit_decision "deny" "Do not use $tool on vault notes — it bypasses Obsidian's index and breaks backlinks. Use \`obsidian-cli\` (\`move\`, \`rename\`, \`delete\`) so backlinks and Templater rules apply."
         fi
       done
     fi
@@ -309,8 +352,8 @@ main() {
     if [[ -n "$redir_target" ]]; then
       local norm
       norm=$(normalise_path "$redir_target" "$cmd_cwd")
-      if in_vault "$norm"; then
-        emit_decision "deny" "Do not redirect output into vault paths — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
+      if is_protected_vault_md "$norm"; then
+        emit_decision "deny" "Do not redirect output into vault notes — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
       fi
     fi
   fi
@@ -331,8 +374,8 @@ main() {
     if [[ -n "$last_positional" ]]; then
       local norm
       norm=$(normalise_path "$last_positional" "$cmd_cwd")
-      if in_vault "$norm"; then
-        emit_decision "deny" "Do not use tee into vault paths — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
+      if is_protected_vault_md "$norm"; then
+        emit_decision "deny" "Do not use tee into vault notes — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
       fi
     fi
   fi
@@ -359,7 +402,7 @@ main() {
         [[ $positional_count -lt 2 ]] && continue
         local norm
         norm=$(normalise_path "$token" "$cmd_cwd")
-        if in_vault "$norm"; then
+        if is_protected_vault_search_root "$norm"; then
           emit_decision "deny" "Do not use $search_tool to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
         fi
       done
@@ -383,7 +426,7 @@ main() {
       [[ "$token" == -* ]] && break
       local norm
       norm=$(normalise_path "$token" "$cmd_cwd")
-      if in_vault "$norm"; then
+      if is_protected_vault_search_root "$norm"; then
         emit_decision "deny" "Do not use find to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
       fi
     done
