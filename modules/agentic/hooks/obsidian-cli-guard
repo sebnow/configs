@@ -36,10 +36,10 @@ vault_roots() {
   if ! raw=$(obsidian-cli vaults verbose 2>/dev/null); then
     return 0
   fi
-  # "obsidian-cli vaults verbose" emits lines like: <name>  <path>
-  # Extract the second whitespace-delimited field (the path), strip trailing
-  # slashes, skip the header line.
-  printf '%s\n' "$raw" | tail -n +2 | awk '{print $2}' | sed 's|/$||'
+  # "obsidian-cli vaults verbose" emits tab-separated lines: <name>\t<path>
+  # with no header row. Using -F'\t' avoids truncating paths that contain spaces,
+  # which whitespace-based splitting ($2 without -F) would silently break.
+  printf '%s\n' "$raw" | awk -F'\t' '{print $2}' | sed 's|/$||'
 }
 
 # normalise_path resolves a raw path token from the inspected command.
