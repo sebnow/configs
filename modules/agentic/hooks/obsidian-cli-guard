@@ -340,14 +340,14 @@ main() {
   # These bypass Obsidian's index and do not handle Unicode paths or search
   # operators. See .agents/prd-obsidian.md pattern P9.
 
-  # grep/rg: the search root is the first non-flag, non-pattern positional.
-  # Pattern: `<tool>` at segment start, then capture all trailing tokens.
+  # grep/rg: positional 1 is the pattern, every subsequent non-flag positional
+  # is a search root. Checking only one slot lets an agent bypass the guard by
+  # prepending a non-vault path (e.g. `grep foo /tmp/safe /tmp/vault`).
   for search_tool in grep rg; do
     local stool_pattern
     stool_pattern="(?:^|[;(]|&&|\|\|)\s*${search_tool}\b\K.*"
     local stool_args
     if stool_args=$(printf '%s' "$cmd" | grep -oP "$stool_pattern" | head -1); then
-      # Skip flags; the first non-flag token is the pattern, the second is the root.
       # read -ra prevents glob expansion of tokens like * against the hook's cwd.
       local -a tokens=()
       read -ra tokens <<< "$stool_args"
@@ -355,19 +355,20 @@ main() {
       for token in "${tokens[@]}"; do
         [[ "$token" == -* ]] && continue
         ((positional_count++)) || true
-        if [[ $positional_count -eq 2 ]]; then
-          local norm
-          norm=$(normalise_path "$token" "$cmd_cwd")
-          if in_vault "$norm"; then
-            emit_decision "deny" "Do not use $search_tool to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
-          fi
-          break
+        # Positional 1 is the pattern; positionals 2+ are paths.
+        [[ $positional_count -lt 2 ]] && continue
+        local norm
+        norm=$(normalise_path "$token" "$cmd_cwd")
+        if in_vault "$norm"; then
+          emit_decision "deny" "Do not use $search_tool to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
         fi
       done
     fi
   done
 
-  # find: the search root is the first non-flag positional (path comes before predicates).
+  # find: every positional before the first -predicate is a search root.
+  # `find dir1 dir2 -name '*.md'` accepts both dir1 and dir2 — stopping after
+  # the first root let an agent bypass the guard by prepending a non-vault path.
   local find_pattern
   find_pattern="(?:^|[;(]|&&|\|\|)\s*find\b\K.*"
   local find_args
@@ -377,13 +378,14 @@ main() {
     read -ra tokens <<< "$find_args"
     local token
     for token in "${tokens[@]}"; do
-      [[ "$token" == -* ]] && continue
+      # First dash-prefixed token marks the predicate section — paths are
+      # exhausted, so stop scanning.
+      [[ "$token" == -* ]] && break
       local norm
       norm=$(normalise_path "$token" "$cmd_cwd")
       if in_vault "$norm"; then
         emit_decision "deny" "Do not use find to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
       fi
-      break
     done
   fi
 

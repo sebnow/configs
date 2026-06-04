@@ -597,6 +597,24 @@ assert_eq "defer P9 (grep sibling dir, not inside vault)" "{}" "$(printf '%s' "$
 result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "grep foo /tmp/vault")" | "$HOOK" | compact)
 assert_eq "defer P9 (empty vault roots override)" "{}" "$result"
 
+# Multi-positional bypass (finding M1): an agent could prepend a non-vault
+# path to evade the previous slot-1 / slot-2 check.
+# grep convention: `grep [flags] PATTERN [paths...]` — every positional after
+# the pattern is a path.
+result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/elsewhere /tmp/vault")")
+assert_eq "deny P9 (grep, vault as second path): grep foo /tmp/elsewhere /tmp/vault" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/elsewhere /tmp/vault")")
+assert_eq "deny P9 (rg, vault as second path): rg foo /tmp/elsewhere /tmp/vault" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# find convention: `find [paths...] [predicates]` — multiple roots are
+# accepted before the first -predicate.
+result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere /tmp/vault -name '*.md'")")
+assert_eq "deny P9 (find, vault as second root): find /tmp/elsewhere /tmp/vault -name '*.md'" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
 # ---------------------------------------------------------------------------
 # P10: obsidian-cli format=json piped to jq .path extraction on array elements
 # ---------------------------------------------------------------------------
