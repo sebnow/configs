@@ -142,10 +142,11 @@ main() {
   # After the subcommand token (`\S+`), `[^;&|()]*` allows key=value arguments
   # before the offending flag but stops at shell operators (`;`, `&`, `|`, `(`,
   # `)`) so flags on a chained command like `obsidian-cli create path=X && ls -la`
-  # are not mistaken for flags on obsidian-cli itself. `\s+-` anchors the
-  # dash-prefixed token to a whitespace boundary so a flag embedded in a
-  # key=value string is not caught.
-  local pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\S+[^;&|()]*\s+-"
+  # are not mistaken for flags on obsidian-cli itself. `\s+--?[a-zA-Z]` anchors
+  # the dash-prefixed token to a whitespace boundary and requires a letter after
+  # the dash(es), so YAML list items (`  - value`) and frontmatter delimiters
+  # (`---`) inside content= strings are not mistaken for flags.
+  local pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\S+[^;&|()]*\s+--?[a-zA-Z]"
 
   if printf '%s' "$cmd" | grep -qP "$pattern"; then
     emit_decision "deny" "obsidian-cli does not parse GNU-style flags — dash-prefixed tokens such as --help or --vault are silently ignored, not treated as options. On the create subcommand this causes the CLI to create Untitled.md in the vault and return a misleading success message instead of failing. Use positional key=value arguments for all options (e.g. vault=MyVault path=Notes/Foo.md). Run obsidian-cli help <subcommand> to see the accepted key=value parameters for a given subcommand."

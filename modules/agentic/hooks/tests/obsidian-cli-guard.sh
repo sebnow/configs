@@ -109,6 +109,22 @@ do
 done
 
 # ---------------------------------------------------------------------------
+# Defer: YAML frontmatter in content= must not trip the flag-detection pattern.
+# YAML list items (  - value) and frontmatter delimiters (---) contain
+# dash characters preceded by whitespace, which the pattern must not treat
+# as GNU-style flags.  Real flags require a letter after the dash(es).
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  "obsidian-cli create path=Notes/Foo.md content='  - list item'" \
+  "obsidian-cli create path=Notes/Foo.md content='---\\ntags:\\n  - seedling\\n---\\nbody'" \
+  "obsidian-cli create path=Notes/Foo.md content='- a\\n- b\\n- c'"
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (YAML dash in content): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
 # Defer: dash flags on commands other than obsidian-cli must not be blocked
 # ---------------------------------------------------------------------------
 
