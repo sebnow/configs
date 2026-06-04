@@ -63,7 +63,10 @@
         package = config.lib.nixGL.wrap (
           inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default
         );
-        settings = ./noctalia/settings.json;
+        settings = lib.recursiveUpdate (lib.importJSON ./noctalia/settings.json) {
+          wallpaper.directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+          general.avatarImage = "${config.home.homeDirectory}/.face";
+        };
         colors = noctaliaColors;
         plugins = ./noctalia/plugins.json;
       };

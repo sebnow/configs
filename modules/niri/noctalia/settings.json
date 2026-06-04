@@ -343,7 +343,6 @@
     "animationDisabled": false,
     "animationSpeed": 1,
     "autoStartAuth": false,
-    "avatarImage": "/home/sebnow/.face",
     "boxRadiusRatio": 1,
     "clockFormat": "hh\\nmm",
     "clockStyle": "custom",
@@ -605,8 +604,7 @@
     "translucentWidgets": true
   },
   "wallpaper": {
-    "automationEnabled": false,
-    "directory": "/home/sebnow/Pictures/Wallpapers",
+    "automationEnabled": true,
     "enableMultiMonitorDirectories": false,
     "enabled": true,
     "favorites": [],
