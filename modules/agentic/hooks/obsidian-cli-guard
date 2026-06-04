@@ -107,6 +107,27 @@ main() {
     emit_decision "deny" "obsidian-cli delete requires a target argument: pass path=<vault-relative-path> (e.g. path=Notes/Foo.md) or file=<name>. Without path= or file=, the CLI silently deletes the active note in the running Obsidian instance — the deletion is invisible until missing content surfaces."
   fi
 
+  # When `obsidian-cli rename` is called with a name= value that does not end
+  # in `.md`, the CLI treats the segment after the last dot as the file
+  # extension — so "Ficus carica var. Brown Turkey" yields extension
+  # "Brown Turkey", and "Bar" (no dot) yields no extension at all. Obsidian
+  # cannot index files without the .md extension, and backlinks break silently.
+  #
+  # The three value alternatives handle double-quoted, single-quoted, and bare
+  # unquoted forms separately. The unquoted alternative uses [^"'\s]* rather
+  # than \S* so that a quoted value like name="Foo.md" is not consumed as a
+  # bare token whose last char is `"` — which would bypass the (?<!\.md) check.
+  # (?<!\.md) is a lookbehind anchored to the end of the value (before the
+  # closing quote, or before whitespace/end-of-string for unquoted values).
+  # (?:^|\s)name= enforces argument position: name= inside a quoted value of
+  # another argument (e.g. content="name=ignored") is not matched because the
+  # preceding character is `"`, not whitespace.
+  local rename_name_md_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+rename\b[^|><;&]*(?:^|\s)name=(?:\"[^\"]*(?<!\.md)\"|'[^']*(?<!\.md)'|[^\"'\s]*(?<!\.md)(?=\s|$))"
+
+  if printf '%s' "$cmd" | grep -qP "$rename_name_md_pattern"; then
+    emit_decision "deny" "obsidian-cli rename requires name= to end with .md. The CLI treats the segment after the last dot as the file extension, so a name like \"Ficus carica var. Brown Turkey\" produces extension \"Brown Turkey\", and a name with no dot at all produces no extension. Without the .md extension Obsidian cannot index the file and backlinks break. Always end the name= value with .md, for example name=\"Ficus carica var. Brown Turkey.md\"."
+  fi
+
   emit_defer
 }
 

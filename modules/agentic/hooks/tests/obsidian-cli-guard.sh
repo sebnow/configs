@@ -346,6 +346,45 @@ do
 done
 
 # ---------------------------------------------------------------------------
+# Deny: obsidian-cli rename with name= value that does not end in .md
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli rename file="Foo" name="Bar"' \
+  'obsidian-cli rename file="Foo" name="Ficus carica var. Brown Turkey"' \
+  'obsidian-cli rename file=Foo name=Bar' \
+  'cd /tmp && obsidian-cli rename file="Foo" name="Bar"' \
+  'obsidian-cli rename file="Foo" name="Bar.md.tmp"'
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (rename name not .md): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: obsidian-cli rename with name= value that ends in .md
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli rename file="Foo" name="Bar.md"' \
+  'obsidian-cli rename file="Foo" name="Ficus carica var. Brown Turkey.md"' \
+  'obsidian-cli rename file="Foo" name=Bar.md' \
+  'obsidian-cli tag name="#project"' \
+  'obsidian-cli rename file="Foo" name="Bar.md" content="name=ignored"'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (rename name .md or other cmd): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: rename non-.md message must mention .md and file extension
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input 'obsidian-cli rename file="Foo" name="Bar"')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (rename name not .md): contains .md" ".md" "$reason"
+assert_contains "deny-reason (rename name not .md): mentions extension" "extension" "$reason"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
