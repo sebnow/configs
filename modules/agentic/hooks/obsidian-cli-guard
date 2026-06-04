@@ -82,7 +82,7 @@ main() {
   # ("Foo.md"), single-quoted values, and bare unquoted values separately so
   # that the leading quote character is consumed before scanning for a dot,
   # avoiding false matches on the quote itself.
-  local name_path_dot_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?=[^|><;&]*\bname=)(?=[^|><;&]*\bpath=)(?=[^|><;&]*(?:\bname=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)|path=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)))"
+  local name_path_dot_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+create\b(?=[^|><;&]*(?:^|\s)name=)(?=[^|><;&]*(?:^|\s)path=)(?=[^|><;&]*(?:(?:^|\s)name=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)|(?:^|\s)path=(?:\"[^\"]*\.[^\"]*\"|'[^']*\.[^']*'|[^\"'\s|><;&]*\.[^\"'\s|><;&]*)))"
 
   if printf '%s' "$cmd" | grep -qP "$name_path_dot_pattern"; then
     emit_decision "deny" "combining name= and path= with a dot in either value causes directory nesting: the CLI treats path= as a directory prefix and name= as the filename, so a dot-bearing name like Foo.md becomes a subdirectory, producing paths such as Notes/Foo.md/Foo.md. Pass path= alone with the full vault-relative path (e.g. path=Notes/Foo.md) to avoid this."

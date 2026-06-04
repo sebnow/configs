@@ -247,6 +247,19 @@ do
 done
 
 # ---------------------------------------------------------------------------
+# Defer: name= or path= appearing only inside a quoted value of another
+# argument — should not count as a real name=/path= argument
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli create path=Notes/Foo.md content="name=bar"' \
+  'obsidian-cli create name=Foo content="path=other"'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (key=val inside quoted value): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
 # Deny-reason: name+path dot message must explain directory nesting and
 # direct the agent to use path= alone
 # ---------------------------------------------------------------------------
