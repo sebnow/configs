@@ -428,6 +428,12 @@ result=$(run_hook "$(make_input 'obsidian-cli headings && obsidian-cli headings=
 assert_eq "deny (cross-segment: unknown subcommand not masked by later key=value)" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
+# Paren-subshell: token inside (obsidian-cli <subcommand>) is followed by ')' not whitespace.
+# The segment-start anchor matches '(' so the detection must still fire.
+result=$(run_hook "$(make_input '(obsidian-cli headings)')")
+assert_eq "deny (paren-subshell: unknown subcommand inside parens)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
 # ---------------------------------------------------------------------------
 # Deny-reason: synonym suggestions and generic fallback
 # ---------------------------------------------------------------------------

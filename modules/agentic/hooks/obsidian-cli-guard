@@ -147,14 +147,15 @@ main() {
 
   # Extract the first subcommand-shaped token after `obsidian-cli` at a segment
   # start. \K resets the match start so grep -oP returns only the token itself.
-  # (?=\s|$) asserts the token ends at whitespace or end-of-string: this excludes
-  # key=value first arguments (e.g. `vault=Knowledge` → no match because `vault`
-  # is not followed by \s or $, it is followed by `=`) without a second subprocess
-  # and without cross-segment ambiguity.
+  # (?=[\s)]|$) asserts the token ends at whitespace, `)`, or end-of-string: this
+  # excludes key=value first arguments (e.g. `vault=Knowledge` → no match because
+  # `vault` is followed by `=`, not a terminator) without a second subprocess and
+  # without cross-segment ambiguity. `)` is included so paren-subshell invocations
+  # like `(obsidian-cli headings)` are also matched.
   # Synonym table: known agent footguns mapped to the correct subcommand.
   # Additions here should be paired with a new deny-reason test above.
   local candidate suggested_subcommand
-  local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*(?=\s|$)"
+  local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*(?=[\s)]|$)"
   if candidate=$(printf '%s' "$cmd" | grep -oP "$segment_pattern" | head -1) \
       && [[ -n "$candidate" ]] \
       && [[ " $KNOWN_SUBCOMMANDS " != *" $candidate "* ]]; then
