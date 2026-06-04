@@ -246,8 +246,13 @@ main() {
     local args_str
     if args_str=$(printf '%s' "$cmd" | grep -oP "$tool_pattern" | head -1); then
       # Check each non-flag token — covers both source and destination paths.
+      # read -ra splits on IFS without triggering pathname expansion; an unquoted
+      # `for token in $args_str` would glob-expand tokens like * against the
+      # hook's own cwd, producing filesystem paths instead of literal tokens.
+      local -a tokens=()
+      read -ra tokens <<< "$args_str"
       local token
-      for token in $args_str; do
+      for token in "${tokens[@]}"; do
         [[ "$token" == -* ]] && continue
         local norm
         norm=$(normalise_path "$token" "$cmd_cwd")
@@ -280,8 +285,11 @@ main() {
   tee_pattern="(?:^|[;(]|&&|\|\|)\s*tee\b\K.*"
   local tee_args
   if tee_args=$(printf '%s' "$cmd" | grep -oP "$tee_pattern" | head -1); then
+    # Same glob-expansion hazard as the P7 and P9 loops — use read -ra.
+    local -a tokens=()
+    read -ra tokens <<< "$tee_args"
     local token last_positional=""
-    for token in $tee_args; do
+    for token in "${tokens[@]}"; do
       [[ "$token" == -* ]] && continue
       last_positional="$token"
     done
@@ -306,8 +314,11 @@ main() {
     local stool_args
     if stool_args=$(printf '%s' "$cmd" | grep -oP "$stool_pattern" | head -1); then
       # Skip flags; the first non-flag token is the pattern, the second is the root.
+      # read -ra prevents glob expansion of tokens like * against the hook's cwd.
+      local -a tokens=()
+      read -ra tokens <<< "$stool_args"
       local positional_count=0 token
-      for token in $stool_args; do
+      for token in "${tokens[@]}"; do
         [[ "$token" == -* ]] && continue
         ((positional_count++)) || true
         if [[ $positional_count -eq 2 ]]; then
@@ -327,8 +338,11 @@ main() {
   find_pattern="(?:^|[;(]|&&|\|\|)\s*find\b\K.*"
   local find_args
   if find_args=$(printf '%s' "$cmd" | grep -oP "$find_pattern" | head -1); then
+    # read -ra prevents glob expansion of tokens like * against the hook's cwd.
+    local -a tokens=()
+    read -ra tokens <<< "$find_args"
     local token
-    for token in $find_args; do
+    for token in "${tokens[@]}"; do
       [[ "$token" == -* ]] && continue
       local norm
       norm=$(normalise_path "$token" "$cmd_cwd")

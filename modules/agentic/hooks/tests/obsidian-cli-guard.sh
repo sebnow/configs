@@ -622,6 +622,92 @@ result=$(run_hook "$(make_input "some-other-tool --json | jq -r '.[].path'")" | 
 assert_eq "defer P10 (.[].path but upstream not obsidian-cli format=json)" "{}" "$result"
 
 # ---------------------------------------------------------------------------
+# vault_roots tab-parsing: first vault must not be silently dropped (Bug 1)
+#
+# obsidian-cli vaults verbose output is tab-separated <name>\t<path> with no
+# header row. The previous code used `tail -n +2 | awk '{print $2}'`: tail
+# dropped the first entry, leaving the first vault silently unprotected.
+#
+# These tests stub obsidian-cli via PATH so the hermetic harness never calls
+# the real binary. A two-vault mock is used: both vaults must be protected,
+# which was impossible before the fix (the first was always silently dropped).
+# ---------------------------------------------------------------------------
+
+# Create a mock obsidian-cli that emits two plain-path vaults.
+# run_with_mock_obsidian scopes both the PATH override and the env-var unset to
+# a subshell so neither leaks; it returns the hook's stdout to the parent for
+# assert_eq, keeping counter increments in the parent shell.
+_mock_dir=$(mktemp -d)
+cat > "$_mock_dir/obsidian-cli" << 'MOCK'
+#!/bin/bash
+if [[ "$1 $2" == "vaults verbose" ]]; then
+  printf 'Alpha\t/tmp/vault-alpha\nBeta\t/tmp/vault-beta\n'
+fi
+MOCK
+chmod +x "$_mock_dir/obsidian-cli"
+
+run_with_mock_obsidian() {
+  local input="$1"
+  (unset OBSIDIAN_GUARD_VAULT_ROOTS; export PATH="$_mock_dir:$PATH"; printf '%s' "$input" | "$HOOK")
+}
+
+# Deny P7: the first vault (previously dropped by tail -n +2) must now be protected.
+result=$(run_with_mock_obsidian "$(make_input "rm /tmp/vault-alpha/Foo.md")")
+assert_eq "deny P7 (tab-parse: first vault not dropped): rm /tmp/vault-alpha/Foo.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Deny P7: the second vault must also be protected (regression guard).
+result=$(run_with_mock_obsidian "$(make_input "rm /tmp/vault-beta/Foo.md")")
+assert_eq "deny P7 (tab-parse: second vault still protected): rm /tmp/vault-beta/Foo.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Defer: a path outside all vaults must remain allowed.
+result=$(run_with_mock_obsidian "$(make_input "rm /tmp/unrelated/Foo.md")" | compact)
+assert_eq "defer P7 (tab-parse: non-vault path still allowed): rm /tmp/unrelated/Foo.md" \
+  "{}" "$result"
+
+rm -rf "$_mock_dir"
+
+# ---------------------------------------------------------------------------
+# Glob-expansion safety: literal * in a command must not expand against the
+# hook process's own cwd (Bug 2)
+#
+# Strategy: set the vault root to a directory that does NOT contain *.md
+# but whose name would be produced by a glob expansion from the hook's cwd.
+# We create files in /tmp that match the pattern, set the vault root to one
+# of those expanded paths, then send a command whose only vault-adjacent
+# token is the literal "*" glob. Without globbing protection, the * expands
+# to real paths in the hook's cwd; if any of those match the vault root the
+# hook incorrectly fires. With globbing disabled, * stays literal, resolves
+# to a non-vault path, and the hook correctly defers.
+# ---------------------------------------------------------------------------
+
+mkdir -p /tmp/glob_guard_test
+touch /tmp/glob_guard_test/note_a.md /tmp/glob_guard_test/note_b.md
+# Vault root is the glob_guard_test directory itself.
+# The command sends `grep pattern /tmp/glob_guard_test` as a non-glob path —
+# that must deny. But a separate command with * in a different position must
+# NOT deny due to glob expansion.
+#
+# Deny: grep with vault as explicit path (control case — must still work)
+result=$(run_with_vault "/tmp/glob_guard_test" \
+  "$(make_input "grep foo /tmp/glob_guard_test")")
+assert_eq "deny P9 (grep vault, glob-test control): grep foo /tmp/glob_guard_test" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# The dangerous case: vault root is "/tmp/glob_guard_test/note_a.md".
+# The command is `mv /tmp/other/src.md /tmp/glob_guard_test/*`.
+# Without globbing protection, the * expands to note_a.md and note_b.md in
+# the hook's cwd; one of those is the vault root, causing a false deny.
+# With globbing disabled, * stays literal and resolves outside the vault.
+result=$(run_with_vault "/tmp/glob_guard_test/note_a.md" \
+  "$(make_input "mv /tmp/other/src.md /tmp/glob_guard_test/*")")
+assert_eq "defer P7 (literal * outside vault — unquoted glob must not expand to vault match)" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+rm -rf /tmp/glob_guard_test
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
