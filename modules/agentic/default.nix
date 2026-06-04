@@ -272,6 +272,7 @@
       programs.git = {
         ignores = [
           ".agents/"
+          ".claude/CLAUDE.local.md"
           ".claude/settings.local.json"
         ];
       };
