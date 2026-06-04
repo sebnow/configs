@@ -463,6 +463,141 @@ reason=$(printf '%s' "$result" | reason_of)
 assert_contains "deny-reason (unknown, no synonym): contains obsidian-cli help" "obsidian-cli help" "$reason"
 
 # ---------------------------------------------------------------------------
+# P7: filesystem mutation tools on vault paths
+# ---------------------------------------------------------------------------
+
+# Helper: run hook with a vault root override.
+# The env var must be exported into the hook subprocess, not just the printf
+# side of the pipeline, so we use `export` + subshell to keep it scoped.
+run_with_vault() {
+  local vault="$1" input="$2"
+  (export OBSIDIAN_GUARD_VAULT_ROOTS="$vault"; printf '%s' "$input" | "$HOOK")
+}
+
+# Deny: mv with a vault-resident source path
+result=$(run_with_vault "/tmp/vault" "$(make_input "mv /tmp/vault/Foo.md /tmp/vault/Bar.md")")
+assert_eq "deny P7 (mv vault src): mv /tmp/vault/Foo.md /tmp/vault/Bar.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason P7 (mv): names obsidian-cli move or rename" "obsidian-cli" "$reason"
+
+# Permit: mv between non-vault paths
+result=$(run_with_vault "/tmp/vault" "$(make_input "mv /tmp/elsewhere/Foo.md /tmp/elsewhere/Bar.md")")
+assert_eq "defer P7 (mv non-vault): mv /tmp/elsewhere/Foo.md /tmp/elsewhere/Bar.md" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Deny: rm on a vault path
+result=$(run_with_vault "/tmp/vault" "$(make_input "rm /tmp/vault/Foo.md")")
+assert_eq "deny P7 (rm vault): rm /tmp/vault/Foo.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Deny: cp with vault destination
+result=$(run_with_vault "/tmp/vault" "$(make_input "cp /tmp/elsewhere/foo.md /tmp/vault/foo.md")")
+assert_eq "deny P7 (cp to vault): cp /tmp/elsewhere/foo.md /tmp/vault/foo.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Deny: mkdir inside vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "mkdir /tmp/vault/subdir")")
+assert_eq "deny P7 (mkdir in vault): mkdir /tmp/vault/subdir" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Deny: touch inside vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "touch /tmp/vault/new.md")")
+assert_eq "deny P7 (touch in vault): touch /tmp/vault/new.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Permit: mv not touching vault at all
+result=$(run_with_vault "/tmp/vault" "$(make_input "mv /tmp/a/file.txt /tmp/b/file.txt")")
+assert_eq "defer P7 (mv no vault involved)" "{}" "$(printf '%s' "$result" | compact)"
+
+# Permit: sibling directory that shares vault prefix but is not inside the vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "mv /tmp/vault-backup/file.md /tmp/vault-backup/other.md")")
+assert_eq "defer P7 (mv sibling dir, not inside vault)" "{}" "$(printf '%s' "$result" | compact)"
+
+# Empty vault roots override → all P7 patterns defer
+result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "mv /tmp/vault/Foo.md /tmp/bar.md")" | "$HOOK" | compact)
+assert_eq "defer P7 (empty vault roots override)" "{}" "$result"
+
+# ---------------------------------------------------------------------------
+# P8: redirection or tee targeting a vault path
+# ---------------------------------------------------------------------------
+
+# Deny: echo redirect into vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "echo body > /tmp/vault/New.md")")
+assert_eq "deny P8 (echo redirect to vault): echo body > /tmp/vault/New.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason P8 (echo): names obsidian-cli create" "obsidian-cli create" "$reason"
+
+# Deny: tee into vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "tee /tmp/vault/Log.md")")
+assert_eq "deny P8 (tee to vault): tee /tmp/vault/Log.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Permit: echo redirect to non-vault path
+result=$(run_with_vault "/tmp/vault" "$(make_input "echo body > /tmp/elsewhere/file")")
+assert_eq "defer P8 (echo redirect to non-vault): echo body > /tmp/elsewhere/file" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Permit: append redirect to non-vault path
+result=$(run_with_vault "/tmp/vault" "$(make_input "echo body >> /tmp/elsewhere/file")")
+assert_eq "defer P8 (echo append to non-vault): echo body >> /tmp/elsewhere/file" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Deny: append redirect (>>) into vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "printf '%s\n' line >> /tmp/vault/Log.md")")
+assert_eq "deny P8 (append redirect to vault): printf >> /tmp/vault/Log.md" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Empty vault roots override → P8 defers
+result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "echo body > /tmp/vault/file.md")" | "$HOOK" | compact)
+assert_eq "defer P8 (empty vault roots override)" "{}" "$result"
+
+# ---------------------------------------------------------------------------
+# P9: search tools on a vault root
+# ---------------------------------------------------------------------------
+
+# Deny: grep with vault as search root
+result=$(run_with_vault "/tmp/vault" "$(make_input "grep -r foo /tmp/vault")")
+assert_eq "deny P9 (grep vault): grep -r foo /tmp/vault" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason P9 (grep): names obsidian-cli search" "obsidian-cli search" "$reason"
+
+# Deny: rg with vault as search root
+result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/vault")")
+assert_eq "deny P9 (rg vault): rg foo /tmp/vault" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Deny: find with vault as search root
+result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault -name '*.md'")")
+assert_eq "deny P9 (find vault): find /tmp/vault -name '*.md'" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Permit: grep against non-vault file
+result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/elsewhere/file")")
+assert_eq "defer P9 (grep non-vault): grep foo /tmp/elsewhere/file" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Permit: rg against non-vault path
+result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/elsewhere")")
+assert_eq "defer P9 (rg non-vault): rg foo /tmp/elsewhere" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Permit: find in a non-vault directory
+result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere -name '*.md'")")
+assert_eq "defer P9 (find non-vault): find /tmp/elsewhere -name '*.md'" \
+  "{}" "$(printf '%s' "$result" | compact)"
+
+# Permit: sibling directory not inside the vault
+result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/vault-old/file")")
+assert_eq "defer P9 (grep sibling dir, not inside vault)" "{}" "$(printf '%s' "$result" | compact)"
+
+# Empty vault roots override → P9 defers
+result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "grep foo /tmp/vault")" | "$HOOK" | compact)
+assert_eq "defer P9 (empty vault roots override)" "{}" "$result"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 

@@ -1,20 +1,8 @@
 #!/usr/bin/env bash
-# PreToolUse hook: block obsidian-cli invocations that pass GNU-style flags.
+# PreToolUse hook: block obsidian-cli misuse and direct filesystem manipulation
+# of vault paths. See .agents/prd-obsidian.md for the full pattern catalogue.
 #
-# obsidian-cli takes positional key=value arguments and does not parse
-# dash-prefixed tokens. Unknown flags are silently ignored. On the `create`
-# subcommand this causes the CLI to write Untitled.md and return a misleading
-# "Created" message instead of failing with an error. This hook intercepts
-# the misuse deterministically before the tool runs.
-#
-# Detection: matches `obsidian-cli` at the start of a pipeline segment
-# (start of command, or after `;`, `&&`, `||`, or `(`) followed by a
-# subcommand token and then any token beginning with `-`. The segment-start
-# anchor prevents false positives where `obsidian-cli` is a quoted string
-# inside `echo`/`printf`. The `\b` word boundary prevents `obsidian-cli-guard`
-# or other hyphenated names from tripping the pattern.
-#
-# stdin  : {"tool_name":"Bash","tool_input":{"command":string},...}
+# stdin  : {"tool_name":"Bash","tool_input":{"command":string},"cwd":string,...}
 # stdout : {"hookSpecificOutput":{"hookEventName":"PreToolUse",
 #            "permissionDecision":"deny",
 #            "permissionDecisionReason":string}}
@@ -34,6 +22,67 @@ emit_defer() {
   exit 0
 }
 
+# vault_roots — prints zero or more absolute vault paths, one per line.
+# When OBSIDIAN_GUARD_VAULT_ROOTS is set (even empty), it wins.
+# Otherwise shells out to obsidian-cli; on any failure prints nothing.
+# See .agents/prd-obsidian.md "vault-roots" contract.
+vault_roots() {
+  if [[ -v OBSIDIAN_GUARD_VAULT_ROOTS ]]; then
+    printf '%s' "$OBSIDIAN_GUARD_VAULT_ROOTS"
+    return 0
+  fi
+  # Defer gracefully if obsidian-cli is unavailable or fails.
+  local raw
+  if ! raw=$(obsidian-cli vaults verbose 2>/dev/null); then
+    return 0
+  fi
+  # "obsidian-cli vaults verbose" emits lines like: <name>  <path>
+  # Extract the second whitespace-delimited field (the path), strip trailing
+  # slashes, skip the header line.
+  printf '%s\n' "$raw" | tail -n +2 | awk '{print $2}' | sed 's|/$||'
+}
+
+# normalise_path resolves a raw path token from the inspected command.
+# Strips surrounding matching quotes, expands leading ~/, resolves relative
+# paths against $cmd_cwd, then collapses .. and . via realpath -m.
+normalise_path() {
+  local raw="$1" cwd="$2"
+  # Strip surrounding double or single quotes.
+  if [[ "$raw" == \"*\" ]]; then
+    raw="${raw:1:${#raw}-2}"
+  elif [[ "$raw" == \'*\' ]]; then
+    raw="${raw:1:${#raw}-2}"
+  fi
+  # Expand leading ~/
+  if [[ "$raw" == "~/"* ]]; then
+    raw="$HOME/${raw:2}"
+  fi
+  # Resolve relative paths against the command's cwd.
+  if [[ "$raw" != /* ]]; then
+    raw="$cwd/$raw"
+  fi
+  realpath -m -- "$raw" 2>/dev/null || printf '%s' "$raw"
+}
+
+# in_vault returns 0 (true) when the given absolute path lies inside any of the
+# vault roots. Containment requires equality or prefix <root>/ to avoid
+# false-positives on sibling directories that share a name prefix.
+in_vault() {
+  local candidate="$1"
+  local roots
+  if ! roots=$(vault_roots); then
+    return 1
+  fi
+  local root
+  while IFS= read -r root; do
+    [[ -z "$root" ]] && continue
+    if [[ "$candidate" == "$root" || "$candidate" == "$root/"* ]]; then
+      return 0
+    fi
+  done <<< "$roots"
+  return 1
+}
+
 main() {
   if ! input=$(cat); then
     emit_defer
@@ -42,6 +91,12 @@ main() {
     emit_defer
   fi
   [[ -n "$cmd" ]] || emit_defer
+
+  local cmd_cwd
+  if ! cmd_cwd=$(printf '%s' "$input" | jq -r '.cwd // empty'); then
+    cmd_cwd=""
+  fi
+  [[ -n "$cmd_cwd" ]] || cmd_cwd="$(pwd)"
 
   # obsidian-cli must appear at a segment start so quoted uses like
   # `echo "obsidian-cli create --help"` (where it is an argument to another
@@ -173,6 +228,112 @@ main() {
     else
       emit_decision "deny" "\"$candidate\" is not a recognised obsidian-cli subcommand. Use: obsidian-cli <subcommand>. Run \`obsidian-cli help\` for the full list."
     fi
+  fi
+
+  # P7: filesystem mutation commands whose first non-flag argument lies inside
+  # a vault root. The tools listed here — mv, cp, rm, mkdir, rmdir, touch, ln
+  # — bypass Obsidian's index and break backlinks when applied to vault files.
+  # See .agents/prd-obsidian.md pattern P7.
+  local mutation_tools="mv cp rm mkdir rmdir touch ln"
+  for tool in $mutation_tools; do
+    # Match `<tool>` at a segment start; \K resets so only the argument string
+    # is returned by grep -oP.
+    local tool_pattern
+    tool_pattern="(?:^|[;(]|&&|\|\|)\s*${tool}\b\K.*"
+    local args_str
+    if args_str=$(printf '%s' "$cmd" | grep -oP "$tool_pattern" | head -1); then
+      # Check each non-flag token — covers both source and destination paths.
+      local token
+      for token in $args_str; do
+        [[ "$token" == -* ]] && continue
+        local norm
+        norm=$(normalise_path "$token" "$cmd_cwd")
+        if in_vault "$norm"; then
+          emit_decision "deny" "Do not use $tool on vault paths — it bypasses Obsidian's index and breaks backlinks. Use \`obsidian-cli\` (\`move\`, \`rename\`, \`delete\`) so backlinks and Templater rules apply."
+        fi
+      done
+    fi
+  done
+
+  # P8: redirect operators (> or >>) or tee whose target lies inside a vault root.
+  # Writing directly to vault paths bypasses Obsidian's indexing pipeline.
+  # See .agents/prd-obsidian.md pattern P8.
+
+  # Check >>/> redirects: extract the path token following >> or >.
+  # The pattern captures the first non-whitespace token after the redirect operator.
+  local redir_target
+  if redir_target=$(printf '%s' "$cmd" | grep -oP '(?:>>|>)\s*\K\S+' | head -1); then
+    if [[ -n "$redir_target" ]]; then
+      local norm
+      norm=$(normalise_path "$redir_target" "$cmd_cwd")
+      if in_vault "$norm"; then
+        emit_decision "deny" "Do not redirect output into vault paths — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
+      fi
+    fi
+  fi
+
+  # Check tee: `tee [-a] <path>` — the path is the last positional argument.
+  local tee_pattern
+  tee_pattern="(?:^|[;(]|&&|\|\|)\s*tee\b\K.*"
+  local tee_args
+  if tee_args=$(printf '%s' "$cmd" | grep -oP "$tee_pattern" | head -1); then
+    local token last_positional=""
+    for token in $tee_args; do
+      [[ "$token" == -* ]] && continue
+      last_positional="$token"
+    done
+    if [[ -n "$last_positional" ]]; then
+      local norm
+      norm=$(normalise_path "$last_positional" "$cmd_cwd")
+      if in_vault "$norm"; then
+        emit_decision "deny" "Do not use tee into vault paths — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
+      fi
+    fi
+  fi
+
+  # P9: text search commands whose search root lies inside a vault root.
+  # These bypass Obsidian's index and do not handle Unicode paths or search
+  # operators. See .agents/prd-obsidian.md pattern P9.
+
+  # grep/rg: the search root is the first non-flag, non-pattern positional.
+  # Pattern: `<tool>` at segment start, then capture all trailing tokens.
+  for search_tool in grep rg; do
+    local stool_pattern
+    stool_pattern="(?:^|[;(]|&&|\|\|)\s*${search_tool}\b\K.*"
+    local stool_args
+    if stool_args=$(printf '%s' "$cmd" | grep -oP "$stool_pattern" | head -1); then
+      # Skip flags; the first non-flag token is the pattern, the second is the root.
+      local positional_count=0 token
+      for token in $stool_args; do
+        [[ "$token" == -* ]] && continue
+        ((positional_count++)) || true
+        if [[ $positional_count -eq 2 ]]; then
+          local norm
+          norm=$(normalise_path "$token" "$cmd_cwd")
+          if in_vault "$norm"; then
+            emit_decision "deny" "Do not use $search_tool to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
+          fi
+          break
+        fi
+      done
+    fi
+  done
+
+  # find: the search root is the first non-flag positional (path comes before predicates).
+  local find_pattern
+  find_pattern="(?:^|[;(]|&&|\|\|)\s*find\b\K.*"
+  local find_args
+  if find_args=$(printf '%s' "$cmd" | grep -oP "$find_pattern" | head -1); then
+    local token
+    for token in $find_args; do
+      [[ "$token" == -* ]] && continue
+      local norm
+      norm=$(normalise_path "$token" "$cmd_cwd")
+      if in_vault "$norm"; then
+        emit_decision "deny" "Do not use find to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
+      fi
+      break
+    done
   fi
 
   emit_defer
