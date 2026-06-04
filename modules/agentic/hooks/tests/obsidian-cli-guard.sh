@@ -745,6 +745,35 @@ fi
 rm -rf "$_memo_mock_dir" "$_memo_counter"
 
 # ---------------------------------------------------------------------------
+# Timeout: a hanging obsidian-cli vaults verbose must not block the hook
+# beyond a short bound (finding L2). Without a timeout a wedged Obsidian
+# instance would block every Bash tool call in the agent session.
+# ---------------------------------------------------------------------------
+
+_hang_mock_dir=$(mktemp -d)
+cat > "$_hang_mock_dir/obsidian-cli" << 'MOCK'
+#!/bin/bash
+if [[ "$1 $2" == "vaults verbose" ]]; then
+  sleep 30
+fi
+MOCK
+chmod +x "$_hang_mock_dir/obsidian-cli"
+
+_hang_start=$(date +%s)
+(unset OBSIDIAN_GUARD_VAULT_ROOTS; export PATH="$_hang_mock_dir:$PATH"; \
+  printf '%s' "$(make_input "rm /tmp/vault-alpha/Foo.md")" | "$HOOK" >/dev/null)
+_hang_elapsed=$(($(date +%s) - _hang_start))
+if [[ $_hang_elapsed -lt 10 ]]; then
+  echo "PASS: timeout: hook returned in ${_hang_elapsed}s despite hanging obsidian-cli"
+  ((PASS++))
+else
+  echo "FAIL: timeout: hook blocked ${_hang_elapsed}s on hanging obsidian-cli (expected <10s)"
+  ((FAIL++))
+fi
+
+rm -rf "$_hang_mock_dir"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 

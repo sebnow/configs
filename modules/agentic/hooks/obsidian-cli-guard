@@ -39,9 +39,13 @@ load_vault_roots() {
     _VAULT_ROOTS_CACHE="$OBSIDIAN_GUARD_VAULT_ROOTS"
     return 0
   fi
-  # Defer gracefully if obsidian-cli is unavailable or fails.
+  # Defer gracefully if obsidian-cli is unavailable, fails, or hangs.
+  # The 2s timeout bounds latency when Obsidian is unreachable so a wedged
+  # instance does not block every Bash tool call in the agent session.
+  # `timeout` exits 124 on timeout; the `if !` catches it the same way as a
+  # non-zero exit from obsidian-cli itself.
   local raw
-  if ! raw=$(obsidian-cli vaults verbose 2>/dev/null); then
+  if ! raw=$(timeout 2s obsidian-cli vaults verbose 2>/dev/null); then
     return 0
   fi
   # "obsidian-cli vaults verbose" emits tab-separated lines: <name>\t<path>
