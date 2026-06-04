@@ -237,7 +237,7 @@ main() {
   # Sorted alphabetically; reproduced verbatim from `obsidian-cli help` output.
   local KNOWN_SUBCOMMANDS=" aliases append backlinks base:create base:query base:views bases command commands create deadends delete dev:cdp dev:console dev:css dev:debug dev:dom dev:errors dev:mobile dev:screenshot devtools diff eval file files folder folders help history history:list history:open history:read history:restore homepage homepage:read hotkey hotkeys links move open orphans outline plugin plugin:disable plugin:enable plugin:install plugin:reload plugins plugins:enabled plugins:restrict plugin:uninstall prepend properties property:read property:remove property:set random random:read read recents reload rename restart search search:context search:open snippet:disable snippet:enable snippets snippets:enabled tab:open tabs tag tags task tasks theme theme:install themes theme:set theme:uninstall unique unresolved vault vaults version wordcount workspace "
 
-  # Extract the first subcommand-shaped token after `obsidian-cli` at a segment
+  # Extract every subcommand-shaped token following `obsidian-cli` at a segment
   # start. \K resets the match start so grep -oP returns only the token itself.
   # (?=[\s)]|$) asserts the token ends at whitespace, `)`, or end-of-string: this
   # excludes key=value first arguments (e.g. `vault=Knowledge` → no match because
@@ -246,11 +246,14 @@ main() {
   # like `(obsidian-cli headings)` are also matched.
   # Synonym table: known agent footguns mapped to the correct subcommand.
   # Additions here should be paired with a new deny-reason test above.
+  #
+  # The loop iterates every candidate on the line so a valid first call cannot
+  # mask an unknown later call (e.g. `obsidian-cli search ... && obsidian-cli headings`).
   local candidate suggested_subcommand
   local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*(?=[\s)]|$)"
-  if candidate=$(printf '%s' "$cmd" | grep -oP "$segment_pattern" | head -1) \
-      && [[ -n "$candidate" ]] \
-      && [[ " $KNOWN_SUBCOMMANDS " != *" $candidate "* ]]; then
+  while IFS= read -r candidate; do
+    [[ -z "$candidate" ]] && continue
+    [[ " $KNOWN_SUBCOMMANDS " == *" $candidate "* ]] && continue
     case "$candidate" in
       list-vaults)  suggested_subcommand="vaults" ;;
       headings)     suggested_subcommand="outline" ;;
@@ -265,7 +268,7 @@ main() {
     else
       emit_decision "deny" "\"$candidate\" is not a recognised obsidian-cli subcommand. Use: obsidian-cli <subcommand>. Run \`obsidian-cli help\` for the full list."
     fi
-  fi
+  done < <(printf '%s' "$cmd" | grep -oP "$segment_pattern" || true)
 
   # P7: filesystem mutation commands whose first non-flag argument lies inside
   # a vault root. The tools listed here — mv, cp, rm, mkdir, rmdir, touch, ln
