@@ -22,13 +22,21 @@ emit_defer() {
   exit 0
 }
 
-# vault_roots — prints zero or more absolute vault paths, one per line.
+# _VAULT_ROOTS_CACHE — script-level cache populated by load_vault_roots, read
+# by in_vault. Defined at script scope (not inside the loader) because
+# in_vault is called from command-substitution contexts in token loops and
+# any cache stored inside vault_roots itself would live in the subshell.
+_VAULT_ROOTS_CACHE=""
+
+# load_vault_roots — populates _VAULT_ROOTS_CACHE with zero or more absolute
+# vault paths, one per line. Must be called exactly once at the start of main
+# so that in_vault calls in token loops do not re-spawn obsidian-cli per token.
 # When OBSIDIAN_GUARD_VAULT_ROOTS is set (even empty), it wins.
-# Otherwise shells out to obsidian-cli; on any failure prints nothing.
+# Otherwise shells out to obsidian-cli; on any failure leaves the cache empty.
 # See .agents/prd-obsidian.md "vault-roots" contract.
-vault_roots() {
+load_vault_roots() {
   if [[ -v OBSIDIAN_GUARD_VAULT_ROOTS ]]; then
-    printf '%s' "$OBSIDIAN_GUARD_VAULT_ROOTS"
+    _VAULT_ROOTS_CACHE="$OBSIDIAN_GUARD_VAULT_ROOTS"
     return 0
   fi
   # Defer gracefully if obsidian-cli is unavailable or fails.
@@ -39,7 +47,9 @@ vault_roots() {
   # "obsidian-cli vaults verbose" emits tab-separated lines: <name>\t<path>
   # with no header row. Using -F'\t' avoids truncating paths that contain spaces,
   # which whitespace-based splitting ($2 without -F) would silently break.
-  printf '%s\n' "$raw" | awk -F'\t' '{print $2}' | sed 's|/$||'
+  if ! _VAULT_ROOTS_CACHE=$(printf '%s\n' "$raw" | awk -F'\t' '{print $2}' | sed 's|/$||'); then
+    _VAULT_ROOTS_CACHE=""
+  fi
 }
 
 # normalise_path resolves a raw path token from the inspected command.
@@ -70,19 +80,18 @@ normalise_path() {
 # in_vault returns 0 (true) when the given absolute path lies inside any of the
 # vault roots. Containment requires equality or prefix <root>/ to avoid
 # false-positives on sibling directories that share a name prefix.
+# Reads from the script-level _VAULT_ROOTS_CACHE populated by load_vault_roots;
+# never spawns a subprocess.
 in_vault() {
   local candidate="$1"
-  local roots
-  if ! roots=$(vault_roots); then
-    return 1
-  fi
+  [[ -z "$_VAULT_ROOTS_CACHE" ]] && return 1
   local root
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
     if [[ "$candidate" == "$root" || "$candidate" == "$root/"* ]]; then
       return 0
     fi
-  done <<< "$roots"
+  done <<< "$_VAULT_ROOTS_CACHE"
   return 1
 }
 
@@ -100,6 +109,10 @@ main() {
     cmd_cwd=""
   fi
   [[ -n "$cmd_cwd" ]] || cmd_cwd="$(pwd)"
+
+  # Populate the vault-roots cache once per hook invocation so that token
+  # loops below can call in_vault repeatedly without re-spawning obsidian-cli.
+  load_vault_roots
 
   # obsidian-cli must appear at a segment start so quoted uses like
   # `echo "obsidian-cli create --help"` (where it is an argument to another

@@ -708,6 +708,43 @@ assert_eq "defer P7 (literal * outside vault — unquoted glob must not expand t
 rm -rf /tmp/glob_guard_test
 
 # ---------------------------------------------------------------------------
+# Memoisation: vault_roots must be invoked at most once per hook invocation,
+# even when in_vault is called for many tokens (Bug 3 / finding M3)
+#
+# Strategy: a mock obsidian-cli that records each invocation to a counter file.
+# Send a command with many vault-adjacent tokens; the obsidian-cli subprocess
+# count must be <=1 regardless of token count.
+# ---------------------------------------------------------------------------
+
+_memo_mock_dir=$(mktemp -d)
+_memo_counter=$(mktemp)
+echo 0 > "$_memo_counter"
+cat > "$_memo_mock_dir/obsidian-cli" << MOCK
+#!/bin/bash
+n=\$(cat "$_memo_counter")
+echo \$((n+1)) > "$_memo_counter"
+if [[ "\$1 \$2" == "vaults verbose" ]]; then
+  printf 'Alpha\t/tmp/vault-alpha\n'
+fi
+MOCK
+chmod +x "$_memo_mock_dir/obsidian-cli"
+
+# Six-token mv command — without memoisation this triggers 6 obsidian-cli calls.
+_memo_cmd="mv /tmp/a.md /tmp/b.md /tmp/c.md /tmp/d.md /tmp/e.md /tmp/f.md"
+(unset OBSIDIAN_GUARD_VAULT_ROOTS; export PATH="$_memo_mock_dir:$PATH"; \
+  printf '%s' "$(make_input "$_memo_cmd")" | "$HOOK" >/dev/null)
+_memo_calls=$(cat "$_memo_counter")
+if [[ "$_memo_calls" -le 1 ]]; then
+  echo "PASS: memoisation: obsidian-cli vaults verbose invoked at most once ($_memo_calls)"
+  ((PASS++))
+else
+  echo "FAIL: memoisation: obsidian-cli vaults verbose invoked $_memo_calls times (expected <=1)"
+  ((FAIL++))
+fi
+
+rm -rf "$_memo_mock_dir" "$_memo_counter"
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
