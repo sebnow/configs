@@ -48,7 +48,7 @@ main() {
     wc_line=$(printf '%s' "$jj_out" | grep "^Working copy.*(@)" || true)
     if [[ -n "$wc_line" ]] && ! printf '%s' "$wc_line" | grep -q "(empty)"; then
       emit_block \
-        "Working copy @ has uncommitted changes. Run \`jj status\` to inspect, then \`jj commit -m MSG\` to seal the change (or \`jj squash\` to fold it into an existing description) before ending the session. Otherwise the user's next file edit will auto-commit into the dirty @." \
+        "Working copy @ is not empty. Commit changes you made this session (\`jj commit -m '<message>'\` or \`jj squash\`). For any changes you did not make, report them to the user rather than committing — they were pre-existing." \
         "vcs-working-copy-guard: jj @ not empty"
     fi
     exit 0
@@ -58,7 +58,7 @@ main() {
   if git_out=$(git status --porcelain 2>/dev/null); then
     if [[ -n "$git_out" ]]; then
       emit_block \
-        "Git working tree is not clean. Run \`git status\` to inspect, then \`git commit -m MSG\` to seal the change (or \`git stash\` to set it aside) before ending the session. Otherwise uncommitted work will remain exposed." \
+        "Git working tree is not clean. Commit changes you made this session (\`git add -p && git commit -m '<message>'\`). For any changes you did not make, report them to the user rather than committing — they were pre-existing." \
         "vcs-working-copy-guard: git working tree not clean"
     fi
   fi
