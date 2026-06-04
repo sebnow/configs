@@ -331,10 +331,24 @@ assert_contains "jj squash -r + -t: reason names --from" \
 result=$(run_hook "$(make_input "jj squash --from X --into Y -u" "$JJ_REPO")" | compact)
 assert_eq "jj squash --from X --into Y -u: defer" "{}" "$result"
 
-# jj squash valid chain: -r from a later chained command must not bleed into
-# the squash check and trigger the -r/--into incompatibility denial.
+# jj squash valid chain (squash first): -r from a later chained command must
+# not bleed into the squash check and trigger the -r/--into denial.
 result=$(run_hook "$(make_input "jj squash --from @ --into pvoosxnx --use-destination-message && jj status && jj log -r '::@ & ~root()' --limit 5" "$JJ_REPO")" | compact)
 assert_eq "jj squash valid chain with downstream -r: defer" "{}" "$result"
+
+# jj squash in middle of chain (squash not first): must still be checked.
+result=$(run_hook "$(make_input "jj status && jj squash" "$JJ_REPO")")
+assert_eq "jj squash (no flags) mid-chain: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# jj squash -u in middle of chain: must pass.
+result=$(run_hook "$(make_input "jj status && jj squash -u && jj log" "$JJ_REPO")" | compact)
+assert_eq "jj squash -u mid-chain: defer" "{}" "$result"
+
+# jj squash -r X --into Y mid-chain: must deny (invalid flag combo).
+result=$(run_hook "$(make_input "jj status && jj squash -r X --into Y -u" "$JJ_REPO")")
+assert_eq "jj squash -r + --into mid-chain: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
 
 # jj squash --from X --into Y -m foo → defer
 result=$(run_hook "$(make_input "jj squash --from X --into Y -m foo" "$JJ_REPO")" | compact)

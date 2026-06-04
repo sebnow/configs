@@ -23,6 +23,159 @@ emit_defer() {
   exit 0
 }
 
+# Check a single jj command segment (no chain separators) for interactive or
+# unsafe usage. Populates the global argv array from the segment, runs all jj
+# guards, and returns normally if the command is safe. Calls emit_decision
+# (which exits) if the command should be denied.
+#
+# NOTE: read -ra splits on IFS; shell-quoted flag values containing spaces are
+# split incorrectly. Acceptable here: we only inspect flag names, never flag
+# values. See the same note in the git block below.
+_check_jj_segment() {
+  local seg="$1"
+  read -ra argv <<< "$seg"
+
+  has_flag() {
+    local flag="$1" arg
+    for arg in "${argv[@]}"; do
+      [[ "$arg" == "$flag" || "$arg" == "$flag="* ]] && return 0
+    done
+    return 1
+  }
+
+  # Extract subcommand: first non-flag positional after "jj"
+  local jj_subcmd="" arg
+  for arg in "${argv[@]:1}"; do
+    if [[ "$arg" != -* ]]; then
+      jj_subcmd="$arg"
+      break
+    fi
+  done
+
+  # --help / -h is always informational and never opens $EDITOR.
+  if has_flag "--help" || has_flag "-h"; then
+    return
+  fi
+
+  case "$jj_subcmd" in
+    split)
+      # Check for at least one non-flag positional (fileset argument).
+      # Skip the value token of any known value-consuming flag of jj split.
+      # Attached forms (--flag=VAL, -f=VAL) start with '-' and are already
+      # excluded by the leading-dash check below.
+      local has_fileset=false skip_next=false
+      for arg in "${argv[@]:2}"; do
+        if $skip_next; then
+          skip_next=false
+          continue
+        fi
+        if [[ "$arg" == "-r" || "$arg" == "--revision" \
+           || "$arg" == "-m" || "$arg" == "--message" \
+           || "$arg" == "-o" || "$arg" == "--onto" \
+           || "$arg" == "-A" || "$arg" == "--insert-after" \
+           || "$arg" == "-B" || "$arg" == "--insert-before" \
+           || "$arg" == "--tool" \
+           || "$arg" == "-R" || "$arg" == "--repository" \
+           || "$arg" == "--at-operation" \
+           || "$arg" == "--color" \
+           || "$arg" == "--config" \
+           || "$arg" == "--config-file" ]]; then
+          skip_next=true
+          continue
+        fi
+        if [[ "$arg" != -* ]]; then
+          has_fileset=true
+          break
+        fi
+      done
+      if ! $has_fileset; then
+        emit_decision "deny" \
+          "jj split requires FILESETS to be non-interactive. Use: jj split FILESETS (e.g. jj split path/to/file). Without filesets, jj split opens an interactive diff editor that will hang the agent."
+      fi
+      return
+      ;;
+    new)
+      # Deny bare "jj new" — it creates an empty commit on @ with no
+      # deliberate intent signal, and is the giveaway of the
+      # describe-then-new anti-pattern.  Any of the following indicates
+      # intent and passes through:
+      #   - a non-flag positional (the target revision)
+      #   - -m / --message  (sets commit description)
+      #   - -A / --insert-after / --after
+      #   - -B / --insert-before / --before
+      # Value-consuming flags that must be skipped so their value token is
+      # not mistaken for a positional revision:
+      #   -R --repository --at-operation --at-op --color --config --config-file
+      # Intent flags (-m/-A/-B) are also value-consuming but are checked
+      # before the skip so they short-circuit to defer.
+      local has_revision=false skip_next=false
+      for arg in "${argv[@]:2}"; do
+        if $skip_next; then
+          skip_next=false
+          continue
+        fi
+        # Intent flags: presence alone is sufficient to defer
+        if [[ "$arg" == "-m"  || "$arg" == "--message" \
+           || "$arg" == "-A"  || "$arg" == "--insert-after"  || "$arg" == "--after" \
+           || "$arg" == "-B"  || "$arg" == "--insert-before" || "$arg" == "--before" ]]; then
+          has_revision=true
+          break
+        fi
+        # Global value-consuming flags: skip the next token
+        if [[ "$arg" == "-R"  || "$arg" == "--repository" \
+           || "$arg" == "--at-operation" || "$arg" == "--at-op" \
+           || "$arg" == "--color" \
+           || "$arg" == "--config" \
+           || "$arg" == "--config-file" ]]; then
+          skip_next=true
+          continue
+        fi
+        if [[ "$arg" != -* ]]; then
+          has_revision=true
+          break
+        fi
+      done
+      if ! $has_revision; then
+        emit_decision "deny" \
+          "bare 'jj new' creates an empty commit with no intent signal. Use 'jj commit -m MSG' to finalize current work, or 'jj new <rev>' to position on a specific revision."
+      fi
+      return
+      ;;
+    describe|commit|metaedit)
+      if ! has_flag "-m" && ! has_flag "--message"; then
+        emit_decision "deny" \
+          "jj $jj_subcmd needs -m/--message; running interactively will hang the agent."
+      fi
+      ;;
+    squash)
+      # -r and --into are mutually exclusive in jj itself; catch the combo
+      # before the agent hits the terse jj error, and name the alternative.
+      if { has_flag "-r" || has_flag "--revision"; } \
+         && { has_flag "--into" || has_flag "-t" || has_flag "--to"; }; then
+        emit_decision "deny" \
+          "jj squash: -r/--revision is incompatible with --into. Use \`jj squash --from SRC --into DEST\` instead of \`-r SRC --into DEST\`."
+      fi
+      # Covers both plain squash and squash --into <dest>; the subcommand is
+      # always "squash" regardless of --into.
+      if ! has_flag "-m" && ! has_flag "--message" \
+         && ! has_flag "-u" && ! has_flag "--use-destination-message"; then
+        emit_decision "deny" \
+          "jj squash needs -m/-u (running interactively will hang the agent). Valid forms: \`jj squash {-u|-m MSG}\` (@ → parent), \`jj squash -r REV {-u|-m MSG}\` (REV → REV's parent), \`jj squash --from SRC --into DEST {-u|-m MSG}\` (SRC → DEST). Do not mix -r with --into."
+      fi
+      ;;
+    diffedit|arrange)
+      emit_decision "deny" \
+        "jj $jj_subcmd is always interactive and will hang the agent."
+      ;;
+    resolve)
+      if ! has_flag "--tool"; then
+        emit_decision "deny" \
+          "jj resolve needs --tool; running interactively will hang the agent."
+      fi
+      ;;
+  esac
+}
+
 main() {
   # Read stdin once
   if ! input=$(cat); then
@@ -40,165 +193,21 @@ main() {
   trimmed="${cmd#"${cmd%%[! ]*}"}"  # strip leading whitespace
 
   # Block jj commands that would open $EDITOR and hang the agent.
+  # Check every jj command in the chain, not just the first: a dangerous
+  # subcommand at any position (e.g. "jj status && jj squash") must be caught.
+  # Split on ' && ', ' || ', ' ; ', and bare ';' via sed; inspect each segment
+  # that starts with 'jj '.
   # NOTE: only matches literal "jj ..." — full-path invocations like
   # /usr/bin/jj squash bypass this block (same limitation as the git guard below).
-  if [[ "$trimmed" == jj\ * ]]; then
-    # NOTE: read -ra splits on IFS; shell-quoted flag values containing spaces
-    # are split incorrectly. Acceptable here: we only inspect flag names,
-    # never flag values. See the same note in the git block below.
-    #
-    # Strip command-chain separators so flags from later commands in a chain
-    # (e.g. "&& jj log -r ...") do not bleed into has_flag checks for the
-    # first command.
-    jj_first="${trimmed%% &&*}"
-    jj_first="${jj_first%% ||*}"
-    jj_first="${jj_first%% ;*}"
-    read -ra argv <<< "$jj_first"
-
-    has_flag() {
-      local flag="$1" arg
-      for arg in "${argv[@]}"; do
-        [[ "$arg" == "$flag" || "$arg" == "$flag="* ]] && return 0
-      done
-      return 1
-    }
-
-    # Extract subcommand: first non-flag positional after "jj"
-    jj_subcmd=""
-    for arg in "${argv[@]:1}"; do
-      if [[ "$arg" != -* ]]; then
-        jj_subcmd="$arg"
-        break
-      fi
-    done
-
-    # --help / -h is always informational and never opens $EDITOR.
-    if has_flag "--help" || has_flag "-h"; then
-      emit_defer
+  _jj_found=false
+  while IFS= read -r _seg; do
+    _seg="${_seg#"${_seg%%[! ]*}"}"  # trim leading whitespace
+    if [[ "$_seg" == jj\ * ]]; then
+      _jj_found=true
+      _check_jj_segment "$_seg"
     fi
-
-    case "$jj_subcmd" in
-      split)
-        # Check for at least one non-flag positional (fileset argument).
-        # Skip the value token of any known value-consuming flag of jj split.
-        # Attached forms (--flag=VAL, -f=VAL) start with '-' and are already
-        # excluded by the leading-dash check below.
-        has_fileset=false
-        skip_next=false
-        for arg in "${argv[@]:2}"; do
-          if $skip_next; then
-            skip_next=false
-            continue
-          fi
-          if [[ "$arg" == "-r" || "$arg" == "--revision" \
-             || "$arg" == "-m" || "$arg" == "--message" \
-             || "$arg" == "-o" || "$arg" == "--onto" \
-             || "$arg" == "-A" || "$arg" == "--insert-after" \
-             || "$arg" == "-B" || "$arg" == "--insert-before" \
-             || "$arg" == "--tool" \
-             || "$arg" == "-R" || "$arg" == "--repository" \
-             || "$arg" == "--at-operation" \
-             || "$arg" == "--color" \
-             || "$arg" == "--config" \
-             || "$arg" == "--config-file" ]]; then
-            skip_next=true
-            continue
-          fi
-          if [[ "$arg" != -* ]]; then
-            has_fileset=true
-            break
-          fi
-        done
-        if ! $has_fileset; then
-          emit_decision "deny" \
-            "jj split requires FILESETS to be non-interactive. Use: jj split FILESETS (e.g. jj split path/to/file). Without filesets, jj split opens an interactive diff editor that will hang the agent."
-        fi
-        emit_defer
-        ;;
-      new)
-        # Deny bare "jj new" — it creates an empty commit on @ with no
-        # deliberate intent signal, and is the giveaway of the
-        # describe-then-new anti-pattern.  Any of the following indicates
-        # intent and passes through:
-        #   - a non-flag positional (the target revision)
-        #   - -m / --message  (sets commit description)
-        #   - -A / --insert-after / --after
-        #   - -B / --insert-before / --before
-        # Value-consuming flags that must be skipped so their value token is
-        # not mistaken for a positional revision:
-        #   -R --repository --at-operation --at-op --color --config --config-file
-        # Intent flags (-m/-A/-B) are also value-consuming but are checked
-        # before the skip so they short-circuit to defer.
-        has_revision=false
-        skip_next=false
-        for arg in "${argv[@]:2}"; do
-          if $skip_next; then
-            skip_next=false
-            continue
-          fi
-          # Intent flags: presence alone is sufficient to defer
-          if [[ "$arg" == "-m"  || "$arg" == "--message" \
-             || "$arg" == "-A"  || "$arg" == "--insert-after"  || "$arg" == "--after" \
-             || "$arg" == "-B"  || "$arg" == "--insert-before" || "$arg" == "--before" ]]; then
-            has_revision=true
-            break
-          fi
-          # Global value-consuming flags: skip the next token
-          if [[ "$arg" == "-R"  || "$arg" == "--repository" \
-             || "$arg" == "--at-operation" || "$arg" == "--at-op" \
-             || "$arg" == "--color" \
-             || "$arg" == "--config" \
-             || "$arg" == "--config-file" ]]; then
-            skip_next=true
-            continue
-          fi
-          if [[ "$arg" != -* ]]; then
-            has_revision=true
-            break
-          fi
-        done
-        if ! $has_revision; then
-          emit_decision "deny" \
-            "bare 'jj new' creates an empty commit with no intent signal. Use 'jj commit -m MSG' to finalize current work, or 'jj new <rev>' to position on a specific revision."
-        fi
-        emit_defer
-        ;;
-      describe|commit|metaedit)
-        if ! has_flag "-m" && ! has_flag "--message"; then
-          emit_decision "deny" \
-            "jj $jj_subcmd needs -m/--message; running interactively will hang the agent."
-        fi
-        ;;
-      squash)
-        # -r and --into are mutually exclusive in jj itself; catch the combo
-        # before the agent hits the terse jj error, and name the alternative.
-        if { has_flag "-r" || has_flag "--revision"; } \
-           && { has_flag "--into" || has_flag "-t" || has_flag "--to"; }; then
-          emit_decision "deny" \
-            "jj squash: -r/--revision is incompatible with --into. Use \`jj squash --from SRC --into DEST\` instead of \`-r SRC --into DEST\`."
-        fi
-        # Covers both plain squash and squash --into <dest>; the subcommand is
-        # always "squash" regardless of --into.
-        if ! has_flag "-m" && ! has_flag "--message" \
-           && ! has_flag "-u" && ! has_flag "--use-destination-message"; then
-          emit_decision "deny" \
-            "jj squash needs -m/-u (running interactively will hang the agent). Valid forms: \`jj squash {-u|-m MSG}\` (@ → parent), \`jj squash -r REV {-u|-m MSG}\` (REV → REV's parent), \`jj squash --from SRC --into DEST {-u|-m MSG}\` (SRC → DEST). Do not mix -r with --into."
-        fi
-        ;;
-      diffedit|arrange)
-        emit_decision "deny" \
-          "jj $jj_subcmd is always interactive and will hang the agent."
-        ;;
-      resolve)
-        if ! has_flag "--tool"; then
-          emit_decision "deny" \
-            "jj resolve needs --tool; running interactively will hang the agent."
-        fi
-        ;;
-    esac
-
-    emit_defer
-  fi
+  done < <(printf '%s\n' "$trimmed" | sed 's/ && /\n/g; s/ || /\n/g; s/ ; /\n/g; s/;/\n/g')
+  $_jj_found && emit_defer
 
   # Non-git commands: defer to existing permission system
   if [[ "$trimmed" != git\ * && "$trimmed" != "git" ]]; then
