@@ -53,7 +53,10 @@ normalise_path() {
   elif [[ "$raw" == \'*\' ]]; then
     raw="${raw:1:${#raw}-2}"
   fi
-  # Expand leading ~/
+  # Match and expand a literal ~/ prefix from the inspected command string.
+  # SC2088: tilde not expanding in quotes is intentional — we match the literal
+  # characters ~/ that an agent typed, then expand to $HOME ourselves.
+  # shellcheck disable=SC2088
   if [[ "$raw" == "~/"* ]]; then
     raw="$HOME/${raw:2}"
   fi
