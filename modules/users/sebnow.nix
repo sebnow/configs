@@ -38,6 +38,21 @@ in
           ];
         };
 
+        home.file.".face".source = pkgs.fetchurl {
+          url = "https://blossom.vlk.sh/90c7d6c27ac628382544fdd18e3ceb0a0e7b6db9479a9dea8a71ac9d7d19c33c";
+          hash = "sha256-kMfWwnrGKDglRP3RjjzrCg57bblHmp3qinGsnX0Zwzw=";
+        };
+
+        home.file."Pictures/Wallpapers/neon-wolf-1a8c6d1b.png".source = pkgs.fetchurl {
+          url = "https://blossom.vlk.sh/1a8c6d1b275b146a2b9e8abaa36a555d8cd6faf52bbdad85d688fb93314ce6a0";
+          hash = "sha256-GoxtGydbFGornoq6o2pVXYzW+vUrva2F1oj7kzFM5qA=";
+        };
+
+        home.file."Pictures/Wallpapers/neon-wolf-171011c2.jpg".source = pkgs.fetchurl {
+          url = "https://blossom.vlk.sh/171011c2c5f11998c2914ba12c029d79287ed28153b43292f59fce6fb1c0936e";
+          hash = "sha256-FxARwsXxGZjCkUuhLAKdeSh+0oFTtDKS9Z/Ob7HAk24=";
+        };
+
         home.username = "sebnow";
         home.homeDirectory = "/home/sebnow";
         home.stateVersion = "23.05";
