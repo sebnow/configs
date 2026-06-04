@@ -35,25 +35,42 @@ _VAULT_ROOTS_CACHE=""
 # Otherwise shells out to obsidian-cli; on any failure leaves the cache empty.
 # See .agents/prd-obsidian.md "vault-roots" contract.
 load_vault_roots() {
+  local raw_roots
   if [[ -v OBSIDIAN_GUARD_VAULT_ROOTS ]]; then
-    _VAULT_ROOTS_CACHE="$OBSIDIAN_GUARD_VAULT_ROOTS"
-    return 0
+    raw_roots="$OBSIDIAN_GUARD_VAULT_ROOTS"
+  else
+    # Defer gracefully if obsidian-cli is unavailable, fails, or hangs.
+    # The 2s timeout bounds latency when Obsidian is unreachable so a wedged
+    # instance does not block every Bash tool call in the agent session.
+    # `timeout` exits 124 on timeout; the `if !` catches it the same way as a
+    # non-zero exit from obsidian-cli itself.
+    local raw
+    if ! raw=$(timeout 2s obsidian-cli vaults verbose 2>/dev/null); then
+      return 0
+    fi
+    # "obsidian-cli vaults verbose" emits tab-separated lines: <name>\t<path>
+    # with no header row. Using -F'\t' avoids truncating paths that contain spaces,
+    # which whitespace-based splitting ($2 without -F) would silently break.
+    if ! raw_roots=$(printf '%s\n' "$raw" | awk -F'\t' '{print $2}' | sed 's|/$||'); then
+      return 0
+    fi
   fi
-  # Defer gracefully if obsidian-cli is unavailable, fails, or hangs.
-  # The 2s timeout bounds latency when Obsidian is unreachable so a wedged
-  # instance does not block every Bash tool call in the agent session.
-  # `timeout` exits 124 on timeout; the `if !` catches it the same way as a
-  # non-zero exit from obsidian-cli itself.
-  local raw
-  if ! raw=$(timeout 2s obsidian-cli vaults verbose 2>/dev/null); then
-    return 0
-  fi
-  # "obsidian-cli vaults verbose" emits tab-separated lines: <name>\t<path>
-  # with no header row. Using -F'\t' avoids truncating paths that contain spaces,
-  # which whitespace-based splitting ($2 without -F) would silently break.
-  if ! _VAULT_ROOTS_CACHE=$(printf '%s\n' "$raw" | awk -F'\t' '{print $2}' | sed 's|/$||'); then
-    _VAULT_ROOTS_CACHE=""
-  fi
+  # Canonicalise each root so symlinked vault paths match candidates that
+  # normalise_path has resolved via realpath -m. Without this, a vault root
+  # supplied as ~/Vaults/X (a symlink) never matches a candidate that resolves
+  # to /mnt/data/x/... — the prefix check sees the unresolved root and fails.
+  # realpath -m tolerates non-existent paths (returning them with .. and .
+  # collapsed) so missing vault directories degrade to literal comparison.
+  local root canonical=""
+  while IFS= read -r root; do
+    [[ -z "$root" ]] && continue
+    local resolved
+    if ! resolved=$(realpath -m -- "$root" 2>/dev/null); then
+      resolved="$root"
+    fi
+    canonical+="$resolved"$'\n'
+  done <<< "$raw_roots"
+  _VAULT_ROOTS_CACHE="${canonical%$'\n'}"
 }
 
 # normalise_path resolves a raw path token from the inspected command.

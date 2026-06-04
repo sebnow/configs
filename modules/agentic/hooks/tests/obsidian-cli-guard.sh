@@ -774,6 +774,33 @@ fi
 rm -rf "$_hang_mock_dir"
 
 # ---------------------------------------------------------------------------
+# Symlink resolution: a vault root reached via a symlink must still match
+# candidates resolved by realpath (finding L1). Without canonicalisation,
+# the candidate's realpath points at the real directory while the vault
+# root stays at the symlink path, and in_vault returns false.
+# ---------------------------------------------------------------------------
+
+mkdir -p /tmp/symlink_real_vault
+ln -sfn /tmp/symlink_real_vault /tmp/symlink_vault_link
+
+# Vault root supplied as the symlink path; candidate resolves to the
+# real path under it. The hook must canonicalise the root to match.
+result=$(run_with_vault "/tmp/symlink_vault_link" \
+  "$(make_input "rm /tmp/symlink_real_vault/Foo.md")")
+assert_eq "deny L1 (symlinked vault root matches canonical candidate)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# Reverse: vault root supplied as real path; candidate addressed via symlink.
+# Candidate canonicalises to the real path, so this should also deny.
+result=$(run_with_vault "/tmp/symlink_real_vault" \
+  "$(make_input "rm /tmp/symlink_vault_link/Foo.md")")
+assert_eq "deny L1 (real vault root matches symlinked candidate)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+rm -f /tmp/symlink_vault_link
+rm -rf /tmp/symlink_real_vault
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
