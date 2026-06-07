@@ -25,4 +25,27 @@
       };
     });
   };
+
+  flake.overlays.nono-packs = final: prev: {
+    mkNonoPack = prev.callPackage ../../pkgs/nono-pack { };
+    nonoPacks = {
+      claude = final.mkNonoPack {
+        name = "claude";
+        version = "0.0.16";
+        hash = "sha256-EyipJ/yHSSlSIComOHIQqtWC9tTyPm1DEQHWRjjbkXM=";
+      };
+    };
+  };
+
+  flake.modules.homeManager.agentic =
+    { pkgs, ... }:
+    {
+      programs.claude-code.plugins = [ pkgs.nonoPacks.claude ];
+
+      # `nono pull` installs profiles to ~/.config/nono/profiles/. The pack's
+      # `policy.json` is the profile payload; install_as: "claude" in its
+      # package.json determines the filename.
+      home.file.".config/nono/profiles/claude.json".source =
+        "${pkgs.nonoPacks.claude}/policy.json";
+    };
 }
