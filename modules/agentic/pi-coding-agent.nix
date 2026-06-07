@@ -26,6 +26,9 @@
           "github-copilot/claude-sonnet-4.6"
           "github-copilot/gpt-5.3-codex"
         ];
+        packages = [
+          { source = "${pkgs.nonoPacks.pi}"; }
+        ];
       };
 
       home.file.".pi/agent/AGENTS.md".source = ./agents.md;
