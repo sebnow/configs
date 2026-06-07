@@ -16,7 +16,9 @@
 
           home.packages = with pkgs; [
             iosevka
+            lato
             nerd-fonts.iosevka-term
+            raleway
           ];
         })
       ];
