@@ -34,6 +34,11 @@
         version = "0.0.16";
         hash = "sha256-EyipJ/yHSSlSIComOHIQqtWC9tTyPm1DEQHWRjjbkXM=";
       };
+      pi = final.mkNonoPack {
+        name = "pi";
+        version = "0.0.4";
+        hash = "sha256-ktZZxjEhHBkwlHNeUUZsuB9oErc8WVmrmwvytMnDk6Q=";
+      };
     };
   };
 
@@ -43,9 +48,26 @@
       programs.claude-code.plugins = [ pkgs.nonoPacks.claude ];
 
       # `nono pull` installs profiles to ~/.config/nono/profiles/. The pack's
-      # `policy.json` is the profile payload; install_as: "claude" in its
-      # package.json determines the filename.
+      # `policy.json` is the profile payload; install_as in its package.json
+      # determines the filename.
       home.file.".config/nono/profiles/claude.json".source =
         "${pkgs.nonoPacks.claude}/policy.json";
+      home.file.".config/nono/profiles/pi.json".source =
+        "${pkgs.nonoPacks.pi}/policy.json";
+
+      # Composite profile: merges claude + pi rules so a single sandbox can
+      # host both agents. `extends` resolves left-to-right; the later base
+      # wins on conflicting rules. Inspect with `nono profile show claude-pi`.
+      home.file.".config/nono/profiles/claude-pi.json".text = builtins.toJSON {
+        meta = {
+          name = "claude-pi";
+          version = "1.0.0";
+          description = "Composite profile: claude + pi";
+        };
+        extends = [
+          "claude"
+          "pi"
+        ];
+      };
     };
 }
