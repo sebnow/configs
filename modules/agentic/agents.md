@@ -39,16 +39,6 @@ plan the commit sequence before starting.
 List changes, identify dependencies,
 and complete commits in order.
 
-# Go Guidelines
-
-For Go files:
-
-- Use `go doc` to verify APIs of libraries
-
-# Tool Guidelines
-
-- Use `jq` for manipulating JSON
-
 # Knowledge Vaults
 
 <knowledge-vaults>
