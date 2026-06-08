@@ -84,6 +84,12 @@ window-rule {
     }
 }
 
+layer-rule {
+    match namespace="^noctalia-notifications-.*$"
+
+    block-out-from "screencast"
+}
+
 blur {
     passes 5
     offset 5.0
