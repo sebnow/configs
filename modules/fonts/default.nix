@@ -15,11 +15,18 @@
           };
 
           home.packages = with pkgs; [
+            font-bitstream-type1
             iosevka
             lato
             nerd-fonts.iosevka-term
             raleway
           ];
+
+          fonts.fontconfig.defaultFonts = {
+            monospace = [ "Iosevka" ];
+            sansSerif = [ "Lato" ];
+            serif = [ "Bistream Charter" ];
+          };
         })
       ];
     };
