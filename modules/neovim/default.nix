@@ -89,6 +89,7 @@
       };
 
       catppuccin.nvim.settings = {
+        transparent_background = true;
         integrations = {
           diffview = true;
           markview = true;
