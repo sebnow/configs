@@ -60,9 +60,11 @@
         # libglvnd cannot find EGL without nixGL injecting LD_LIBRARY_PATH and
         # __EGL_VENDOR_LIBRARY_FILENAMES. Wrap the package so the spawn-at-startup
         # entry in config.kdl resolves to the nixGL wrapper via PATH.
-        package = config.lib.nixGL.wrap (
-          inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default
-        );
+        package =
+          let
+            base = inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          in
+          if config.targets.genericLinux.enable then config.lib.nixGL.wrap base else base;
         settings = lib.recursiveUpdate (lib.importJSON ./noctalia/settings.json) {
           wallpaper.directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
           general.avatarImage = "${config.home.homeDirectory}/.face";
