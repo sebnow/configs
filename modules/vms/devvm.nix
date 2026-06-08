@@ -23,6 +23,9 @@ in
 
         hardware.graphics.enable = true;
         security.polkit.enable = true;
+        # Required for GSettings dconf backend (GIO_EXTRA_MODULES); without this
+        # libadwaita cannot read color-scheme from dconf and defaults to light.
+        programs.dconf.enable = true;
 
         # Provide a DRM/KMS-capable GPU for Wayland compositing.
         # Without a virtio-vga device, x86 QEMU defaults to std VGA which has no
