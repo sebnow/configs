@@ -100,6 +100,7 @@ in
 
               programs.ghostty.enable = true;
               programs.ghostty.isDefault = true;
+              programs.ghostty.settings.theme = "Catppuccin Mocha";
               programs.direnv = {
                 enable = true;
                 nix-direnv.enable = true;
