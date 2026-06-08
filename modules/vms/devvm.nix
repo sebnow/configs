@@ -44,13 +44,13 @@ in
           enable = true;
           settings.default_session = {
             command = "${pkgs.niri}/bin/niri --session";
-            user = "sebnow";
+            user = "dev";
           };
         };
 
         environment.systemPackages = [ pkgs.niri ];
 
-        users.users.sebnow = {
+        users.users.dev = {
           isNormalUser = true;
           extraGroups = [
             "wheel"
@@ -65,14 +65,13 @@ in
         i18n.defaultLocale = "en_US.UTF-8";
         system.stateVersion = "26.05";
 
-        nixpkgs.config.allowUnfreePredicate =
-          pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
+        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "claude-code" ];
 
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
           backupFileExtension = "backup";
-          users.sebnow =
+          users.dev =
             { ... }:
             {
               imports = [
@@ -85,19 +84,16 @@ in
                 homeManager.shell
                 homeManager.source-control
                 homeManager.terminals
-                homeManager.tmux
               ];
 
-              home.username = "sebnow";
-              home.homeDirectory = "/home/sebnow";
+              home.username = "dev";
+              home.homeDirectory = "/home/dev";
               home.stateVersion = "26.05";
               home.packages = with pkgs; [
                 bottom
                 fd
                 jq
               ];
-
-              catppuccin.accent = "blue";
 
               programs.ghostty.enable = true;
               programs.ghostty.isDefault = true;
