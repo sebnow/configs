@@ -22,7 +22,13 @@
           catppuccin.ghostty.enable = false;
 
           programs.ghostty = {
-            package = if pkgs.stdenv.isDarwin then null else (config.lib.nixGL.wrap pkgs.ghostty);
+            package =
+              if pkgs.stdenv.isDarwin then
+                null
+              else if config.targets.genericLinux.enable then
+                config.lib.nixGL.wrap pkgs.ghostty
+              else
+                pkgs.ghostty;
             settings = {
               font-size = if pkgs.stdenv.isDarwin then 14 else 12;
               font-family = "IosevkaTerm NF";
@@ -47,7 +53,7 @@
 
           home.sessionVariables.TERMINAL = lib.mkIf ghosttyCfg.isDefault "ghostty";
         })
-        (lib.mkIf (ghosttyCfg.enable && pkgs.stdenv.isLinux) {
+        (lib.mkIf (ghosttyCfg.enable && pkgs.stdenv.isLinux && config.targets.genericLinux.enable) {
           xdg.configFile."systemd/user/app-com.mitchellh.ghostty.service" = lib.mkForce {
             text =
               let
@@ -63,7 +69,7 @@
         # Kitty
         (lib.mkIf kittyCfg.enable {
           programs.kitty = {
-            package = config.lib.nixGL.wrap pkgs.kitty;
+            package = if config.targets.genericLinux.enable then config.lib.nixGL.wrap pkgs.kitty else pkgs.kitty;
             font = {
               name = "IosevkaTerm NF";
               size = 12;
