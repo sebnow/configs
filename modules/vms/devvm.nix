@@ -24,6 +24,15 @@ in
         hardware.graphics.enable = true;
         security.polkit.enable = true;
 
+        # Provide a DRM/KMS-capable GPU for Wayland compositing.
+        # Without a virtio-vga device, x86 QEMU defaults to std VGA which has no
+        # DRM device and niri's smithay backend hangs at initialisation.
+        # virtio-vga-gl enables Virgil3D (host-accelerated 3D via virgl).
+        virtualisation.vmVariant.virtualisation.qemu.options = [
+          "-device virtio-vga-gl"
+          "-display gtk,gl=on"
+        ];
+
         services.pipewire = {
           enable = true;
           alsa.enable = true;
