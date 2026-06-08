@@ -76,6 +76,19 @@ window-rule {
     clip-to-geometry true
 }
 
+window-rule {
+    match app-id="^com\\.mitchellh\\.ghostty$"
+
+    background-effect {
+        blur true
+    }
+}
+
+blur {
+    passes 5
+    offset 5.0
+}
+
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
@@ -85,7 +98,8 @@ binds {
             "--gtk-titlebar=false" \
             "--window-show-tab-bar=never" \
             "--window-padding-x=5" \
-            "--window-padding-y=3"
+            "--window-padding-y=3" \
+            "--background-opacity=0.80"
     }
     Mod+B { spawn "zen-browser"; }
     Mod+P { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
