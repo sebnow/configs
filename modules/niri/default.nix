@@ -79,11 +79,7 @@
       home.packages = with pkgs; [
         brightnessctl
         cliphist
-        imagemagick
         playerctl
-        python3
-        wireplumber
-        wlsunset
       ];
     };
 }
