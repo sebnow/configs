@@ -52,7 +52,7 @@
       };
     in
     {
-      imports = [ inputs.noctalia-shell.homeModules.default ];
+      imports = [ inputs.noctalia.homeModules.default ];
 
       programs.noctalia-shell = {
         enable = true;
@@ -62,7 +62,7 @@
         # entry in config.kdl resolves to the nixGL wrapper via PATH.
         package =
           let
-            base = inputs.noctalia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
+            base = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
           in
           if config.targets.genericLinux.enable then config.lib.nixGL.wrap base else base;
         settings = lib.recursiveUpdate (lib.importJSON ./noctalia/settings.json) {
