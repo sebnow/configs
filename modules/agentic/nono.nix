@@ -70,6 +70,7 @@
               read = [
                 "$HOME/.config/git"
                 "$HOME/.config/jj"
+                "/etc/passwd" # git resolves the user through it
               ];
             };
           }
