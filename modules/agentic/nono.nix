@@ -9,21 +9,23 @@
   # reads `args.cargoHash` (the original call's hash), not finalAttrs', so
   # `overrideAttrs` on `cargoHash` alone has no effect.
   flake.overlays.nono = _final: prev: {
-    nono = prev.nono.overrideAttrs (finalAttrs: _prevAttrs: {
-      version = "0.62.0";
+    nono = prev.nono.overrideAttrs (
+      finalAttrs: _prevAttrs: {
+        version = "0.62.0";
 
-      src = prev.fetchFromGitHub {
-        owner = "always-further";
-        repo = "nono";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-sJ8RuYOtAO5WqGJSSQnCdK4eCDszIACzrZzbmrdoeoI=";
-      };
+        src = prev.fetchFromGitHub {
+          owner = "always-further";
+          repo = "nono";
+          tag = "v${finalAttrs.version}";
+          hash = "sha256-sJ8RuYOtAO5WqGJSSQnCdK4eCDszIACzrZzbmrdoeoI=";
+        };
 
-      cargoDeps = prev.rustPlatform.fetchCargoVendor {
-        inherit (finalAttrs) pname version src;
-        hash = "sha256-kmktowTunziarCoCOHht12DrIXyDpWgK7XZAAf4I8ok=";
-      };
-    });
+        cargoDeps = prev.rustPlatform.fetchCargoVendor {
+          inherit (finalAttrs) pname version src;
+          hash = "sha256-kmktowTunziarCoCOHht12DrIXyDpWgK7XZAAf4I8ok=";
+        };
+      }
+    );
   };
 
   flake.overlays.nono-packs = final: prev: {
@@ -43,17 +45,36 @@
   };
 
   flake.modules.homeManager.agentic =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       programs.claude-code.plugins = [ pkgs.nonoPacks.claude ];
 
       # `nono pull` installs profiles to ~/.config/nono/profiles/. The pack's
       # `policy.json` is the profile payload; install_as in its package.json
       # determines the filename.
-      home.file.".config/nono/profiles/claude.json".source =
-        "${pkgs.nonoPacks.claude}/policy.json";
-      home.file.".config/nono/profiles/pi.json".source =
-        "${pkgs.nonoPacks.pi}/policy.json";
+      home.file.".config/nono/profiles/claude.json".text =
+        let
+          base = builtins.fromJSON (builtins.readFile "${pkgs.nonoPacks.claude}/policy.json");
+          goVars = config.home.sessionVariables;
+        in
+        builtins.toJSON (
+          base
+          // {
+            filesystem = base.filesystem // {
+              allow = base.filesystem.allow ++ [
+                "${config.xdg.cacheHome}/go-build"
+                "/tmp"
+                goVars.GOMODCACHE
+                goVars.GOPATH
+              ];
+              read = [
+                "$HOME/.config/git"
+                "$HOME/.config/jj"
+              ];
+            };
+          }
+        );
+      home.file.".config/nono/profiles/pi.json".source = "${pkgs.nonoPacks.pi}/policy.json";
 
       # Composite profile: merges claude + pi rules so a single sandbox can
       # host both agents. `extends` resolves left-to-right; the later base
