@@ -94,6 +94,8 @@ The `query=` value accepts Obsidian's full search syntax.
 | `query="project -draft"` | exclude term |
 | `query="meeting (work OR personal)"` | grouped OR |
 
+Multi-word values without inner quotes are AND content matches across body prose, not exact-phrase or filename matches. Wrap with escaped quotes (`query="\"exact phrase\""`) for the literal phrase, or use the `file:` operator below to match against filenames.
+
 ### Search Operators
 
 | Operator | Purpose | Example |
@@ -113,6 +115,14 @@ The `query=` value accepts Obsidian's full search syntax.
 
 `tag:` does not traverse tag hierarchies — `tag:#parent` does not match `#parent/child`.
 `block:` is slower than other operators (parses all Markdown).
+
+### Checking Whether a Note Exists
+
+1. **By known path** — `obsidian-cli file path="Notes/Example Topic.md"`. Returns metadata for the note, or prints `Error: File "<p>" not found.` to stdout when absent. Exit code is 0 either way — detect absence by checking the output, not `$?`.
+
+2. **By title only** — `obsidian-cli search query='file:"Example Topic"' format=json | jq -r '.[]'`. The `file:` operator matches against filenames, so the result set is not diluted by body-prose matches. Empty array means no such note.
+
+A bare multi-word `search query=` is a content search — it will both miss exact-title notes whose body does not repeat the title, and bury the right note among AND-matches across body prose. Reach for `file` or the `file:` operator instead when you only want to know whether a note exists.
 
 ### Property (Frontmatter) Queries
 
