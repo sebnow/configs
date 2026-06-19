@@ -273,6 +273,7 @@
         ignores = [
           ".agents/"
           ".claude/CLAUDE.local.md"
+          ".claude/scheduled_tasks.lock"
           ".claude/settings.local.json"
         ];
       };
