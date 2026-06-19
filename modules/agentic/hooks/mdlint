@@ -11,7 +11,7 @@
 #                        optional dot and whitespace (e.g. "# 1. Title", "# 2 Title")
 #   bold-only-heading  — block headings whose entire visible text is wrapped in
 #                        **...** or __...__ (e.g. "# **Introduction**")
-#   unescaped-dollar   — block $ not preceded by \ outside fenced code blocks
+#   unescaped-dollar   — block $ not preceded by \ outside fenced code blocks and LaTeX math spans
 #   verbose-constructions (soft) — warn on wordy phrases without blocking
 #   all-caps (soft)      — warn on lines that are entirely uppercase and longer than 20 chars
 #
@@ -94,20 +94,25 @@ if [[ $bold_status -eq 0 ]]; then
   exit 2
 fi
 
-# Unescaped dollar sign rule: block $ not preceded by \ outside fenced code blocks.
+# Unescaped dollar sign rule: block $ not preceded by \ outside fenced code blocks and LaTeX math spans.
 # Uses a line-by-line scan to track fence state across the new content.
 # Both backtick (```) and tilde (~~~) fences are recognised. A fence is only
 # closed by the same character that opened it (CommonMark rule).
 # Inline code spans (single backticks) are exempt: CommonMark does not process
 # backslash escapes or math-mode rendering inside code spans, so the rule has no
 # failure mode to defend against there.
+# LaTeX inline math ($...$, $$...$$) is stripped per-line; multi-line display
+# math ($$\n...\n$$) is tracked as a fence. A $$ line inside a code block does
+# not open a math fence. Limitation: cross-line $...$ inline math is not stripped.
 # Limitation: escaped backticks (\`) in prose are not handled — rare in practice.
 # False-positive: new_string that is entirely inside a pre-existing fence looks
 # like plain text to this hook; see .agents/issues/04-block-unescaped-dollar-signs.md.
 # See .agents/prd-markdown.md
 fence_re='^[[:space:]]*(```+|~~~+)'
+display_math_re='^[[:space:]]*[$][$][[:space:]]*$'
 fence_char=""
 in_fence=0
+in_display_math=0
 dollar_line=""
 while IFS= read -r line; do
   if [[ "$line" =~ $fence_re ]]; then
@@ -122,12 +127,30 @@ while IFS= read -r line; do
     continue
   fi
   if [[ $in_fence -eq 0 ]]; then
+    # Toggle display math fence on lines that are exactly $$ (outside code fences).
+    if [[ "$line" =~ $display_math_re ]]; then
+      if [[ $in_display_math -eq 0 ]]; then
+        in_display_math=1
+      else
+        in_display_math=0
+      fi
+      continue
+    fi
+    [[ $in_display_math -eq 0 ]] || continue
     dollar_exit=0
     # Strip single-backtick inline code spans before checking. `[^`]*` covers
     # the common case; cross-line spans and double-backtick spans are not handled.
     # See .agents/issues/04-block-unescaped-dollar-signs.md
     if ! stripped_line=$(printf '%s' "$line" | sed "s/\`[^\`]*\`//g"); then
       printf 'mdlint: sed error stripping inline code spans\n' >&2
+      exit 0
+    fi
+    # Strip LaTeX math spans before the dollar check: $$...$$ first (prevents
+    # partial match by the $...$ rule), then $...$. [$] is a character class for
+    # literal $; [^$]* excludes nested $, so display math with inner $ must use
+    # a multi-line fence block.
+    if ! stripped_line=$(printf '%s' "$stripped_line" | sed 's/[$][$][^$]*[$][$]//g; s/[$][^$]*[$]//g'); then
+      printf 'mdlint: sed error stripping LaTeX math spans\n' >&2
       exit 0
     fi
     # Parity-aware lookbehind: match $ not preceded by an unescaped backslash.
