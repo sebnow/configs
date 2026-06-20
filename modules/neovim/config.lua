@@ -129,10 +129,10 @@ local wk = require("which-key")
 wk.setup()
 
 wk.add({
-  { "<localleader>D", group = "Debugging" },
+  { "<localleader>D", group = "Diagnostics" },
   { "<localleader>S", group = "Source Control" },
   { "<localleader>b", group = "Buffers" },
-  { "<localleader>d", group = "Diagnostics" },
+  { "<localleader>d", group = "Debugging" },
   { "<localleader>l", group = "LSP" },
   { "<localleader>li", group = "Inlay Hint" },
   { "<localleader>p", group = "Project" },
@@ -184,7 +184,7 @@ vim.keymap.set("n", "<localleader>sw", makePicker("lsp_workspace_symbols"), { de
 vim.keymap.set("n", "<localleader>p/", makePicker("grep"), { desc = "Search in project" })
 vim.keymap.set("v", "<localleader>p/", makePicker("grep_word"), { desc = "Search word in project" })
 vim.keymap.set("n", "<localleader>Sb", makePicker("git_branches"), { desc = "Branches" })
-vim.keymap.set("n", "<localleader>dl", makePicker("diagnostics"), { desc = "Explore diagnostics" })
+vim.keymap.set("n", "<localleader>Dl", makePicker("diagnostics"), { desc = "Explore diagnostics" })
 -- Override builtin keymaps to have Snacks.picker provide the list. Not sure why
 -- `vim.ui.select` doesn't get used by default.
 vim.keymap.set("n", "gO", makePicker("lsp_symbols"), { desc = "Explore document symbols" })
@@ -373,7 +373,7 @@ vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 vim.keymap.set("n", "grc", vim.lsp.codelens.run, { desc = "Run Code Lens" })
 
-vim.keymap.set("n", "<localleader>do", function()
+vim.keymap.set("n", "<localleader>Do", function()
   vim.diagnostic.open_float(floating_preview_opts)
 end, { desc = "Show line diagnostics" })
 
@@ -469,35 +469,32 @@ end, { desc = "Step into" })
 vim.keymap.set("n", "<F12>", function()
   require("dap").step_out()
 end, { desc = "Step out" })
-vim.keymap.set("n", "<Leader>Db", function()
+vim.keymap.set("n", "<localleader>db", function()
   require("dap").toggle_breakpoint()
 end, { desc = "Toggle breakpoint" })
-vim.keymap.set("n", "<Leader>DB", function()
+vim.keymap.set("n", "<localleader>dB", function()
   require("dap").set_breakpoint()
 end, { desc = "Set breakpoint" })
-vim.keymap.set("n", "<Leader>Dlp", function()
-  require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
-end, { desc = "Set log point" })
-vim.keymap.set("n", "<Leader>Dr", function()
+vim.keymap.set("n", "<localleader>dr", function()
   require("dap").repl.open()
 end, { desc = "Open REPL" })
-vim.keymap.set("n", "<Leader>Dl", function()
+vim.keymap.set("n", "<localleader>dl", function()
   require("dap").run_last()
 end, { desc = "Run last" })
-vim.keymap.set({ "n", "v" }, "<Leader>Dh", function()
+vim.keymap.set({ "n", "v" }, "<localleader>dh", function()
   require("dap.ui.widgets").hover()
 end, { desc = "Hover" })
-vim.keymap.set({ "n", "v" }, "<Leader>Dp", function()
+vim.keymap.set({ "n", "v" }, "<localleader>dp", function()
   require("dap.ui.widgets").preview()
 end, { desc = "Preview" })
-vim.keymap.set("n", "<Leader>Df", function()
+vim.keymap.set("n", "<localleader>df", function()
   local widgets = require("dap.ui.widgets")
   widgets.centered_float(widgets.frames)
 end, { desc = "Show frames" })
-vim.keymap.set("n", "<Leader>Ds", function()
+vim.keymap.set("n", "<localleader>ds", function()
   local widgets = require("dap.ui.widgets")
   widgets.centered_float(widgets.scopes)
 end, { desc = "Show scopes" })
-vim.keymap.set("n", "<Leader>DT", function()
+vim.keymap.set("n", "<localleader>du", function()
   require("dapui").toggle()
 end, { desc = "Toggle UI" })
