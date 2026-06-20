@@ -46,36 +46,38 @@
 
   flake.modules.homeManager.agentic =
     { pkgs, config, ... }:
+    let
+      goVars = config.home.sessionVariables;
+      extendProfile =
+        pack:
+        let
+          base = builtins.fromJSON (builtins.readFile "${pack}/policy.json");
+        in
+        base
+        // {
+          filesystem = base.filesystem // {
+            allow = base.filesystem.allow ++ [
+              "${config.xdg.cacheHome}/go-build"
+              "/tmp"
+              goVars.GOMODCACHE
+              goVars.GOPATH
+            ];
+            read = [
+              "$HOME/.config/git"
+              "$HOME/.config/jj"
+              "/etc/passwd" # git resolves the user through it
+            ];
+          };
+        };
+    in
     {
       programs.claude-code.plugins = [ pkgs.nonoPacks.claude ];
 
       # `nono pull` installs profiles to ~/.config/nono/profiles/. The pack's
       # `policy.json` is the profile payload; install_as in its package.json
       # determines the filename.
-      home.file.".config/nono/profiles/claude.json".text =
-        let
-          base = builtins.fromJSON (builtins.readFile "${pkgs.nonoPacks.claude}/policy.json");
-          goVars = config.home.sessionVariables;
-        in
-        builtins.toJSON (
-          base
-          // {
-            filesystem = base.filesystem // {
-              allow = base.filesystem.allow ++ [
-                "${config.xdg.cacheHome}/go-build"
-                "/tmp"
-                goVars.GOMODCACHE
-                goVars.GOPATH
-              ];
-              read = [
-                "$HOME/.config/git"
-                "$HOME/.config/jj"
-                "/etc/passwd" # git resolves the user through it
-              ];
-            };
-          }
-        );
-      home.file.".config/nono/profiles/pi.json".source = "${pkgs.nonoPacks.pi}/policy.json";
+      home.file.".config/nono/profiles/claude.json".text = builtins.toJSON (extendProfile pkgs.nonoPacks.claude);
+      home.file.".config/nono/profiles/pi.json".text = builtins.toJSON (extendProfile pkgs.nonoPacks.pi);
 
       # Composite profile: merges claude + pi rules so a single sandbox can
       # host both agents. `extends` resolves left-to-right; the later base
