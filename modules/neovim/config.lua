@@ -288,12 +288,24 @@ vim.lsp.config("yamlls", {
 vim.filetype.add({ extension = { templ = "templ" } })
 
 vim.api.nvim_create_autocmd("FileType", {
-  callback = function()
+  callback = function(ev)
     if vim.treesitter.get_parser(0, nil, { error = false }) then
-      vim.treesitter.start()
+      vim.treesitter.start(ev.buf)
       if vim.bo.filetype ~= "yaml" then
         vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
       end
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  callback = function()
+    if vim.bo.filetype == "c" and vim.treesitter.get_parser(0, nil, { error = false }) then
+      vim.wo.foldmethod = "expr"
+      vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+    else
+      vim.wo.foldmethod = vim.go.foldmethod
+      vim.wo.foldexpr = vim.go.foldexpr
     end
   end,
 })
