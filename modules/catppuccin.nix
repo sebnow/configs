@@ -15,6 +15,7 @@
 
       catppuccin = {
         enable = true;
+        autoEnable = true;
 
         # detect_integrations requires git at load time (via vim.pack),
         # which isn't available in the Nix build sandbox.
