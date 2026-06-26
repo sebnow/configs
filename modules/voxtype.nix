@@ -45,9 +45,9 @@
 
       # Manage the model declaratively instead of `voxtype setup --download`.
       whisperModel = pkgs.fetchurl {
-        name = "ggml-base.en.bin";
-        url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin";
-        sha256 = "00nhqqvgwyl9zgyy7vk9i3n017q2wlncp5p7ymsk0cpkdp47jdx0";
+        name = "ggml-medium.en.bin";
+        url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.en.bin";
+        sha256 = "0mj3vbvaiyk5x2ids9zlp2g94a01l4qar9w109qcg3ikg0sfjdyc";
       };
 
       # voxtype's deserializer requires whole sections ([hotkey] [audio]
