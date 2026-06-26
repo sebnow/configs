@@ -98,4 +98,11 @@ in
         };
       };
   };
+
+  # NixOS-side account config for sebnow on any NixOS host. The
+  # `input` group grants the evdev access required by voxtype's
+  # global-hotkey daemon.
+  flake.modules.nixos.sebnow = {
+    users.users.sebnow.extraGroups = [ "input" ];
+  };
 }
