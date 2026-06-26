@@ -24,6 +24,7 @@ in
           homeManager.source-control
           homeManager.terminals
           homeManager.tmux
+          homeManager.voxtype
         ];
 
         nixpkgs.config = {
