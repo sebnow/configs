@@ -394,6 +394,30 @@ vim.keymap.set("v", "<localleader>fb", function()
   require("conform").format()
 end, { desc = "Format range" })
 
+require("jj").setup({
+  picker = { snacks = {} },
+  editor = { auto_insert = true },
+  diff = { backend = "diffview" },
+})
+
+local jj_cmd = require("jj.cmd")
+local jj_picker = require("jj.picker")
+vim.keymap.set("n", "<localleader>Sc", jj_cmd.commit, { desc = "Commit" })
+vim.keymap.set("n", "<localleader>Sd", jj_cmd.describe, { desc = "Describe" })
+vim.keymap.set("n", "<localleader>Se", jj_cmd.edit, { desc = "Edit change" })
+vim.keymap.set("n", "<localleader>Sf", jj_cmd.fetch, { desc = "Fetch" })
+vim.keymap.set("n", "<localleader>Sh", jj_picker.file_history, { desc = "File history" })
+vim.keymap.set("n", "<localleader>Sl", jj_cmd.log, { desc = "Log" })
+vim.keymap.set("n", "<localleader>SL", function()
+  jj_cmd.log({ revisions = "'all()'" })
+end, { desc = "Log all" })
+vim.keymap.set("n", "<localleader>Sn", jj_cmd.new, { desc = "New change" })
+vim.keymap.set("n", "<localleader>Sp", jj_cmd.push, { desc = "Push" })
+vim.keymap.set("n", "<localleader>Sq", jj_cmd.squash, { desc = "Squash" })
+vim.keymap.set("n", "<localleader>Ss", jj_cmd.status, { desc = "Status" })
+vim.keymap.set("n", "<localleader>Su", jj_cmd.undo, { desc = "Undo" })
+vim.keymap.set("n", "<localleader>Sv", jj_picker.status, { desc = "View status" })
+
 require("neogit").setup({
   integrations = {
     snacks = true,

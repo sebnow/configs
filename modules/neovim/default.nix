@@ -33,6 +33,7 @@
           conform-nvim
           diffview-nvim
           inc-rename-nvim
+          jj-nvim
           lualine-nvim
           markview-nvim
           neogit
@@ -83,6 +84,7 @@
         ];
         extraPackages = [
           pkgs.fd
+          pkgs.jujutsu
           pkgs.ripgrep
           pkgs.vscode-extensions.vadimcn.vscode-lldb
         ];
