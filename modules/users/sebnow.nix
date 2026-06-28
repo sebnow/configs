@@ -16,6 +16,7 @@ in
           homeManager.gnome
           homeManager.go
           homeManager.ipfs
+          homeManager.lore
           homeManager.mlflow
           homeManager.neovim
           homeManager.niri
