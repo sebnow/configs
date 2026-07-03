@@ -1,6 +1,6 @@
 ---
 name: obsidian-cli
-description: "Provides obsidian-cli for Obsidian vault operations. Use when creating, moving, renaming, or deleting vault notes; searching vault content; querying or setting frontmatter properties; or working with tags. Covers composition guidance and operator reference for obsidian-cli subcommands. Triggers: 'create note', 'move note', 'rename note', 'delete note', 'search vault', 'find notes', 'obsidian', 'vault', 'tag search', 'property query', 'frontmatter'. Do NOT use for non-vault markdown files."
+description: "Provides obsidian-cli for Obsidian vault operations. Use when creating, moving, renaming, or deleting vault notes; searching vault content; querying or setting frontmatter properties; working with tags; or looking up obsidian-cli command syntax and usage. Covers composition guidance and operator reference for obsidian-cli subcommands. Triggers: 'obsidian-cli', 'create note', 'move note', 'rename note', 'delete note', 'search vault', 'find notes', 'obsidian', 'vault', 'tag search', 'property query', 'frontmatter', 'check usage', 'command usage'. Do NOT use for non-vault markdown files."
 compatibility: Requires obsidian-cli on PATH and a running Obsidian instance.
 ---
 
