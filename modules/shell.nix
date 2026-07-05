@@ -42,7 +42,7 @@
           "--height 30%"
           "--min-height 5"
         ];
-        fileWidgetOptions = [ "--preview 'bat -p --color=always {}'" ];
+        fileWidget.options = [ "--preview 'bat -p --color=always {}'" ];
       };
 
       programs.starship = {
