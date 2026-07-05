@@ -81,6 +81,7 @@
         includes = [
           { path = "config.local"; }
         ];
+        lfs.enable = true;
         settings = {
           alias = {
             st = "status --short";
