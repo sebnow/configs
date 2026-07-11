@@ -58,7 +58,7 @@ automatically imported via import-tree.
 | `overlays`        | nixGL overlay                                                                            |
 | `shell`           | Bash, Zsh, bat, eza, fzf, starship                                                       |
 | `source-control`  | Jujutsu (primary) and Git with delta                                                     |
-| `terminals`       | Ghostty, Kitty, Alacritty                                                                |
+| `terminals`       | Ghostty                                                                                  |
 | `tmux`            | tmux with vi keybindings                                                                 |
 
 ### Packages
