@@ -1,6 +1,7 @@
 ---
 name: breakdown
 description: "Decomposes a PRD, brainstorm transcript, or raw requirements into vertically-sliced implementation issues with context, acceptance criteria, and dependency ordering. Use when starting implementation planning from any requirement input. Triggers: 'break into issues', 'create issues', 'decompose PRD', 'write issues', 'issue breakdown', 'breakdown'. Do NOT use when requirements are still unclear — run brainstorm skill first."
+disable-model-invocation: true
 ---
 
 # Issue Breakdown
@@ -52,6 +53,7 @@ Before formatting issues, explore the codebase to discover
 existing API boundaries, types, and signatures relevant to each slice.
 
 Capture:
+
 - File paths where relevant code lives (labeled as orientation hints, not authoritative)
 - Existing types, function signatures, or contracts the implementing agent should know about
 - Proposed new boundaries as advisory guidance, not mandated abstractions

@@ -1,6 +1,7 @@
 ---
 name: ui-design
 description: "Use when implementing visual design, styling components, or building design systems. Enforces intentional aesthetics, systematic design tokens, production-grade implementation. Triggers: 'implement design', 'style component', 'design system', 'design tokens', 'visual design', 'component library', 'frontend styling'."
+disable-model-invocation: true
 ---
 
 # UI Design
@@ -27,6 +28,7 @@ Never start coding without defining:
 Commit to a bold aesthetic choice before implementation:
 
 **Tone Options:**
+
 - Brutalist (raw, functional, high contrast)
 - Maximalist (layered, rich, abundant detail)
 - Retro-futuristic (nostalgic tech, bold geometry)
@@ -60,6 +62,7 @@ Never use magic numbers or arbitrary values.
 ### Token Structure
 
 Use three-tier system:
+
 1. **Foundation tokens**: Raw values (#3b82f6, 0.25rem)
 2. **Semantic tokens**: Purpose-driven (--color-primary, --space-base)
 3. **Component tokens**: Specific usage (--button-color-primary-bg)
@@ -105,6 +108,7 @@ Use distinctive fonts with proper hierarchy.
 Never default to Inter/Roboto without justification.
 
 Required elements:
+
 - Font pairing (display + body)
 - Weight hierarchy (300/400 for body, 600/700/800 for headings)
 - Variable fonts for fluid control
@@ -118,6 +122,7 @@ Use CSS custom properties for theme switching.
 Map semantic tokens to foundation tokens per theme.
 
 Required contrast ratios:
+
 - Text: 4.5:1 minimum (WCAG AA)
 - Interactive components: 3:1 minimum
 
@@ -128,6 +133,7 @@ See @tokens.md for dark mode implementation patterns.
 Prioritize high-impact moments over scattered effects.
 
 Required:
+
 - Proper easing curves (never linear)
 - Respect prefers-reduced-motion
 - Performance-conscious implementation
@@ -143,6 +149,7 @@ See @backgrounds.md for gradient meshes, textures, and patterns.
 ## Component Library Patterns
 
 Each component must:
+
 - Define its own tokens
 - Document all interactive states (default, hover, active, focus, disabled)
 - Use semantic HTML
@@ -165,12 +172,14 @@ When implementing AI-powered interface adaptation:
 ### Personalization Boundaries
 
 **Appropriate:**
+
 - Layout density preferences
 - Color scheme (light/dark mode)
 - Content prioritization
 - Navigation shortcuts
 
 **Forbidden:**
+
 - Hiding critical functionality
 - Removing accessibility features
 - Changing core workflows without notice
@@ -200,6 +209,7 @@ Before marking UI design complete:
 ## Red Flags
 
 Stop if you catch yourself:
+
 - Using generic fonts (Inter/Roboto) or purple gradients without justification
 - Single font weight, uniform spacing, everything centered
 - Magic numbers instead of tokens
@@ -212,6 +222,7 @@ Stop if you catch yourself:
 State: "UI design implementation complete" only after checklist passes.
 
 Document for handoff:
+
 1. Design token definitions
 2. Component inventory with all states
 3. Aesthetic direction rationale

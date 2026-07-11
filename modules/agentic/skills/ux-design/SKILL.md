@@ -1,6 +1,7 @@
 ---
 name: ux-design
 description: "Use when designing user interfaces, improving UX, or creating design specifications. Enforces user-centered process, WCAG 2.1 AA accessibility, mobile-first approach. Triggers: 'design interface', 'improve UX', 'user experience', 'accessibility', 'responsive design', 'user flow'."
+disable-model-invocation: true
 ---
 
 # UX Design
@@ -50,12 +51,14 @@ Never jump to visual design without IA.
 #### Accessibility Requirements (Non-Negotiable)
 
 **Perceivable**
+
 - Color contrast: 4.5:1 text, 3:1 UI components
 - Alt text for all informative images
 - Captions/transcripts for media
 - Text resizable to 200% without horizontal scroll
 
 **Operable**
+
 - Keyboard navigable (visible focus indicators)
 - Touch targets minimum 44x44px (48x48px preferred)
 - No keyboard traps
@@ -63,12 +66,14 @@ Never jump to visual design without IA.
 - Skip navigation links
 
 **Understandable**
+
 - Clear labels and instructions
 - Consistent navigation
 - Error identification and recovery guidance
 - Plain language (8th grade level default)
 
 **Robust**
+
 - Semantic HTML structure
 - ARIA only when native HTML insufficient
 - Progressive enhancement
@@ -80,8 +85,14 @@ Use min-width queries to enhance.
 
 ```css
 /* Correct mobile-first */
-.container { width: 100%; }
-@media (min-width: 768px) { .container { width: 750px; } }
+.container {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
 
 /* Never use max-width for responsive */
 ```
@@ -168,6 +179,7 @@ Document answers before proceeding.
 ## Progressive Disclosure
 
 Complex features require staged revelation:
+
 - Core functionality visible immediately
 - Advanced options revealed on demand
 - Help text contextual, not overwhelming
@@ -175,6 +187,7 @@ Complex features require staged revelation:
 ## Error Prevention
 
 Design to prevent errors before handling them:
+
 - Clear affordances
 - Confirmation for destructive actions
 - Inline validation
@@ -205,3 +218,4 @@ Before marking complete:
 - [ ] Success metrics established
 
 State: "UX design phase complete" only after all items checked.
+

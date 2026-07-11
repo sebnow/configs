@@ -1,6 +1,7 @@
 ---
 name: prompt-engineering
 description: "Applies TDD methodology and research-backed practices (Meincke 2025) for writing or improving LLM prompts: measure baseline, test don't assume, iterate rigorously. Prevents assuming universal techniques work. Includes persuasion principles for compliance. Triggers: 'write a prompt', 'improve prompt', 'prompt not working', general prompting, application development. Not for formatting-only tasks requiring no iteration."
+disable-model-invocation: true
 ---
 
 # Prompt Engineering
@@ -55,6 +56,7 @@ Bad: "Explain climate change"
 Good: "Write 3 paragraphs explaining climate change for high school students. Use bullet points for key facts. Maintain neutral tone."
 
 Required elements:
+
 - Task description
 - Output format
 - Tone/style
@@ -69,6 +71,7 @@ Provide 2-5 input-output pairs demonstrating desired behavior.
 More examples = better performance, but diminishing returns after ~5.
 
 Format:
+
 ```
 Example 1:
 Input: [example input]
@@ -123,6 +126,7 @@ Test whether it helps your use case.
 Separate different parts clearly.
 
 Use:
+
 - Clear headings
 - Whitespace between sections
 - Consistent formatting
@@ -213,12 +217,14 @@ When building applications with LLM APIs:
 - **SDK configuration**: Output schema, system prompts, temperature, safety settings
 
 Decision criteria - Use SDK configuration for:
+
 - Output format/schema (JSON structure, field types)
 - Generation parameters (temperature, top_k, max_tokens)
 - System-level instructions (role, behavior guidelines)
 - Safety settings, stop sequences
 
 Use prompt content for:
+
 - Task-specific instructions
 - Domain context
 - Examples demonstrating desired behavior

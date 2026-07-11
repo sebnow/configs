@@ -1,6 +1,7 @@
 ---
 name: council
 description: "Multi-perspective deliberation through independent parallel analysis. Spawns subagents with different analytical lenses to stress-test decisions. Use when evaluating complex decisions, comparing approaches, or pressure-testing strategies. Triggers: 'council', 'deliberate', 'stress-test this decision', 'get perspectives on', 'pressure-test'. Do NOT use for brainstorming (use brainstorm), code review (use review-code), or straightforward decisions with clear answers."
+disable-model-invocation: true
 ---
 
 # Council
@@ -44,6 +45,7 @@ with different labels are not genuinely different.
 Predefined lens sets by domain:
 
 **Architecture decisions:**
+
 - Failure modes: identify how this fails under load,
   under partial outage, under operator error.
   What breaks first? What is the blast radius?
@@ -55,6 +57,7 @@ Predefined lens sets by domain:
   What expertise does the team need that it may not have?
 
 **Strategy decisions:**
+
 - Opportunity cost: what are you not doing by choosing this?
   What options does this foreclose?
   What would you do with the time and resources instead?
@@ -65,6 +68,7 @@ Predefined lens sets by domain:
   Work backward from failure to identify hidden risks.
 
 **Risk assessment:**
+
 - Tail exposure: what is the worst realistic outcome,
   not the expected outcome?
   Is the downside bounded or unbounded?
@@ -74,6 +78,7 @@ Predefined lens sets by domain:
   how do you reverse it? What is the cost of being wrong?
 
 **General** (use when no domain fits):
+
 - Hidden assumptions: what is everyone taking for granted?
   What beliefs are load-bearing but unexamined?
 - Systemic effects: what are the second-order consequences?

@@ -1,6 +1,7 @@
 ---
 name: brainstorm
 description: "Explores ideas through structured questioning to reach shared understanding. Use when brainstorming, requirements are unclear, or fleshing out any idea. Triggers: 'brainstorm', 'let us think about', 'flesh out this idea', 'explore options', unclear requirements, vague requests. Do NOT use for well-defined tasks with clear requirements."
+disable-model-invocation: true
 ---
 
 # Brainstorming
@@ -41,6 +42,7 @@ User: "I want to add caching to my API."
 
 Response:
 "A few questions before we dig in:
+
 1. What is the API serving and what is the read/write ratio? (My guess: read-heavy)
 2. What is the motivation — latency, cost, DB load? (My guess: DB load)"
 

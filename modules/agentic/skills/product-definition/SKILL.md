@@ -1,6 +1,7 @@
 ---
 name: product-definition
 description: "Synthesizes a completed brainstorm transcript into a Product Requirements Document (PRD). Use when requirements are decided and a formal spec is needed. Triggers: 'create PRD', 'write PRD', 'product requirements', 'turn brainstorm into spec'. Do NOT use when requirements are still unclear — run the brainstorm skill first."
+disable-model-invocation: true
 ---
 
 # Product Definition

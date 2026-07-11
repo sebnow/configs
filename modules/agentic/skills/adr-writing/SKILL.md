@@ -1,6 +1,7 @@
 ---
 name: adr-writing
 description: "Use when documenting significant architectural decisions. Creates focused ADRs explaining context, decision, and alternatives. Prevents vague documentation and implementation detail bloat. Triggers: 'create ADR', 'document decision', making technology/framework/persistence/auth choices, cross-cutting concerns."
+disable-model-invocation: true
 ---
 
 # ADR Writing
