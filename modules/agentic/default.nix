@@ -89,7 +89,7 @@
           theme = claudeThemeName;
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
-          model = "opusplan";
+          model = "sonnet";
           skillOverrides = {
             claude-api = "off";
             code-review = "off";
@@ -231,6 +231,8 @@
               "CronDelete"
               "CronList"
               "DesignSync"
+              "EnterPlanMode"
+              "ExitPlanMode"
               "NotebookEdit"
               "PushNotification"
               "Read(./.env)"
