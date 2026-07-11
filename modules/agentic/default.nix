@@ -31,6 +31,11 @@
         hooksDir = ./hooks;
         skills = ./skills;
         settings = {
+          disableArtifact = true;
+          disableBundledSkills = true;
+          disableClaudeAiConnectors = true;
+          disableRemoteControl = true;
+          disableWorkflows = true;
           editorMode = "vim";
           feedbackSurveyRate = 0;
           fileSuggestion =
@@ -222,9 +227,19 @@
             ];
             deny = [
               "AskUserQuestion"
+              "CronCreate"
+              "CronDelete"
+              "CronList"
+              "DesignSync"
+              "NotebookEdit"
+              "PushNotification"
               "Read(./.env)"
               "Read(./.env.*)"
               "Read(./.envrc)"
+              "RemoteTrigger"
+              "ReportFindings"
+              "ScheduleWakeup"
+              "ShareOnboardingGuide"
             ];
           };
           env = {
