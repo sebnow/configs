@@ -17,7 +17,6 @@ in
           homeManager.go
           homeManager.ipfs
           homeManager.lore
-          homeManager.mlflow
           homeManager.neovim
           homeManager.niri
           homeManager.obsidian
