@@ -1,9 +1,5 @@
 { inputs, ... }:
 {
-  flake.overlays.pi-coding-agent = final: prev: {
-    pi-coding-agent = prev.callPackage ../../pkgs/pi-coding-agent { };
-  };
-
   flake.modules.homeManager.agentic =
     { pkgs, config, ... }:
     let
