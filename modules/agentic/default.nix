@@ -243,6 +243,12 @@
               "ReportFindings"
               "ScheduleWakeup"
               "ShareOnboardingGuide"
+              "TaskCreate"
+              "TaskGet"
+              "TaskList"
+              "TaskOutput"
+              "TaskStop"
+              "TaskUpdate"
             ];
           };
           env = {
