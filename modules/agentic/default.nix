@@ -31,6 +31,7 @@
         hooksDir = ./hooks;
         skills = ./skills;
         settings = {
+          autoMemoryEnabled = false;
           disableArtifact = true;
           disableBundledSkills = true;
           disableClaudeAiConnectors = true;
