@@ -208,7 +208,7 @@ vim.lsp.enable({
   "lua_ls",
   "marksman",
   "nixd",
-  "tsserver",
+  "ts_ls",
   "yamlls",
   "zls",
 })
