@@ -16,11 +16,11 @@
         editorPaddingX = 1;
         theme = "catppuccin-${config.catppuccin.flavor}";
         defaultProvider = "github-copilot";
-        defaultModel = "claude-sonnet.6";
+        defaultModel = "claude-sonnet-4.6";
         enabledModels = [
-          "github-copilot/claude-opus-4.6"
           "github-copilot/claude-sonnet-4.6"
-          "github-copilot/gpt-5.3-codex"
+          "github-copilot/claude-opus-4.8"
+          "github-copilot/gpt-5.5"
         ];
         packages = [
           { source = "${pkgs.nonoPacks.pi}"; }
