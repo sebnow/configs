@@ -173,6 +173,13 @@ main() {
   fi
   [[ -n "$cmd_cwd" ]] || cmd_cwd="$(pwd)"
 
+  # A leading `cd <dir> &&`/`cd <dir>;` changes the cwd for the rest of the
+  # command, so relative paths below must resolve against it, not $cmd_cwd.
+  local cd_prefix
+  if cd_prefix=$(printf '%s' "$cmd" | grep -oP '^\s*cd\s+\K\S+(?=\s*(?:&&|;))'); then
+    cmd_cwd=$(normalise_path "$cd_prefix" "$cmd_cwd")
+  fi
+
   # Populate the vault-roots cache once per hook invocation so that token
   # loops below can call in_vault repeatedly without re-spawning obsidian-cli.
   load_vault_roots
