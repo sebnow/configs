@@ -53,6 +53,8 @@ For each module, capture:
 Specify interfaces, not internals.
 Downstream agents own the implementation.
 
+This includes database schema, event, or other API signatures.
+
 The signature is the declaration only — no `{ ... }` body, no example data.
 Do not include implementation bodies, schemas with column lists, configuration values, file paths, or line numbers.
 Those belong in the issues produced from this PRD.
