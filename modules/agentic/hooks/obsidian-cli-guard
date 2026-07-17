@@ -270,6 +270,27 @@ main() {
     emit_decision "deny" "obsidian-cli rename requires name= to end with .md. The CLI treats the segment after the last dot as the file extension, so a name like \"Notes v1.draft\" produces extension \"draft\", and a name with no dot at all produces no extension. Without the .md extension Obsidian cannot index the file and backlinks break. Always end the name= value with .md, for example name=\"Notes v1.draft.md\"."
   fi
 
+  # `obsidian-cli property:set name=tags ...` always overwrites the vault-wide
+  # type registry entry for "tags" from the native "tags" type to "multitext" —
+  # property:set's type= enum (text|list|number|checkbox|date|datetime) has no
+  # "tags" option, so there is no way to preserve the native type through this
+  # subcommand. The corruption degrades the tags UI for every note in the
+  # vault, not just the one targeted by the call. property:remove and
+  # property:set on other reserved keys (e.g. aliases) do not exhibit this bug,
+  # so only property:set name=tags is denied here.
+  #
+  # (?:^|\s) before name= enforces argument position, matching the same
+  # quoted-value bypass concern as the delete/create no-target patterns above:
+  # without it, content="name=tags" would be mistaken for a real name= token.
+  # [^;&|()]* scopes the scan to the current command segment. The lookahead
+  # after "tags" requires a value boundary (whitespace, shell operator, or
+  # end-of-string) so name=tagsFoo is not mistaken for name=tags.
+  local property_set_tags_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+property:set\b[^;&|()]*(?:^|\s)name=(?:\"tags\"|'tags'|tags)(?=[\s;&|()]|$)"
+
+  if printf '%s' "$cmd" | grep -qP "$property_set_tags_pattern"; then
+    emit_decision "deny" "obsidian-cli property:set name=tags overwrites the vault-wide type registry entry for \"tags\" from the native \"tags\" type to \"multitext\" — property:set's type= values (text|list|number|checkbox|date|datetime) have no \"tags\" option, so the native type cannot be preserved through this subcommand. This degrades the tags UI for every note in the vault, not just the one targeted. Edit the tags: line in the note's frontmatter directly instead."
+  fi
+
   # When the first token after `obsidian-cli` is not a recognised subcommand,
   # the CLI silently does nothing useful (or errors in an opaque way). Agents
   # have historically invented subcommands that look plausible but do not exist

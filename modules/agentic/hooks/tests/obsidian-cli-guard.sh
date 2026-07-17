@@ -401,6 +401,50 @@ assert_contains "deny-reason (rename name not .md): contains .md" ".md" "$reason
 assert_contains "deny-reason (rename name not .md): mentions extension" "extension" "$reason"
 
 # ---------------------------------------------------------------------------
+# Deny: obsidian-cli property:set name=tags (overwrites the vault-wide type
+# registry entry for "tags" from the native "tags" type to "multitext")
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli property:set path="Notes/Foo.md" name=tags value="a,b"' \
+  'obsidian-cli property:set path="Notes/Foo.md" name="tags" value="a,b"' \
+  "obsidian-cli property:set path='Notes/Foo.md' name='tags' value=a" \
+  'obsidian-cli property:set name=tags value=a path="Notes/Foo.md"' \
+  'cd /tmp && obsidian-cli property:set path="Notes/Foo.md" name=tags value=a' \
+  'obsidian-cli property:set path="Notes/Foo.md" name=tags value=a type=list'
+do
+  result=$(run_hook "$(make_input "$cmd")")
+  assert_eq "deny (property:set name=tags): $cmd" "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+# ---------------------------------------------------------------------------
+# Defer: property:set on other property names, property:remove/read on tags,
+# and name=tags appearing only inside a quoted value of another argument
+# ---------------------------------------------------------------------------
+
+for cmd in \
+  'obsidian-cli property:set path="Notes/Foo.md" name=status value=Done' \
+  'obsidian-cli property:remove path="Notes/Foo.md" name=tags' \
+  'obsidian-cli property:read path="Notes/Foo.md" name=tags' \
+  'obsidian-cli property:set path="Notes/Foo.md" name=tagsFoo value=a' \
+  'obsidian-cli property:set path="Notes/Foo.md" name=aliases value=a' \
+  'obsidian-cli property:set path="Notes/Foo.md" name=status content="name=tags"'
+do
+  result=$(run_hook "$(make_input "$cmd")" | compact)
+  assert_eq "defer (property:set safe / other subcommand): $cmd" "{}" "$result"
+done
+
+# ---------------------------------------------------------------------------
+# Deny-reason: property:set name=tags message must name the multitext failure
+# mode and the frontmatter-edit corrective action
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input 'obsidian-cli property:set path="Notes/Foo.md" name=tags value=a')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (property:set tags): mentions multitext" "multitext" "$reason"
+assert_contains "deny-reason (property:set tags): mentions frontmatter" "frontmatter" "$reason"
+
+# ---------------------------------------------------------------------------
 # Deny: unknown subcommand (not in allow-list)
 # ---------------------------------------------------------------------------
 
