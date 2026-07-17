@@ -157,6 +157,15 @@ obsidian-cli property:remove path="Notes/Note.md" name="status"
 obsidian-cli properties path="Notes/Note.md"
 ```
 
+Never use `property:set` with `name=tags`. Its `type=` values
+(`text|list|number|checkbox|date|datetime`) do not include the native `tags`
+type, so setting the `tags` property this way overwrites the vault-wide type
+registry entry from `tags` to `multitext` — degrading the tags UI for every
+note in the vault, not just the one edited. To change a note's tags, edit the
+`tags:` line in its frontmatter directly with the Edit tool instead.
+`property:remove name=tags` and `property:set`/`property:remove` on other
+properties (including `aliases`) do not exhibit this bug.
+
 ## Other Useful Commands
 
 ```bash
