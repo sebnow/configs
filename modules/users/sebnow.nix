@@ -17,6 +17,7 @@ in
           homeManager.go
           homeManager.ipfs
           homeManager.lore
+          homeManager.mdbase-tasknotes
           homeManager.neovim
           homeManager.niri
           homeManager.obsidian
