@@ -120,9 +120,14 @@
             # ~/.local/share lookup), so the Nix model is the source of truth.
             model = "${whisperModel}";
             language = "en";
-            # Transcribe chunks while recording continues, and optimise the
-            # context window for short clips -> text appears far sooner.
-            eager_processing = true;
+            # eager_processing chunks audio and stitches transcripts back
+            # together with exact-token boundary matching (voxtype
+            # src/eager.rs deduplicate_boundary); since each chunk is
+            # transcribed independently (no_context=true, always on -
+            # src/transcribe/whisper.rs:214), differing punctuation/wording
+            # at the seam makes the match fail and duplicates the boundary
+            # text. Disabled until upstream normalises the comparison.
+            eager_processing = false;
             context_window_optimization = true;
           };
 
