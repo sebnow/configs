@@ -71,12 +71,14 @@
         };
     in
     {
-      programs.claude-code.plugins = [ pkgs.nonoPacks.claude ];
+      programs.claude-code.plugins.nono = pkgs.nonoPacks.claude;
 
       # `nono pull` installs profiles to ~/.config/nono/profiles/. The pack's
       # `policy.json` is the profile payload; install_as in its package.json
       # determines the filename.
-      home.file.".config/nono/profiles/claude.json".text = builtins.toJSON (extendProfile pkgs.nonoPacks.claude);
+      home.file.".config/nono/profiles/claude.json".text = builtins.toJSON (
+        extendProfile pkgs.nonoPacks.claude
+      );
       home.file.".config/nono/profiles/pi.json".text = builtins.toJSON (extendProfile pkgs.nonoPacks.pi);
 
       # Composite profile: merges claude + pi rules so a single sandbox can
