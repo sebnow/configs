@@ -38,6 +38,7 @@
           disableRemoteControl = true;
           disableWorkflows = true;
           editorMode = "vim";
+          effortLevel = "medium";
           feedbackSurveyRate = 0;
           fileSuggestion =
             let
@@ -90,7 +91,7 @@
           theme = claudeThemeName;
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
-          model = "sonnet";
+          model = "opus";
           skillOverrides = {
             claude-api = "off";
             code-review = "off";
