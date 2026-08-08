@@ -19,12 +19,7 @@
       programs.neovim = {
         enable = true;
         defaultEditor = true;
-        initLua = lib.strings.concatStrings [
-          ''
-            vim.g.codelldb_path = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb";
-          ''
-          (builtins.readFile ./config.lua)
-        ];
+        initLua = builtins.readFile ./config.lua;
         withPython3 = false;
         withRuby = false;
         withNodeJs = false;
@@ -40,11 +35,8 @@
           neotest
           neotest-golang
           noice-nvim
-          nvim-dap
-          nvim-dap-lldb
-          nvim-dap-ui
           nvim-lspconfig
-          nvim-nio # Required for neotest, nvim-dap-ui
+          nvim-nio # Required for neotest
           nvim-treesitter-context
           (nvim-treesitter.withPlugins (
             p: with p; [
@@ -86,7 +78,6 @@
           pkgs.fd
           pkgs.jujutsu
           pkgs.ripgrep
-          pkgs.vscode-extensions.vadimcn.vscode-lldb
         ];
       };
 
