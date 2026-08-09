@@ -42,27 +42,30 @@ its `Language-Specific` section links to language reference files
 
 ## Identify Reference Anchor
 
-Determine where new code and tests will point readers
-for requirements context.
+An anchor is a persistent artifact this repository already keeps
+that records why a requirement exists —
+a requirements document, an ADR, a design note,
+or whatever this project uses.
 
-Acceptable anchors are persistent artifacts in this repository:
+Anchoring is optional.
+Its only purpose is to point a future reader
+who needs the rationale behind a piece of code.
+An anchor earns a reference only when it genuinely serves that reader.
 
-- A requirements document
-  (e.g. `docs/prd-X.md`, `docs/rfc-X.md`)
-- An ADR
-  (e.g. `docs/adr/0042-X.md`)
+Do not manufacture one:
 
-Issue URLs, external design documents,
-and brainstorm or blueprint output that exists only in conversation
-are not valid anchors —
-they can move, change, or become inaccessible to future readers of the code.
+- Do not adopt a document that does not fit the change
+  just to have something to point at.
+- Do not treat ephemeral sources
+  (issue URLs, external design docs, brainstorm or blueprint output)
+  as anchors — they move, change, or vanish for future readers.
+- If the project keeps no fitting artifact, there is no anchor, and that is fine.
 
-Ask the user once for an anchor.
-If they supply one, every reference comment points to it.
-If they cannot,
-proceed in degraded mode:
-reference comments explain the decision itself
-rather than pointing to an artifact.
+Ask the user once whether a suitable anchor exists.
+If they name one, references point to it where they add value.
+If they do not, or none fits,
+skip anchor references
+and rely on clear code and the plan source for context.
 State which mode you are in.
 
 ## Establish Baseline
@@ -96,33 +99,34 @@ Coining domain language is a product decision, not an implementation choice.
 
 # Requirement References
 
-Code and tests for new behaviour carry comments
-pointing readers to the recorded anchor.
+A reference comment is the exception, not the rule.
+Add one only where a non-obvious decision —
+a business rule or a technical constraint (a workaround, a performance
+trade-off, an ordering requirement) —
+would otherwise leave a future reader guessing why the code does what it does.
+Most code needs none.
 
-Where to place the comment:
+Where a comment earns its place:
 
 - At module or API boundaries
   (top of a new module,
   on exported functions or types implementing a requirement).
-- At conditionals reflecting a business decision
+- At conditionals reflecting a deliberate decision
   (guard clauses enforcing a domain rule, threshold checks,
   branch logic whose rationale is not obvious from the code alone).
 
 Where not to place it:
 
 - Mundane control flow (typical `if`/`for`, error propagation, loop counters).
-- Mechanical code with no business rationale.
+- Mechanical code with no rationale worth recording.
 - Every function — only the ones tied to specific requirements.
 
-Format is flexible; aim for consistency within the repo.
+If an anchor exists, point to it. If not, state the rationale inline.
+Keep the format consistent with the surrounding repo.
 Examples:
 
-- `// Implements F-12 from docs/prd-tasks.md`
+- `// Implements F-12 from the tasks requirements doc`
 - `// See ADR-0042: priority levels capped at 1-4`
-
-In degraded mode (no anchor available),
-explain the decision itself:
-
 - `// Priority levels capped at 1-4 to keep task comparison cognitively manageable`
 
 # Commit Sequence Planning
