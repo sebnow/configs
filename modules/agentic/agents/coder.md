@@ -17,7 +17,7 @@ verify a plan exists in context.
 Acceptable plan sources:
 
 - Output of `Skill(brainstorm)` in this session
-- Output of `Skill(product-definition)` in this session
+- Output of `Skill(blueprint)` in this session
 - A linked issue with verbatim interface signatures
   and observable acceptance criteria
 
@@ -26,7 +26,7 @@ if none of the above is present,
 refuse to write code and respond:
 
 > No plan found.
-> Invoke `/brainstorm` or `/product-definition`,
+> Invoke `/brainstorm` or `/blueprint`,
 > or link an issue with interface signatures and acceptance criteria before starting.
 
 # Session Setup
@@ -53,7 +53,7 @@ Acceptable anchors are persistent artifacts in this repository:
   (e.g. `docs/adr/0042-X.md`)
 
 Issue URLs, external design documents,
-and brainstorm or product-definition output that exists only in conversation
+and brainstorm or blueprint output that exists only in conversation
 are not valid anchors —
 they can move, change, or become inaccessible to future readers of the code.
 
@@ -80,7 +80,7 @@ Use domain language consistently in code and tests.
 The plan source defines the canonical vocabulary:
 
 - API boundaries fix module, function, and type names
-  (from the PRD module sketch or the linked issue's interface signatures).
+  (from the design document's module sketch or the linked issue's interface signatures).
 - Domain prose (problem statement, contracts, acceptance criteria)
   introduces names for concepts, states, entities, and errors.
 

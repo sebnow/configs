@@ -1,6 +1,6 @@
 ---
 name: breakdown
-description: "Decomposes a PRD, brainstorm transcript, or raw requirements into vertically-sliced implementation issues with context, acceptance criteria, and dependency ordering. Use when starting implementation planning from any requirement input. Triggers: 'break into issues', 'create issues', 'decompose PRD', 'write issues', 'issue breakdown', 'breakdown'. Do NOT use when requirements are still unclear — run brainstorm skill first."
+description: "Decomposes a design document, brainstorm transcript, or raw requirements into vertically-sliced implementation issues with context, acceptance criteria, and dependency ordering. Use when starting implementation planning from any requirement input. Triggers: 'break into issues', 'create issues', 'decompose blueprint', 'write issues', 'issue breakdown', 'breakdown'. Do NOT use when requirements are still unclear — run brainstorm skill first."
 disable-model-invocation: true
 ---
 
@@ -15,7 +15,7 @@ Follow these steps in order. Do not skip steps.
 
 ### Step 1: Extract behavioral goals
 
-Read the input — PRD, brainstorm transcript, or raw chat.
+Read the input — a design document, brainstorm transcript, or raw chat.
 
 For each user-visible behavior the input describes, extract:
 
@@ -44,10 +44,10 @@ Do not create issues for:
 
 ### Step 3: Carry signatures forward, then explore the codebase
 
-If the input is a PRD, the module sketch already contains a signature block for each module.
+If the input is a design document, its Design section already contains a signature block for each module.
 Copy each signature into the Context section of the issue that touches that module, verbatim.
 Do not paraphrase a signature into prose —
-that re-introduces the inference gap the PRD eliminated.
+that re-introduces the inference gap the design document eliminated.
 
 Before formatting issues, explore the codebase to discover
 existing API boundaries, types, and signatures relevant to each slice.
@@ -58,7 +58,7 @@ Capture:
 - Existing types, function signatures, or contracts the implementing agent should know about
 - Proposed new boundaries as advisory guidance, not mandated abstractions
 
-Permitted in Context: signature declarations copied verbatim from the PRD, existing type definitions, function headers from the codebase.
+Permitted in Context: signature declarations copied verbatim from the design document, existing type definitions, function headers from the codebase.
 Forbidden in Context: implementation bodies, full schemas, configuration values.
 
 ### Step 4: Order by behavioral dependency
@@ -113,13 +113,13 @@ Never:
 - Invent decisions that are missing from the input — flag them
 - Leave a mock in place without a follow-up integration issue
 - Write acceptance criteria that only describe code quality, not observable behavior
-- Paraphrase a PRD-supplied signature into prose, or drop it from the issue's Context
+- Paraphrase a signature supplied by the design document into prose, or drop it from the issue's Context
 
 ## Common Issues
 
 ### Input is ambiguous or incomplete
 
-Cause: the PRD or chat transcript did not capture all decisions.
+Cause: the design document or chat transcript did not capture all decisions.
 Solution: flag each missing decision as an open question in the relevant issue's Context section. Do not invent answers. Do not ask the user — record the gap and continue.
 
 ### Two issues have a circular dependency
@@ -134,9 +134,9 @@ Solution: create an explicit integration follow-up issue titled "Replace [mock] 
 
 ## Examples
 
-### Example: PRD → vertical slices
+### Example: design document → vertical slices
 
-Input: PRD describing a /health endpoint (no auth) and a /users endpoint (Bearer token, returns id+email from DB).
+Input: a design document describing a /health endpoint (no auth) and a /users endpoint (Bearer token, returns id+email from DB).
 Actions: (1) Extract two behavioral goals: health probe, authenticated user listing. (2) Decompose: Issue 1 = /health returns 200 {status:ok}; Issue 2 = /users returns 401 without token; Issue 3 = /users returns user list with valid token. (3) Explore codebase for Express router patterns, auth middleware location, DB query conventions. (4) Order: Issue 1 has no deps; Issue 2 depends on auth middleware (why: endpoint behavior is undefined without it; bypass: stub middleware); Issue 3 depends on Issues 1 and 2 (why: both must exist to test the full path). (5) Format with template and present draft.
 Result: Three issues, each vertically sliced, with file hints and specific AC. No "implement DB schema" issue.
 

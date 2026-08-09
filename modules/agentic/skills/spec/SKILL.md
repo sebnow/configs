@@ -1,6 +1,6 @@
 ---
 name: spec
-description: "Produces and maintains a holistic system specification (SPEC.md) at a project root. The spec is the single source of truth for what the system must conform to. Use when starting a new project's spec, folding new ADRs or requirements into an existing spec, or reconciling contradicting decisions. Triggers: 'create SPEC.md', 'write a spec', 'system specification', 'update the spec', 'fold ADR into spec', 'specify the system'. Do NOT use for PRDs (run product-definition) or ADRs (run adr-writing); the spec is downstream of both."
+description: "Produces and maintains a holistic system specification (SPEC.md) at a project root. The spec is the single source of truth for what the system must conform to. Use when starting a new project's spec, folding new ADRs or requirements into an existing spec, or reconciling contradicting decisions. Triggers: 'create SPEC.md', 'write a spec', 'system specification', 'update the spec', 'fold ADR into spec', 'specify the system'. Do NOT use for a single change's design document (run blueprint) or ADRs (run adr-writing); the spec is downstream of both."
 ---
 
 # Spec Writing
@@ -8,7 +8,7 @@ description: "Produces and maintains a holistic system specification (SPEC.md) a
 Produces a single, authoritative `SPEC.md` describing what the system must conform to right now.
 
 The spec is a snapshot of present truth.
-It is not a changelog, not a PRD, not a design doc.
+It is not a changelog, not a design doc.
 History lives in git.
 Decision rationale lives in ADRs.
 The spec answers only "what must hold."
@@ -21,7 +21,7 @@ It does not interview the user.
 Accepted input sources:
 
 - Brainstorm transcripts (output of the `brainstorm` skill)
-- PRDs (output of the `product-definition` skill)
+- Change design documents (output of the `blueprint` skill)
 - ADRs (output of the `adr-writing` skill)
 - Loose requirement notes or design decisions
 
@@ -144,13 +144,13 @@ Before writing, verify:
 ## When Not to Use
 
 - The user has a single architectural decision to record — use `adr-writing` instead.
-- The user is describing one product feature — use `product-definition` instead.
+- The user is describing one change — use `blueprint` instead.
 - The user wants to verify code conformance to an existing spec — that is a future skill, not this one.
 - The user has not decided yet — run `brainstorm` first.
 
 ## Integration with Other Skills
 
-- `brainstorm`, `product-definition`, `adr-writing` produce inputs this skill consumes.
+- `brainstorm`, `blueprint`, `adr-writing` produce inputs this skill consumes.
 - `writing-clearly-and-concisely` applies to spec prose.
 - `commit` handles the commit after the user has reviewed the written file.
 

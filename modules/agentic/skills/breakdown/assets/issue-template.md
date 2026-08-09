@@ -13,7 +13,7 @@ Background the implementing agent needs:
 
 - Why this slice exists and which feature it belongs to
 - Relevant API boundaries — existing (types, signatures, contracts) or proposed advisory ones.
-  If the PRD supplied a signature for this module, copy it verbatim:
+  If the design document supplied a signature for this module, copy it verbatim:
 
   ```ts
   type CreateTask = (input: { title: string; priority: 1 | 2 | 3 | 4 }) => Promise<Task>
@@ -21,7 +21,7 @@ Background the implementing agent needs:
 
   Inline references to a single name, route, or symbol stay in backticks (e.g. `` `GET /health` ``).
 - File paths as orientation hints, labeled: "orientation hint: `path/to/file`"
-- Links to source documents (PRD, brainstorm transcript) as inline markdown links
+- Links to source documents (design document, brainstorm transcript) as inline markdown links
 
 ### Details
 
