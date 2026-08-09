@@ -6,8 +6,8 @@ expect_trigger: true
 target_lens: null
 category: discoverability
 rationale: |
-  Scenarios 10–14 verify that the skill activates on the five trigger
-  phrases listed in the PRD's success criteria. "Consolidate tightly-coupled
+  Scenarios 10–14 verify that the skill activates on its five
+  expected trigger phrases. "Consolidate tightly-coupled
   modules" is the phrasing listed verbatim in the skill's frontmatter
   description; failure here indicates a description mismatch.
 assertions:
