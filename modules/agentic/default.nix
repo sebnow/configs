@@ -141,7 +141,6 @@
               ];
             }
             # Blocks emoji (and future rules) in new markdown content.
-            # See .agents/prd-markdown.md
             {
               matcher = "Edit|Write";
               hooks = [
