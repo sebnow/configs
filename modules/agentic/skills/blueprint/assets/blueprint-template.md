@@ -50,19 +50,21 @@ each module entry should map to one or more end-to-end issues.
 
 Map how control flows through the change as an indented tree.
 The root is the entry point; children are the calls it makes, in order.
-Mark added calls with `+`, removed calls with `-`, and leave unchanged calls unprefixed.
+Prefix every line with a marker column, unified-diff style: a space for unchanged
+calls, `+` for added calls, `-` for removed calls. The content (with its tree
+indentation) follows the marker, so a ```diff block highlights it.
 
 The example below replaces a per-item query (an N+1) with a single batch load;
 its calls map to the module signatures above.
 
-```
-GET /feed handled
-  Server.ListFeed(ctx, userID)
-    Store.FindFeedItems(ctx, userID)
--   for each item:
--     Store.FindComments(ctx, item.ID)
-+   Store.FindCommentsByItems(ctx, itemIDs)
-    writeJSON(w, items)
+```diff
+ GET /feed handled
+   Server.ListFeed(ctx, userID)
+     Store.FindFeedItems(ctx, userID)
+-    for each item:
+-      Store.FindComments(ctx, item.ID)
++    Store.FindCommentsByItems(ctx, itemIDs)
+     writeJSON(w, items)
 ```
 
 If the change alters no control flow (pure data or schema change),

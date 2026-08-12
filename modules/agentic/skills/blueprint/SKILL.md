@@ -72,7 +72,9 @@ Those belong in the issues produced downstream.
 Map how control flows through the change as an indented tree.
 The root is the entry point (what triggers the flow);
 children are the calls it makes, in order.
-Mark added calls with `+`, removed calls with `-`, and leave unchanged calls unprefixed.
+Prefix every line with a marker column, unified-diff style: a space for unchanged
+calls, `+` for added calls, `-` for removed calls, with the tree indentation after
+the marker — so a ```diff block highlights it.
 
 Every call named in the tree must correspond to a module interface signature above.
 The tree shows the sequence; the signatures pin the contracts.
