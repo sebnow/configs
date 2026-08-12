@@ -18,23 +18,25 @@ so the two subsections cross-check each other.
 
 For each module the change introduces or modifies:
 
-> **Server.ListFeed** (Go)
->
-> ```go
-> func (s *Server) ListFeed(ctx context.Context, userID string) ([]FeedItem, error)
-> ```
->
-> Responsibility: returns a user's feed with each item's comments attached.
-> Contracts: returns an empty slice (not nil) when the feed is empty; read-only.
+#### `Server.ListFeed` (Go)
 
-> **Store.FindCommentsByItems** (Go)
->
-> ```go
-> func (s *Store) FindCommentsByItems(ctx context.Context, itemIDs []string) (map[string][]Comment, error)
-> ```
->
-> Responsibility: batch-loads comments for many items in a single query.
-> Contracts: keys the result by item ID; items with no comments are absent from the map.
+```go
+func (s *Server) ListFeed(ctx context.Context, userID string) ([]FeedItem, error)
+```
+
+Responsibility: returns a user's feed with each item's comments attached.
+
+Contracts: returns an empty slice (not nil) when the feed is empty; read-only.
+
+#### `Store.FindCommentsByItems` (Go)
+
+```go
+func (s *Store) FindCommentsByItems(ctx context.Context, itemIDs []string) (map[string][]Comment, error)
+```
+
+Responsibility: batch-loads comments for many items in a single query.
+
+Contracts: keys the result by item ID; items with no comments are absent from the map.
 
 Include only signature declarations, type aliases, function or method headers,
 and interface or struct definitions.
