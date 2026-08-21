@@ -52,7 +52,12 @@ nobody has agreed to make.
 3. **Explore alternatives for high-stakes boundaries** — a long-lived interface,
    many callers, or a non-obvious choice. See
    [references/design-alternatives.md](references/design-alternatives.md).
-4. **Write the sketch, get approval, hand off.** Produce the architecture sketch
+4. **Visualize (optional, on request).** Part of the design conversation, before
+   approval: when the user wants to see the candidates, produce a local HTML
+   visualization with a self-contained card per candidate. It helps compare
+   options and decide. See
+   [references/visualization.md](references/visualization.md). Never required.
+5. **Write the sketch, get approval, hand off.** Produce the architecture sketch
    (see Output), then hand to `blueprint` — or, for a simple boundary whose
    signatures are obvious, straight to `coding`.
 

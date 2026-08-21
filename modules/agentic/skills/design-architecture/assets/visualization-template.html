@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture visualization</title>
+
+<!-- Tailwind (CDN) for layout/utilities. Mermaid (CDN) is imported in the module script below. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: "class" };</script>
+
+<style>
+  /* ---- Design tokens: the single source of the visual language. ----
+     Light in :root, dark in :root.dark. Every colour used below is a token;
+     no hard-coded hex outside these two blocks. Keep the JS `palette` object
+     (module script) in sync so Mermaid matches. */
+  :root {
+    color-scheme: light;
+    --bg:#f8fafc; --fg:#0f172a; --muted:#64748b;
+    --panel:#ffffff; --panel-border:#e2e8f0;
+    --module:#e0f2fe; --module-border:#0284c7; --module-fg:#075985;
+    --boundary:#7c3aed; --boundary-bg:rgba(124,58,237,.06);
+    --system:#fef3c7; --system-border:#d97706; --system-fg:#92400e;
+    --existing:#94a3b8; --existing-bg:#eef2f6;
+    --new:#10b981; --new-bg:#d1fae5;
+    --removed:#ef4444; --removed-bg:#fee2e2;
+    --edge:#475569; --crosses-bg:#ede9fe; --crosses-fg:#5b21b6;
+  }
+  :root.dark {
+    color-scheme: dark;
+    --bg:#0b1220; --fg:#e5e7eb; --muted:#94a3b8;
+    --panel:#111827; --panel-border:#1f2937;
+    --module:#0c4a6e; --module-border:#38bdf8; --module-fg:#bae6fd;
+    --boundary:#a78bfa; --boundary-bg:rgba(167,139,250,.12);
+    --system:#78350f; --system-border:#f59e0b; --system-fg:#fde68a;
+    --existing:#64748b; --existing-bg:#1e293b;
+    --new:#34d399; --new-bg:#064e3b;
+    --removed:#f87171; --removed-bg:#3f1d1d;
+    --edge:#94a3b8; --crosses-bg:#312e81; --crosses-fg:#c7d2fe;
+  }
+
+  body { background:var(--bg); color:var(--fg); }
+  .panel { background:var(--panel); border:1px solid var(--panel-border); }
+  .ba { container-type:inline-size; }
+  .ba-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:start; }
+  @container (max-width: 640px) { .ba-grid { grid-template-columns:1fr; } }
+  .stage { position:relative; min-height:230px; display:grid; place-items:center; padding:1.25rem; }
+
+  /* ---- Visual language: one class per concept, all token-driven. ---- */
+  .module {
+    background:var(--module); border:2px solid var(--module-border); color:var(--module-fg);
+    border-radius:.75rem; padding:.7rem 1rem; font-weight:600; text-align:center;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+  }
+  .module.existing { background:var(--existing-bg); border-color:var(--existing); color:var(--muted); filter:saturate(.6); }
+  .module.new { background:var(--new-bg); border-color:var(--new); color:var(--fg); position:relative; }
+  .module.new::after {
+    content:"+"; position:absolute; top:-.6rem; right:-.6rem; width:1.35rem; height:1.35rem;
+    display:grid; place-items:center; border-radius:999px; background:var(--new); color:#03251b;
+    font-weight:800; box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .module.removed { border-style:dashed; border-color:var(--removed); background:var(--removed-bg); color:var(--muted); }
+  .module.removed .label { text-decoration:line-through; }
+
+  .system {
+    border:2px solid var(--system-border); color:var(--system-fg); border-radius:.75rem;
+    padding:.7rem 1rem; font-weight:600; text-align:center;
+    background-image:repeating-linear-gradient(45deg, var(--system) 0 8px, transparent 8px 16px);
+    background-color:var(--system);
+  }
+
+  .boundary {
+    position:relative; border:2px dashed var(--boundary); background:var(--boundary-bg);
+    border-radius:1rem; padding:1.6rem 1rem 1rem; display:grid; gap:.75rem; justify-items:center;
+  }
+  .boundary > .boundary-label {
+    position:absolute; top:-.72rem; left:1rem; background:var(--panel); color:var(--boundary);
+    border:1px solid var(--boundary); border-radius:999px; padding:.05rem .6rem; font-size:.72rem; font-weight:700;
+  }
+
+  .crosses { background:var(--crosses-bg); color:var(--crosses-fg); border-radius:999px; padding:.1rem .55rem; font-size:.72rem; font-weight:600; white-space:nowrap; }
+
+  /* Dependency arrow (hand-built), direction = arrowhead. */
+  .arrow { display:flex; align-items:center; gap:.4rem; color:var(--edge); }
+  .arrow svg { display:block; }
+  .arrow-line { stroke:var(--edge); stroke-width:2.5; }
+  .arrow-head { fill:var(--edge); }
+
+  /* Legend, rendered from the same tokens. */
+  .legend { display:flex; flex-wrap:wrap; gap:.5rem .9rem; }
+  .legend-item { display:flex; align-items:center; gap:.45rem; font-size:.8rem; color:var(--muted); }
+  .swatch { width:1.1rem; height:1.1rem; border-radius:.35rem; border:2px solid var(--panel-border); }
+  .sw-module { background:var(--module); border-color:var(--module-border); }
+  .sw-new { background:var(--new-bg); border-color:var(--new); }
+  .sw-existing { background:var(--existing-bg); border-color:var(--existing); }
+  .sw-removed { background:var(--removed-bg); border-color:var(--removed); border-style:dashed; }
+  .sw-system { background:var(--system); border-color:var(--system-border); }
+  .sw-boundary { background:var(--boundary-bg); border-color:var(--boundary); border-style:dashed; }
+
+  /* Per-candidate article: self-contained context + before/after. */
+  .candidate > header h2 { font-size:1.125rem; font-weight:700; }
+  .candidate-meta { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1rem 1.25rem; }
+  @container (max-width: 640px) { .candidate-meta { grid-template-columns:1fr; } }
+  .field h3 { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:.35rem; }
+  .field p { font-size:.9rem; }
+  .field.benefits ul { list-style:none; display:grid; gap:.35rem; font-size:.9rem; }
+  .field.benefits li { position:relative; padding-left:1.05rem; }
+  .field.benefits li::before { content:""; position:absolute; left:0; top:.5em; width:.5rem; height:.5rem; border-radius:2px; background:var(--new); }
+  .chips { display:flex; flex-wrap:wrap; gap:.4rem; }
+  .chip { font-size:.75rem; font-weight:600; padding:.12rem .55rem; border-radius:999px; background:var(--module); color:var(--module-fg); border:1px solid var(--module-border); }
+  .chip.new { background:var(--new-bg); border-color:var(--new); color:var(--fg); }
+  .chip.existing { background:var(--existing-bg); border-color:var(--existing); color:var(--muted); }
+  .chip.system { background:var(--system); border-color:var(--system-border); color:var(--system-fg); }
+  .ba-title { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+
+  /* ---- Editorial collapse animation: pure CSS via :has() + transitions. ----
+     Toggling the checkbox merges two shallow modules into one deep module. */
+  .merge-demo { display:grid; gap:.75rem; justify-items:center; }
+  .merge-stack { position:relative; display:grid; gap:.6rem; justify-items:center; min-height:150px; align-content:center; }
+  .merge-stack .shallow { transition:transform .6s ease, opacity .45s ease; }
+  .merge-stack .deep {
+    position:absolute; inset:auto; opacity:0; transform:scale(.9);
+    transition:opacity .5s ease .15s, transform .5s ease .15s;
+  }
+  .merge-demo:has(.merge-toggle:checked) .shallow.a { transform:translateY(28px); opacity:0; }
+  .merge-demo:has(.merge-toggle:checked) .shallow.b { transform:translateY(-28px); opacity:0; }
+  .merge-demo:has(.merge-toggle:checked) .deep { opacity:1; transform:scale(1); }
+  .switch { display:inline-flex; align-items:center; gap:.5rem; font-size:.8rem; color:var(--muted); cursor:pointer; user-select:none; }
+
+  /* Mermaid host inherits background from the panel; nodes are themed via JS. */
+  .mermaid { display:flex; justify-content:center; }
+  .mermaid svg { max-width:100%; height:auto; }
+
+  .theme-toggle { border:1px solid var(--panel-border); color:var(--fg); background:var(--panel); border-radius:.6rem; padding:.4rem .75rem; font-size:.85rem; }
+  .theme-toggle::after { content:"Dark"; }
+  :root.dark .theme-toggle::after { content:"Light"; }
+</style>
+</head>
+
+<body class="min-h-screen">
+  <div class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+
+    <header class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold">Architecture visualization</h1>
+        <p class="text-sm" style="color:var(--muted)">Before / after per candidate. Replace the example content; keep the tokens, legend, and theme handling.</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour mode"></button>
+    </header>
+
+    <!-- Legend -->
+    <section class="panel rounded-xl p-4">
+      <div class="legend">
+        <span class="legend-item"><span class="swatch sw-module"></span>Module (owned)</span>
+        <span class="legend-item"><span class="swatch sw-new"></span>New</span>
+        <span class="legend-item"><span class="swatch sw-existing"></span>Existing</span>
+        <span class="legend-item"><span class="swatch sw-removed"></span>Removed</span>
+        <span class="legend-item"><span class="swatch sw-system"></span>External system</span>
+        <span class="legend-item"><span class="swatch sw-boundary"></span>Boundary</span>
+        <span class="legend-item"><span class="crosses">label</span>What crosses</span>
+      </div>
+    </section>
+
+    <!-- ================= Candidate 1: hand-built (mass / depth + collapse) ================= -->
+    <article class="ba panel candidate rounded-xl p-5 space-y-5">
+      <header>
+        <h2>Candidate 1 — Deepen a shallow boundary</h2>
+        <p class="text-sm" style="color:var(--muted)">Recommended. Editorial mass diagram: complexity the caller carries vs. complexity the module absorbs.</p>
+      </header>
+
+      <div class="candidate-meta">
+        <div class="field">
+          <h3>Files / modules</h3>
+          <ul class="chips">
+            <li class="chip existing">Step A</li>
+            <li class="chip existing">Step B</li>
+            <li class="chip new">Deep module</li>
+          </ul>
+        </div>
+        <div class="field">
+          <h3>Problem</h3>
+          <p>The caller must know and sequence two steps itself; the thin wrapper hides nothing it does not already have to understand.</p>
+        </div>
+        <div class="field">
+          <h3>Solution</h3>
+          <p>Absorb both steps into one module behind a single call, so the sequencing lives below the interface.</p>
+        </div>
+        <div class="field benefits">
+          <h3>Benefits</h3>
+          <ul>
+            <li>Caller makes one call instead of coordinating two.</li>
+            <li>Sequencing can change without touching callers.</li>
+            <li>Cost: the module grows — confirm it stays one nameable job.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="ba-title mb-2">Before / after</div>
+        <div class="ba-grid">
+        <!-- Before -->
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wide" style="color:var(--muted)">Before</div>
+          <div class="stage">
+            <div class="boundary" style="width:100%">
+              <span class="boundary-label">thin wrapper</span>
+              <div class="module existing"><span class="label">Step A</span></div>
+              <div class="module existing"><span class="label">Step B</span></div>
+              <div class="crosses">caller sequences A then B</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- After (with pure-CSS collapse demo) -->
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wide" style="color:var(--muted)">After</div>
+          <div class="stage">
+            <div class="merge-demo" style="width:100%">
+              <div class="merge-stack">
+                <div class="module shallow a existing" style="width:70%"><span class="label">Step A</span></div>
+                <div class="module shallow b existing" style="width:70%"><span class="label">Step B</span></div>
+                <div class="module deep new" style="width:80%"><span class="label">Deep module</span></div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" class="merge-toggle" />
+                animate collapse
+              </label>
+              <div class="crosses">caller makes one call</div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ================= Candidate 2: Mermaid (dependency direction / what crosses) ================= -->
+    <article class="ba panel candidate rounded-xl p-5 space-y-5">
+      <header>
+        <h2>Candidate 2 — Point the dependency the right way</h2>
+        <p class="text-sm" style="color:var(--muted)">Alternative. Graph-shaped: dependency direction and what crosses each boundary.</p>
+      </header>
+
+      <div class="candidate-meta">
+        <div class="field">
+          <h3>Files / modules</h3>
+          <ul class="chips">
+            <li class="chip existing">Caller</li>
+            <li class="chip new">Interface (caller-owned)</li>
+            <li class="chip system">External API</li>
+          </ul>
+        </div>
+        <div class="field">
+          <h3>Problem</h3>
+          <p>The caller depends straight on the external API and speaks its wire format, so a change over there reaches the caller.</p>
+        </div>
+        <div class="field">
+          <h3>Solution</h3>
+          <p>Put an interface the caller owns between them; the external format is produced below it, in one place.</p>
+        </div>
+        <div class="field benefits">
+          <h3>Benefits</h3>
+          <ul>
+            <li>External format changes stop at the boundary.</li>
+            <li>The caller works in its own terms, not the wire's.</li>
+            <li>Cost: one more interface — justify it with a real second use or a volatile dependency.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="ba-title mb-2">Before / after</div>
+        <div class="ba-grid">
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wide" style="color:var(--muted)">Before</div>
+          <!-- Mermaid source lives in .textContent; JS captures it and re-themes on toggle. -->
+          <pre class="mermaid">
+flowchart LR
+  caller["Caller"] -->|"raw record, wire format"| ext["External API"]
+  class caller existing
+  class ext system
+          </pre>
+        </div>
+
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wide" style="color:var(--muted)">After</div>
+          <pre class="mermaid">
+flowchart LR
+  caller["Caller"] -->|"domain request"| iface["Interface (caller-owned)"]
+  iface -->|"formats below the boundary"| ext["External API"]
+  class caller existing
+  class iface new
+  class ext system
+          </pre>
+        </div>
+        </div>
+      </div>
+    </article>
+
+    <footer class="text-xs pt-2" style="color:var(--muted)">
+      Reusable arrowhead for hand-built dependency arrows:
+      <span class="arrow">A
+        <svg width="52" height="12" viewBox="0 0 52 12" aria-hidden="true">
+          <line class="arrow-line" x1="0" y1="6" x2="44" y2="6" />
+          <path class="arrow-head" d="M44 1 L52 6 L44 11 Z" />
+        </svg>
+      B</span>
+    </footer>
+  </div>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+    // Palette kept in sync with the CSS tokens above. Mermaid needs concrete
+    // values at init time (it does not read CSS custom properties).
+    const palette = {
+      light: { moduleBg:"#e0f2fe", moduleBorder:"#0284c7", moduleFg:"#075985", line:"#475569",
+               systemBg:"#fef3c7", systemBorder:"#d97706", existingBg:"#eef2f6", existing:"#94a3b8",
+               newBg:"#d1fae5", new:"#10b981", removedBg:"#fee2e2", removed:"#ef4444", fg:"#0f172a" },
+      dark:  { moduleBg:"#0c4a6e", moduleBorder:"#38bdf8", moduleFg:"#bae6fd", line:"#94a3b8",
+               systemBg:"#78350f", systemBorder:"#f59e0b", existingBg:"#1e293b", existing:"#64748b",
+               newBg:"#064e3b", new:"#34d399", removedBg:"#3f1d1d", removed:"#f87171", fg:"#e5e7eb" },
+    };
+
+    const isDark = () => document.documentElement.classList.contains("dark");
+
+    // Capture each diagram's source once, before Mermaid replaces it with SVG.
+    const diagrams = [...document.querySelectorAll(".mermaid")];
+    diagrams.forEach(el => { el.dataset.src = el.textContent.trim(); });
+
+    function themeVars(p) {
+      return {
+        background: "transparent",
+        primaryColor: p.moduleBg, primaryBorderColor: p.moduleBorder, primaryTextColor: p.moduleFg,
+        lineColor: p.line, secondaryColor: p.systemBg, tertiaryColor: p.systemBg,
+        fontFamily: "ui-sans-serif, system-ui, sans-serif",
+      };
+    }
+    // classDef assignments (new/existing/removed/system) mapped to the same tokens.
+    function classDefs(p) {
+      return [
+        `classDef new fill:${p.newBg},stroke:${p.new},stroke-width:2px,color:${p.fg};`,
+        `classDef existing fill:${p.existingBg},stroke:${p.existing},color:${p.fg};`,
+        `classDef removed fill:${p.removedBg},stroke:${p.removed},stroke-width:2px,stroke-dasharray:4 3,color:${p.fg};`,
+        `classDef system fill:${p.systemBg},stroke:${p.systemBorder},color:${p.fg};`,
+      ].join("\n");
+    }
+
+    async function renderMermaid() {
+      const p = isDark() ? palette.dark : palette.light;
+      mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: themeVars(p) });
+      diagrams.forEach(el => {
+        el.innerHTML = el.dataset.src + "\n" + classDefs(p);
+        el.removeAttribute("data-processed");
+      });
+      await mermaid.run({ nodes: diagrams });
+    }
+
+    // Theme: initialise from prefers-color-scheme, allow manual override.
+    if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark");
+    document.getElementById("theme-toggle").addEventListener("click", async () => {
+      document.documentElement.classList.toggle("dark");
+      await renderMermaid();
+    });
+
+    renderMermaid();
+  </script>
+</body>
+</html>
