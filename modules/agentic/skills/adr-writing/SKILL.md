@@ -128,6 +128,15 @@ When a decision changes or needs extension, write a new ADR that supersedes or
 amends it, and link the two. The superseded ADR stays in place, marked as
 superseded. The trail of what was decided and why is the point.
 
+## References
+
+Cite only durable, reachable sources: an in-repo path, a stable public URL, or a
+permanent identifier (a ticket ID, a commit hash). Do not cite external or
+ephemeral sources a reader with the repository cannot reach — personal notes,
+private vaults, chat threads, or transient design docs — as if they were
+authoritative. If the reasoning is load-bearing, capture it in the ADR itself
+rather than pointing at something that may vanish.
+
 ## File Naming
 
 Name files by need, not solution.

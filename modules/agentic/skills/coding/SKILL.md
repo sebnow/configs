@@ -183,6 +183,13 @@ Follow this workflow for all code changes:
 - Comments:
   Add only when providing additional context or explaining non-obvious decisions.
   Don't add superfluous comments that merely restate what code does.
+- References:
+  Cite only durable, reachable sources in code and comments —
+  an in-repo path, a stable public URL, or a permanent identifier (ticket ID, commit hash).
+  Do not point at external or ephemeral documentation a reader with the repository
+  cannot reach (personal notes, private vaults, chat threads, transient design docs)
+  as if it were authoritative.
+  If the reasoning matters, inline it; if it lives elsewhere, link something durable.
 - Naming:
   Use domain terminology.
   Names should imply type - prefixes like `is_` or `did_` for booleans,
