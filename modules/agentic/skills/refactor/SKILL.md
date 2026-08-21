@@ -5,8 +5,10 @@ description: "Drives the design phase of a refactor. Walks the codebase through 
 
 # Refactor
 
-This is the design phase of a refactor.
-The coding skill handles implementation.
+This is the detection and triage phase of a refactor: walk existing code, surface
+friction, and route each candidate to the skill that resolves it. Mechanical
+transforms go straight to the coding skill; boundary-level transforms go to the
+design-architecture skill, which designs the new boundary before implementation.
 
 ## Vocabulary
 
@@ -50,24 +52,32 @@ Present a numbered list. For each candidate:
 Do not propose interface signatures yet.
 Ask which candidate to explore.
 
-### Phase 3: Grilling loop
+### Phase 3: Triage and route
 
-Grill the chosen candidate into a concrete design.
+Confirm the chosen candidate is real friction, then route it. Do not design the
+boundary here — that is the design-architecture skill's job.
 
-Read [references/dependency-strategy.md](references/dependency-strategy.md)
-to determine the dependency category and adapter requirements.
-
-Two tests every candidate must pass before proposing a design:
+Two tests every candidate must pass before routing:
 
 - Deletion test — would deleting this module concentrate complexity across N callers, or just move it? If "just move it", the module is shallow.
 - Compression test — does the candidate collapse repeated logic, or just relocate it?
-- Two-adapters test — one adapter is a hypothetical port; two is a real one. Do not introduce a port for a single implementation.
 
-If the candidate is high-stakes (long-lived interface, many callers, non-obvious design choice),
-read [references/design-alternatives.md](references/design-alternatives.md)
-and spawn three or more sub-agents in parallel, each with a different design constraint.
+If neither test passes, the candidate is not real friction — drop it.
 
-End Phase 3 with an agreed design. Then hand off to the coding skill for implementation.
+Classify the surviving transform and route it:
+
+- **Mechanical transform** — the move is fully specified by the transformation itself
+  (extract a function, inline a helper, delete dead code, move to its own file,
+  promote a primitive to a named type). Hand the named transform to the coding skill
+  for implementation.
+- **Boundary transform** — the move changes where a boundary sits, which way it
+  faces, or what crosses it (introduce an interface where there was none, split or
+  collapse a module, replace an opaque payload with a schema). The relief is named
+  but the boundary design is open. Hand off to the design-architecture skill, which
+  designs the boundary; it then flows through blueprint to coding. Whether a separate
+  interface is justified is design-architecture's call, not this skill's.
+
+End Phase 3 by naming the transform and the skill it routes to.
 
 ## Side effects
 

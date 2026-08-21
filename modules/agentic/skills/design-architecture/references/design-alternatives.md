@@ -1,5 +1,5 @@
 This is not the `council` skill.
-`design-alternatives` generates alternative interfaces for one chosen refactoring candidate.
+`design-alternatives` generates alternative interfaces for one chosen boundary.
 `council` runs multi-perspective deliberation on a broader decision (scope, risk, strategy).
 
 ## Process
@@ -22,14 +22,14 @@ Required sub-agents:
 - **Minimise interface** — fewest parameters, fewest types, fewest error modes.
 - **Maximise flexibility** — most extension points, most composable pieces.
 - **Optimise for the common caller** — best ergonomics for the 80% case.
-- **Ports-and-adapters** (if external dependencies are involved) —
-  define the port and identify the adapters.
+- **Isolate the volatile dependency** (when an external dependency is involved) —
+  draw the interface so the dependency's changes stop at the boundary.
 
 Each sub-agent produces:
 - the interface: types, signatures, invariants, error modes
 - a usage example showing the common caller path
 - what the implementation hides
-- the dependency strategy and adapters (see dependency-strategy.md)
+- how the interface handles its dependencies (see dependency-strategy.md)
 - trade-offs: what this design sacrifices
 
 ### Phase 3: Present and compare
@@ -41,5 +41,5 @@ Compare designs by:
 
 Give a recommendation with reasoning.
 Do not present a neutral menu — commit to a preferred design and defend it.
-The recommendation becomes the agreed design for Phase 3 of the refactor process.
-Hand off to the coding skill for implementation.
+The recommendation becomes the decided boundary recorded in the architecture sketch.
+Blueprint pins the exact signatures downstream; do not hand off to coding from here.

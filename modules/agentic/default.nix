@@ -209,6 +209,7 @@
               "Skill(adr-writing)"
               "Skill(commit)"
               "Skill(council)"
+              "Skill(design-architecture)"
               "Skill(jujutsu)"
               "Skill(obsidian-cli)"
               "Skill(prompt-engineering)"
