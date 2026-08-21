@@ -112,6 +112,22 @@ Exclude:
 - Step-by-step implementation
 - Code examples (unless illustrating approach)
 
+## Immutability
+
+An accepted ADR is a historical record of a decision made at a point in time.
+Do not edit an accepted ADR to add new rows, conventions, or rules as the system
+grows — that turns a decision record into a living registry and erases what was
+actually decided, and when.
+
+An ADR provides a framework for the decisions that follow from it;
+it does not enumerate every convention that framework later produces.
+If, say, an ADR establishes a naming scheme, later names live in code or a
+living document — not appended to the ADR.
+
+When a decision changes or needs extension, write a new ADR that supersedes or
+amends it, and link the two. The superseded ADR stays in place, marked as
+superseded. The trail of what was decided and why is the point.
+
 ## File Naming
 
 Name files by need, not solution.
