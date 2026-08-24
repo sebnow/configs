@@ -23,10 +23,6 @@
       url = "github:otahontas/pi-coding-agent-catppuccin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    noctalia = {
-      url = "github:noctalia-dev/noctalia";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     catppuccin-niri = {
       url = "github:ninetailedtori/catppuccin-niri";
       flake = false;

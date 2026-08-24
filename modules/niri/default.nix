@@ -32,10 +32,6 @@
       '';
     in
     {
-      # noctalia's home-manager options are provided by home-manager's built-in
-      # `programs.noctalia` module. Importing the flake's own homeModule as well
-      # would double-declare `programs.noctalia.enable`. The flake input is still
-      # used below for the package (v5, nixGL-wrapped).
       programs.noctalia = {
         enable = true;
         # noctalia-shell uses Qt/OpenGL (quickshell). On non-NixOS, the Nix-packaged
@@ -43,10 +39,7 @@
         # __EGL_VENDOR_LIBRARY_FILENAMES. Wrap the package so the spawn-at-startup
         # entry in config.kdl resolves to the nixGL wrapper via PATH.
         package =
-          let
-            base = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
-          in
-          if config.targets.genericLinux.enable then config.lib.nixGL.wrap base else base;
+          if config.targets.genericLinux.enable then config.lib.nixGL.wrap pkgs.noctalia else pkgs.noctalia;
         settings = {
           bar.default = {
             auto_hide = true;
