@@ -46,7 +46,7 @@ layout {
     }
 }
 
-spawn-at-startup "noctalia-shell"
+spawn-at-startup "noctalia"
 
 prefer-no-csd
 
@@ -108,7 +108,7 @@ binds {
             "--background-opacity=0.80"
     }
     Mod+B { spawn "zen-browser"; }
-    Mod+P { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Mod+P { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
 
     Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 

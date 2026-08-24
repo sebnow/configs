@@ -17,8 +17,8 @@
   flake.modules.homeManager.niri =
     {
       config,
-      lib,
       pkgs,
+      lib,
       ...
     }:
     let
@@ -30,31 +30,13 @@
           ${inputs.catppuccin-niri}/themes/${flavor}/catppuccin-${flavor}-${accent}.kdl \
           > $out
       '';
-      palette = (lib.importJSON "${config.catppuccin.sources.palette}/palette.json").${flavor}.colors;
-      hex = name: palette.${name}.hex;
-      noctaliaColors = {
-        mError = hex "red";
-        mHover = hex "teal";
-        mOnError = hex "crust";
-        mOnHover = hex "crust";
-        mOnPrimary = hex "crust";
-        mOnSecondary = hex "crust";
-        mOnSurface = hex "text";
-        mOnSurfaceVariant = hex "subtext1";
-        mOnTertiary = hex "crust";
-        mOutline = hex "surface2";
-        mPrimary = hex accent;
-        mSecondary = hex "peach";
-        mShadow = hex "crust";
-        mSurface = hex "base";
-        mSurfaceVariant = hex "surface0";
-        mTertiary = hex "teal";
-      };
     in
     {
-      imports = [ inputs.noctalia.homeModules.default ];
-
-      programs.noctalia-shell = {
+      # noctalia's home-manager options are provided by home-manager's built-in
+      # `programs.noctalia` module. Importing the flake's own homeModule as well
+      # would double-declare `programs.noctalia.enable`. The flake input is still
+      # used below for the package (v5, nixGL-wrapped).
+      programs.noctalia = {
         enable = true;
         # noctalia-shell uses Qt/OpenGL (quickshell). On non-NixOS, the Nix-packaged
         # libglvnd cannot find EGL without nixGL injecting LD_LIBRARY_PATH and
@@ -65,12 +47,50 @@
             base = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
           in
           if config.targets.genericLinux.enable then config.lib.nixGL.wrap base else base;
-        settings = lib.recursiveUpdate (lib.importJSON ./noctalia/settings.json) {
-          wallpaper.directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-          general.avatarImage = "${config.home.homeDirectory}/.face";
+        settings = {
+          bar.default = {
+            auto_hide = true;
+            background_opacity = 0.75;
+            reserve_space = false;
+            margin_edge = 0;
+            margin_ends = 0;
+            radius = 0;
+            start = [
+              "launcher"
+              "workspaces"
+              "media"
+            ];
+            center = [ "active_window" ];
+            end = [
+              "tray"
+              "clock"
+              "notifications"
+              "battery"
+              "volume"
+              "brightness"
+              "control-center"
+            ];
+          };
+          dock.enabled = false;
+          notification.background_opacity = 0.75;
+          osd.background_opacity = 0.75;
+          shell = {
+            avatar_path = "${config.home.homeDirectory}/.face";
+            polkit_agent = true;
+          };
+          theme = {
+            mode = "dark";
+            source = "builtin";
+            builtin = "Catppuccin";
+          };
+          wallpaper = {
+            enabled = true;
+            directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+            automation = {
+              enabled = true;
+            };
+          };
         };
-        colors = noctaliaColors;
-        plugins = ./noctalia/plugins.json;
       };
 
       xdg.configFile."niri/config.kdl".source = ./config.kdl;
@@ -81,5 +101,7 @@
         cliphist
         playerctl
       ];
+
+      programs.fzf.colors.bg = lib.mkForce "-1";
     };
 }
