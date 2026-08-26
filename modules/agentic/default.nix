@@ -232,8 +232,11 @@
               "CronDelete"
               "CronList"
               "DesignSync"
+              "EndConversation"
               "EnterPlanMode"
+              "EnterWorktree"
               "ExitPlanMode"
+              "ExitWorktree"
               "NotebookEdit"
               "PushNotification"
               "Read(./.env)"
@@ -242,6 +245,7 @@
               "RemoteTrigger"
               "ReportFindings"
               "ScheduleWakeup"
+              "SendFeedback"
               "ShareOnboardingGuide"
               "TaskCreate"
               "TaskGet"
@@ -252,6 +256,9 @@
             ];
           };
           env = {
+            CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = true;
+            CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = true;
+            DISABLE_FEEDBACK_COMMAND = true;
             ENABLE_CLAUDEAI_MCP_SERVERS = false;
           };
           hooks.Stop = [
