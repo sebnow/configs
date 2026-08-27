@@ -17,7 +17,6 @@
     in
     {
       home.packages = [
-        pkgs.ast-grep
         pkgs.jq
         pkgs.nono
         pkgs.nushell
@@ -172,7 +171,6 @@
           ];
           permissions = {
             allow = [
-              "Bash(ast-grep:*)"
               "Bash(cat:*)"
               "Bash(fd:*)"
               "Bash(git commit:*)"
