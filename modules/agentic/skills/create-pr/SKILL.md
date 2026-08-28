@@ -28,15 +28,19 @@ use it for context, but describe what the diff actually does.
 
 ## Register
 
-Write **conversational**.
-
-Unlike Slack and code review, PR descriptions are reference documents read
-asynchronously, often by reviewers who were not in the conversation.
-Lists, code blocks, and hyperlinks are appropriate where the content calls for them.
+PR descriptions are reference documents read asynchronously, often by reviewers
+who were not in the conversation. Lists, code blocks, and hyperlinks are
+appropriate where the content calls for them.
 
 Default to flowing paragraphs. Reach for section headings only when the
-description is long enough that navigation aids the reviewer — short PR
+description is long enough that navigation aids the reviewer. Short PR
 descriptions read better as continuous prose.
+
+Never hard-wrap the description. Write each paragraph as one unwrapped line and
+let the reviewer's client wrap it. GitHub renders every newline as a line break,
+so a hard-wrapped paragraph displays with ragged breaks. This applies to the
+body text only; list items, code blocks, and the call-flow tree keep their own
+line structure.
 
 Get the point across quickly, using simplified technical English (ASD-STE100).
 Elaborate after the main point is made, if the topic may be unclear.
@@ -44,17 +48,33 @@ Elaborate after the main point is made, if the topic may be unclear.
 Use implicit subject; avoid "I" and "we". The work and the changes are the subject.
 
 Good:
+
 > Bounds the math path's upload concurrency to match the non-math budget.
 
 Avoid:
+
 > I bounded the math path's upload concurrency.
+
+Frame the description as a change to the current code, not as documentation of
+the resulting code. Describe what the PR alters — the delta — rather than
+narrating how the post-merge code behaves as if it were the standing baseline.
+
+Good:
+
+> Adds a short-lived cache in front of the profile lookup.
+
+Avoid:
+
+> The profile lookup reads through a short-lived cache.
 
 The title follows the same register: imperative, implicit subject, matching the
 commit skill's message style.
 
 ## Call flow and modules (non-trivial PRs only)
 
-Mirror the blueprint skill's two structural aids. Derive both from the diff.
+Non-trivial PRs carry two structural aids, both derived from the diff: a
+diff-marked call-flow tree and a touched-module list. Both are defined in full
+below; produce them from the diff alone, without consulting any other skill.
 
 ### Call flow
 
@@ -111,6 +131,7 @@ marking an existing draft ready), confirm before running `gh pr create` without
 Never:
 
 - Invent a ticket or issue reference — this skill does not link tickets.
+- Hard-wrap the description body — paragraphs are single unwrapped lines.
 - Describe intent from a blueprint that the diff does not show; the code wins.
 - Add the call-flow or modules sections to a trivial PR.
 - Publish a non-draft PR without explicit user go-ahead.
