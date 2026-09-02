@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: "Turns the current branch's committed work into a pull request: writes the description in a conversational reference-document register and, for non-trivial changes, carries forward a diff-marked call-flow tree and a touched-module list. Creates a draft by default; publishes only on explicit request. Triggers: 'create a PR', 'open a pull request', 'raise a PR', 'gh pr create', 'draft a PR'. Do NOT use to write commits (use the commit skill) or to plan an undecided change (use brainstorm/blueprint)."
+description: "Turns the current branch's committed work into a pull request: writes the description in a conversational reference-document register and, for non-trivial changes, carries forward a diff-marked call-flow tree and a touched-module list. Creates a draft by default; publishes only on explicit request. Triggers: 'create a PR', 'open a pull request', 'raise a PR', 'gh pr create', 'draft a PR'. Do NOT use to write commits."
 disable-model-invocation: true
 ---
 
@@ -8,17 +8,16 @@ disable-model-invocation: true
 
 Turn the current branch's committed work into a pull request.
 
-Assumes the commits already exist. Committing belongs to the commit skill.
-The code is the source of truth. If a blueprint exists for this change,
-use it for context, but describe what the diff actually does.
+Assumes the commits already exist. The code is the source of truth. The user
+should have already provided context around the change to provide the reasoning
+for it, but describe what the diff actually does.
 
 ## Workflow
 
 1. **Detect the base branch.** Use the branch's tracking ref when it is not the
    remote default; otherwise use the remote default. State the chosen base and
    let the user override.
-2. **Read the diff.** Compare the branch against the base
-   (`git diff <base>...HEAD`, `git log <base>..HEAD`). This is the source of truth.
+2. **Read the diff.** Compare the branch against the base. This is the source of truth.
 3. **Judge triviality.** A trivial PR touches one module and alters no control flow.
    Non-trivial PRs get the call-flow and modules sections; trivial PRs do not.
 4. **Write the description** using the register below and
@@ -30,22 +29,23 @@ use it for context, but describe what the diff actually does.
 
 PR descriptions are reference documents read asynchronously, often by reviewers
 who were not in the conversation. Lists, code blocks, and hyperlinks are
-appropriate where the content calls for them.
+appropriate where the content calls for them. Never hard-wrap the description.
 
-Default to flowing paragraphs. Reach for section headings only when the
-description is long enough that navigation aids the reviewer. Short PR
-descriptions read better as continuous prose.
+Favor legibility over density. A wall of dense prose buries the point. Lead with
+the main point in a sentence or two, then break the rest into short paragraphs,
+lists, and — once length warrants navigation — section headings, so a reviewer
+can scan the description and get the main points quickly.
 
-Never hard-wrap the description. Write each paragraph as one unwrapped line and
-let the reviewer's client wrap it. GitHub renders every newline as a line break,
-so a hard-wrapped paragraph displays with ragged breaks. This applies to the
-body text only; list items, code blocks, and the call-flow tree keep their own
-line structure.
+Reach for a bulleted list whenever the change has discrete parts: several fixes,
+a set of touched behaviors, a handful of trade-offs. A list carries these better
+than a run-on sentence. Keep paragraphs short and separate them with a blank
+line; a short PR may need only a lead paragraph.
 
-Get the point across quickly, using simplified technical English (ASD-STE100).
-Elaborate after the main point is made, if the topic may be unclear.
+Get the point across quickly. Elaborate after the main point is made, if the
+topic may be unclear.
 
-Use implicit subject; avoid "I" and "we". The work and the changes are the subject.
+Use implicit subject; avoid "I" and "we". The work and the changes are the
+subject.
 
 Good:
 
@@ -56,7 +56,7 @@ Avoid:
 > I bounded the math path's upload concurrency.
 
 Frame the description as a change to the current code, not as documentation of
-the resulting code. Describe what the PR alters — the delta — rather than
+the resulting code. Describe what the PR alters (the delta) rather than
 narrating how the post-merge code behaves as if it were the standing baseline.
 
 Good:
@@ -67,21 +67,23 @@ Avoid:
 
 > The profile lookup reads through a short-lived cache.
 
-The title follows the same register: imperative, implicit subject, matching the
-commit skill's message style.
+The title follows the same register: imperative, implicit subject.
 
 ## Call flow and modules (non-trivial PRs only)
 
-Non-trivial PRs carry two structural aids, both derived from the diff: a
-diff-marked call-flow tree and a touched-module list. Both are defined in full
-below; produce them from the diff alone, without consulting any other skill.
+Non-trivial PRs carry structural aids, derived from the diff alone
+
+- a diff-marked call-flow tree
+- a touched-module list.
 
 ### Call flow
 
 Map how control flows through the change as an indented tree. The root is the
-entry point; children are the calls it makes, in order. Prefix every line with a
-marker column, unified-diff style: a space for unchanged calls, `+` for added,
-`-` for removed. A ```diff block then highlights the change.
+entry point; children are the calls it makes, in order.
+
+Prefix every line with a marker column, unified-diff style: a space for
+unchanged calls, `+` for added, `-` for removed. A diff code fence highlights
+the change.
 
 ```diff
  GET /feed handled
@@ -101,8 +103,8 @@ One bullet per touched module: name plus a one-line responsibility. The diff
 itself shows the contracts, so do not restate signatures or error modes.
 
 ```
-- `Server.ListFeed` — returns a user's feed with comments attached.
-- `Store.FindCommentsByItems` — batch-loads comments for many items in one query.
+- `Server.ListFeed`: returns a user's feed with comments attached.
+- `Store.FindCommentsByItems`: batch-loads comments for many items in one query.
 ```
 
 ## Creating the PR
@@ -130,8 +132,8 @@ marking an existing draft ready), confirm before running `gh pr create` without
 
 Never:
 
-- Invent a ticket or issue reference — this skill does not link tickets.
-- Hard-wrap the description body — paragraphs are single unwrapped lines.
-- Describe intent from a blueprint that the diff does not show; the code wins.
+- Invent a ticket or issue reference.
+- Hard-wrap the description body. Paragraphs are single unwrapped lines.
+- Describe intent from source documents that the diff does not show; the code wins.
 - Add the call-flow or modules sections to a trivial PR.
 - Publish a non-draft PR without explicit user go-ahead.

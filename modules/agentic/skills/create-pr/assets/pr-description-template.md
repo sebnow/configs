@@ -1,13 +1,15 @@
 # PR Description Template
 
-The register governs the prose; this template governs the structure.
-Headings are optional — use them only when length warrants navigation.
-For a short PR, the summary paragraph alone is the whole description.
+The register governs the prose. This template governs the structure.
+Headings are optional. Use them only when length warrants navigation.
+Favor short paragraphs and lists over dense blocks. For a short PR, the summary
+paragraph alone is the whole description.
 
 ## Summary (always)
 
-One or two flowing paragraphs. Lead with what the change does and why, in the
-conversational register. Implicit subject, ASD-STE100.
+Lead with what the change does and why, in a sentence or two, using the
+implicit subject. Keep paragraphs short; when the change has several distinct
+parts, list them rather than packing them into one paragraph.
 
 > Bounds the math path's upload concurrency to match the non-math budget.
 > The math path previously spawned one upload per tile with no ceiling, so a
