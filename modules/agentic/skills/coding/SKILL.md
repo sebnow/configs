@@ -183,6 +183,18 @@ Follow this workflow for all code changes:
 - Comments:
   Add only when providing additional context or explaining non-obvious decisions.
   Don't add superfluous comments that merely restate what code does.
+  A doc comment documents its own unit —
+  what it does, the invariants it upholds,
+  and the reasoning or caveats for its existence.
+  Do not write a sentence whose subject is another symbol
+  and whose predicate is that symbol's behavior, history, or what it relies on:
+  the claim is unauditable from here and rots silently when that symbol changes.
+  State the governing invariant as a self-contained fact instead.
+  A bare pointer (`see reconcile`) and a durable reference (a SPEC/ADR id) are fine —
+  they carry no behavior to rot.
+  Test each sentence: if the code it describes is renamed or changed,
+  does the sentence become a lie with nothing to catch it?
+  If so, rewrite it as a fact about this unit or delete it.
 - References:
   Cite only durable, reachable sources in code and comments —
   an in-repo path, a stable public URL, or a permanent identifier (ticket ID, commit hash).
