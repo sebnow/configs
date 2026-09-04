@@ -41,6 +41,12 @@ Always apply these perspectives:
   per-item work that could be batched.
 - **Documentation**: Outdated or incorrect comments/docs,
   missing docs for non-obvious decisions, API doc gaps.
+  Flag a doc comment whose sentence describes another symbol's
+  behavior, history, or what it relies on —
+  it rots silently when that symbol changes;
+  the fix is to state the governing invariant as a self-contained fact.
+  Do not flag a bare pointer (`see reconcile`) or a durable reference
+  (a SPEC/ADR id): they carry no behavior to rot.
 
 Activate these when the changeset touches relevant code:
 
