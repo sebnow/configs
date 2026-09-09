@@ -625,32 +625,12 @@ assert_eq "defer P8 (empty vault roots override)" "{}" "$result"
 # P9: search tools on a vault root
 # ---------------------------------------------------------------------------
 
-# Deny: grep with vault as search root
-result=$(run_with_vault "/tmp/vault" "$(make_input "grep -r foo /tmp/vault")")
-assert_eq "deny P9 (grep vault): grep -r foo /tmp/vault" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-reason=$(printf '%s' "$result" | reason_of)
-assert_contains "deny-reason P9 (grep): names obsidian-cli search" "obsidian-cli search" "$reason"
-
-# Deny: rg with vault as search root
-result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/vault")")
-assert_eq "deny P9 (rg vault): rg foo /tmp/vault" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-
 # Deny: find with vault as search root
 result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault -name '*.md'")")
 assert_eq "deny P9 (find vault): find /tmp/vault -name '*.md'" \
   "deny" "$(printf '%s' "$result" | decision_of)"
-
-# Permit: grep against non-vault file
-result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/elsewhere/file")")
-assert_eq "defer P9 (grep non-vault): grep foo /tmp/elsewhere/file" \
-  "{}" "$(printf '%s' "$result" | compact)"
-
-# Permit: rg against non-vault path
-result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/elsewhere")")
-assert_eq "defer P9 (rg non-vault): rg foo /tmp/elsewhere" \
-  "{}" "$(printf '%s' "$result" | compact)"
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason P9 (find): names obsidian-cli search" "obsidian-cli search" "$reason"
 
 # Permit: find in a non-vault directory
 result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere -name '*.md'")")
@@ -658,25 +638,15 @@ assert_eq "defer P9 (find non-vault): find /tmp/elsewhere -name '*.md'" \
   "{}" "$(printf '%s' "$result" | compact)"
 
 # Permit: sibling directory not inside the vault
-result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/vault-old/file")")
-assert_eq "defer P9 (grep sibling dir, not inside vault)" "{}" "$(printf '%s' "$result" | compact)"
+result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault-old -name '*.md'")")
+assert_eq "defer P9 (find sibling dir, not inside vault)" "{}" "$(printf '%s' "$result" | compact)"
 
 # Empty vault roots override → P9 defers
-result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "grep foo /tmp/vault")" | "$HOOK" | compact)
+result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "find /tmp/vault -name '*.md'")" | "$HOOK" | compact)
 assert_eq "defer P9 (empty vault roots override)" "{}" "$result"
 
 # Multi-positional bypass (finding M1): an agent could prepend a non-vault
-# path to evade the previous slot-1 / slot-2 check.
-# grep convention: `grep [flags] PATTERN [paths...]` — every positional after
-# the pattern is a path.
-result=$(run_with_vault "/tmp/vault" "$(make_input "grep foo /tmp/elsewhere /tmp/vault")")
-assert_eq "deny P9 (grep, vault as second path): grep foo /tmp/elsewhere /tmp/vault" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-
-result=$(run_with_vault "/tmp/vault" "$(make_input "rg foo /tmp/elsewhere /tmp/vault")")
-assert_eq "deny P9 (rg, vault as second path): rg foo /tmp/elsewhere /tmp/vault" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-
+# path to evade a single-slot check.
 # find convention: `find [paths...] [predicates]` — multiple roots are
 # accepted before the first -predicate.
 result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere /tmp/vault -name '*.md'")")
@@ -771,14 +741,14 @@ rm -rf "$_mock_dir"
 mkdir -p /tmp/glob_guard_test
 touch /tmp/glob_guard_test/note_a.md /tmp/glob_guard_test/note_b.md
 # Vault root is the glob_guard_test directory itself.
-# The command sends `grep pattern /tmp/glob_guard_test` as a non-glob path —
+# The command sends `find /tmp/glob_guard_test` as a non-glob path —
 # that must deny. But a separate command with * in a different position must
 # NOT deny due to glob expansion.
 #
-# Deny: grep with vault as explicit path (control case — must still work)
+# Deny: find with vault as explicit path (control case — must still work)
 result=$(run_with_vault "/tmp/glob_guard_test" \
-  "$(make_input "grep foo /tmp/glob_guard_test")")
-assert_eq "deny P9 (grep vault, glob-test control): grep foo /tmp/glob_guard_test" \
+  "$(make_input "find /tmp/glob_guard_test -name '*.md'")")
+assert_eq "deny P9 (find vault, glob-test control): find /tmp/glob_guard_test" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
 # The dangerous case: vault root is "/tmp/glob_guard_test/note_a.md".
@@ -945,8 +915,6 @@ assert_eq "defer scope (tee inside dot-prefix subdir)" "{}" "$result"
 # Search tools: search root inside dot-prefixed vault subdir must defer.
 for cmd in \
   "find /tmp/vault/.tmp-transcript-XYZ -name '*.md'" \
-  "grep -r foo /tmp/vault/.tmp-transcript-XYZ" \
-  "rg foo /tmp/vault/.tmp-transcript-XYZ" \
   "find /tmp/vault/.claude/skills -name '*.md'"
 do
   result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)

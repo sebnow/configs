@@ -408,36 +408,9 @@ main() {
     fi
   fi
 
-  # Text search commands whose search root lies inside a vault root. These
+  # find: file search commands whose search root lies inside a vault root
   # bypass Obsidian's index and do not handle Unicode paths or search operators.
-
-  # grep/rg: positional 1 is the pattern, every subsequent non-flag positional
-  # is a search root. Checking only one slot lets an agent bypass the guard by
-  # prepending a non-vault path (e.g. `grep foo /tmp/safe /tmp/vault`).
-  for search_tool in grep rg; do
-    local stool_pattern
-    stool_pattern="(?:^|[;(]|&&|\|\|)\s*${search_tool}\b\K.*"
-    local stool_args
-    if stool_args=$(printf '%s' "$cmd" | grep -oP "$stool_pattern" | head -1); then
-      # read -ra prevents glob expansion of tokens like * against the hook's cwd.
-      local -a tokens=()
-      read -ra tokens <<< "$stool_args"
-      local positional_count=0 token
-      for token in "${tokens[@]}"; do
-        [[ "$token" == -* ]] && continue
-        ((positional_count++)) || true
-        # Positional 1 is the pattern; positionals 2+ are paths.
-        [[ $positional_count -lt 2 ]] && continue
-        local norm
-        norm=$(normalise_path "$token" "$cmd_cwd")
-        if is_protected_vault_search_root "$norm"; then
-          emit_decision "deny" "Do not use $search_tool to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
-        fi
-      done
-    fi
-  done
-
-  # find: every positional before the first -predicate is a search root.
+  # every positional before the first -predicate is a search root.
   # `find dir1 dir2 -name '*.md'` accepts both dir1 and dir2 — stopping after
   # the first root let an agent bypass the guard by prepending a non-vault path.
   local find_pattern
