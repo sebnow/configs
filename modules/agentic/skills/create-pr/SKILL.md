@@ -67,6 +67,18 @@ Avoid:
 
 > The profile lookup reads through a short-lived cache.
 
+Avoid these habits:
+
+- Significance framing — state the change, not its novelty or importance. An
+  additive verb already implies absence, so "Adds X it never had" restates the verb.
+  Drop "it never had", "for the first time", "finally", "long-missing".
+- Setup-then-reveal colon — do not withhold the change behind a framing clause and a
+  colon. Write "Adds `/metrics` and `/health` endpoints", not "Gives the service an
+  HTTP surface it never had: ...". A colon introducing a genuine list is fine.
+- Noun stacks — unpack into a verb or relative clause; chain at most two modifiers
+  before a noun. Write "a gauge reporting River job counts", not "a River job-state
+  gauge".
+
 The title follows the same register: imperative, implicit subject.
 
 ## Call flow and modules (non-trivial PRs only)
