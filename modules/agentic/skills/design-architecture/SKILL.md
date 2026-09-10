@@ -6,9 +6,16 @@ disable-model-invocation: true
 
 # Design Architecture
 
-Design the shape of a change before the code exists: where the boundaries sit,
-which way dependencies point, and what crosses each boundary — in the terms of
-the change itself. Reason from the change in front of you.
+Work out the shape of a change before the code exists — where the boundaries
+sit, which way dependencies point, and what crosses each boundary — as a
+discussion, in the terms of the change itself. Reason from the change in front
+of you.
+
+The obvious first shape is usually the wrong one; that is why this step exists.
+Treat it as a claim to pressure-test, not an answer to record. Pressure-testing
+may still land on a lean boundary — earn the shape by working it, do not
+manufacture structure. What to build is governed by the Lenses: never draw a
+boundary around something that will not vary.
 
 It does not implement, and it does not pin exact signatures or call flow —
 those come after (blueprint, then coding).
