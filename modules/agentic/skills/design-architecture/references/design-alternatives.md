@@ -39,7 +39,10 @@ Compare designs by:
 - **Locality**: where does change concentrate when requirements shift?
 - **Boundary placement**: where is the API boundary drawn, and what does each side own?
 
-Give a recommendation with reasoning.
-Do not present a neutral menu — commit to a preferred design and defend it.
-The recommendation becomes the decided boundary recorded in the architecture sketch.
-Blueprint pins the exact signatures downstream; do not hand off to coding from here.
+Do the analytical work and put it to the user — do not resolve it for them.
+State what each design trades, where they are in tension, and which calls turn on
+context you do not have. Recommend a view where you hold one and argue it; a flat,
+neutral menu is a cop-out, but so is a defended conclusion that ends the discussion.
+LLMs are unreliable at design — surface what you are unsure of rather than papering
+over it with confidence. The alternatives stay live until the user chooses; the
+boundary is decided when they decide it, not when you recommend.

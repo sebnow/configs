@@ -57,9 +57,14 @@ nobody has agreed to make.
    visualization with a self-contained card per candidate. It helps compare
    options and decide. See
    [references/visualization.md](references/visualization.md). Never required.
-5. **Write the sketch, get approval, hand off.** Produce the architecture sketch
-   (see Output), then hand to `blueprint` — or, for a simple boundary whose
-   signatures are obvious, straight to `coding`.
+5. **Discuss the boundaries; let the user decide.** Put the design to the user as
+   a discussion, not a verdict: the candidate placements, what each one trades,
+   and the tensions you cannot resolve alone. Recommend a view where you hold one
+   and argue it — but distrust the obvious answer and leave the decision to the
+   user. Only once the user has settled the shape do you optionally record it (see
+   Output) and pick a downstream with them: `blueprint` to pin signatures,
+   `coding` when the shape makes them obvious, or stop — the architecture can be
+   decided without being built next.
 
 ## Lenses
 
@@ -143,10 +148,14 @@ file paths, and line numbers. Those belong to blueprint and coding.
 - Leakage is named for each boundary.
 - No signatures, call flow, or implementation detail in the sketch.
 
-## After the sketch
+## Reaching a decision
 
-State: "Architecture sketch complete. Please review and approve before blueprint."
-Wait for explicit approval before any blueprint, coding, or implementation work.
+The design is settled when the user has made the boundary calls — not when you
+have a recommendation. Do not present the design as concluded, and do not move
+toward implementation on your own. State the open choices and your view on them,
+then wait for the user to decide. Any downstream — `blueprint`, `coding`, or
+stopping here — is the user's call, made after the shape is settled, never the
+default you steer toward.
 
 ## Downstream
 
