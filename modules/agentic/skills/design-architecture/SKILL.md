@@ -62,7 +62,8 @@ nobody has agreed to make.
    and the tensions you cannot resolve alone. Recommend a view where you hold one
    and argue it — but distrust the obvious answer and leave the decision to the
    user. Only once the user has settled the shape do you optionally record it (see
-   Output) and pick a downstream with them: `blueprint` to pin signatures,
+   Recording the design) and pick a downstream with them: `blueprint` to pin
+   signatures,
    `coding` when the shape makes them obvious, or stop — the architecture can be
    decided without being built next.
 
@@ -125,19 +126,21 @@ can observe.
 For the reasoning and sources behind each lens, see
 [references/lenses.md](references/lenses.md).
 
-## Output: the architecture sketch
+## Recording the design (optional)
 
-A short document that feeds `blueprint`:
+The discussion is the deliverable, not a document. Only if the user wants what
+they settled written down — to keep, or to carry to `blueprint` — capture:
 
 - **Modules** — each with a one-sentence responsibility.
 - **Boundaries** — for each: which way it faces, what it hides, what crosses it in
   the consumer's terms, whether a separate interface is justified, and what leaks.
-- **Decisions** — each boundary choice and why, naming the lens that drove it.
+- **Decisions** — each boundary call the user made and why, naming the lens that
+  drove it.
 
 Leave out exact signatures, call flow, implementation, schemas, configuration,
 file paths, and line numbers. Those belong to blueprint and coding.
 
-## Check before handing off
+## Check the design holds
 
 - Every dependency points deliberately; none of the wrong way.
 - Every boundary hides something that varies; none is speculative.
@@ -146,7 +149,7 @@ file paths, and line numbers. Those belong to blueprint and coding.
 - Resolution and formatting sit on the producing side.
 - No interface exists for a single implementation.
 - Leakage is named for each boundary.
-- No signatures, call flow, or implementation detail in the sketch.
+- No signatures, call flow, or implementation detail in the design.
 
 ## Reaching a decision
 
