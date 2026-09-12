@@ -31,6 +31,7 @@
           jj-nvim
           lualine-nvim
           markview-nvim
+          mini-nvim
           neogit
           neotest
           neotest-golang
@@ -86,6 +87,9 @@
         integrations = {
           diffview = true;
           markview = true;
+          mini = {
+            enabled = true;
+          };
           noice = true;
           snacks = {
             enabled = true;

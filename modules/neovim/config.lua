@@ -424,6 +424,76 @@ require("neogit").setup({
   },
 })
 
+local diff_base = nil -- nil uses the per-backend default (jj: @-, git: HEAD)
+local minidiff_attached_buffers = {} -- buf_id -> { is_jj }
+
+local function set_diff_ref(buf_id)
+  local diff = require("mini.diff")
+  local info = minidiff_attached_buffers[buf_id]
+  if not info then
+    return
+  end
+  local path = vim.api.nvim_buf_get_name(buf_id)
+  local dir = vim.fs.dirname(path)
+  local name = vim.fs.basename(path)
+  local cmd
+  if info.is_jj then
+    cmd = { "jj", "file", "show", "-r", diff_base or "@-", name }
+  else
+    cmd = { "git", "show", (diff_base or "HEAD") .. ":./" .. name }
+  end
+
+  vim.system(cmd, { cwd = dir, text = true }, function(out)
+    if out.code ~= 0 then
+      return
+    end
+    vim.schedule(function()
+      if vim.api.nvim_buf_is_valid(buf_id) then
+        diff.set_ref_text(buf_id, out.stdout)
+      end
+    end)
+  end)
+end
+
+require("mini.diff").setup({
+  view = { style = "sign" },
+  source = {
+    name = "vcs",
+    attach = function(buf_id)
+      local path = vim.api.nvim_buf_get_name(buf_id)
+      if path == "" or vim.bo[buf_id].buftype ~= "" then
+        return
+      end
+      vim.system({ "jj", "root" }, { cwd = vim.fs.dirname(path) }, function(root)
+        minidiff_attached_buffers[buf_id] = { is_jj = root.code == 0 }
+        vim.schedule(function()
+          set_diff_ref(buf_id)
+        end)
+      end)
+      vim.api.nvim_create_autocmd({ "BufWritePost", "FocusGained" }, {
+        buffer = buf_id,
+        group = vim.api.nvim_create_augroup("MiniDiffVcs_" .. buf_id, { clear = true }),
+        callback = function()
+          set_diff_ref(buf_id)
+        end,
+      })
+    end,
+    detach = function(buf_id)
+      minidiff_attached_buffers[buf_id] = nil
+      pcall(vim.api.nvim_del_augroup_by_name, "MiniDiffVcs_" .. buf_id)
+    end,
+  },
+})
+
+vim.api.nvim_create_user_command("DiffBase", function(opts)
+  diff_base = opts.args ~= "" and opts.args or nil
+  for buf_id in pairs(minidiff_attached_buffers) do
+    if vim.api.nvim_buf_is_valid(buf_id) then
+      set_diff_ref(buf_id)
+    end
+  end
+end, { nargs = "?", desc = "Set VCS diff base revision (empty resets to default)" })
+
 require("neotest").setup({
   adapters = {
     require("neotest-golang")({
