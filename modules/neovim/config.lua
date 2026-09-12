@@ -550,24 +550,40 @@ vim.api.nvim_create_user_command("DiffBasePick", diff_base_picker, {
 })
 vim.keymap.set("n", "<localleader>Sr", diff_base_picker, { desc = "Set diff base (pick revision)" })
 
--- Pick files changed in the current diff base range and open the real file
--- (with mini.diff signs), rather than a diff view. Uses the same base as the
--- signs, so it stays in sync with :DiffBase.
+-- Pick files changed in the current diff base range. Each entry previews the
+-- per-file diff (so added/deleted files render too) and opens the real file on
+-- confirm when it still exists. Uses the same base as the signs, so it stays in
+-- sync with :DiffBase.
 local function diff_files_picker()
   local dir = vim.uv.cwd()
   local is_jj = vim.system({ "jj", "root" }, { cwd = dir }):wait().code == 0
   local root_cmd = is_jj and { "jj", "root" } or { "git", "rev-parse", "--show-toplevel" }
   local root = vim.trim(vim.system(root_cmd, { cwd = dir, text = true }):wait().stdout or "")
-  local list_cmd = is_jj and { "jj", "diff", "--from", diff_base or "@-", "--to", "@", "--name-only" }
-    or { "git", "diff", "--name-only", diff_base or "HEAD" }
-  local out = vim.system(list_cmd, { cwd = dir, text = true }):wait()
+  if root == "" then
+    return
+  end
+  local base = diff_base or (is_jj and "@-" or "HEAD")
+  local list_cmd = is_jj and { "jj", "diff", "--from", base, "--to", "@", "--summary" }
+    or { "git", "diff", "--name-status", base }
+  local out = vim.system(list_cmd, { cwd = root, text = true }):wait()
   if out.code ~= 0 then
     vim.notify("DiffFiles: " .. (out.stderr or "failed to list changes"), vim.log.levels.ERROR)
     return
   end
   local items = {}
   for line in vim.gsplit(out.stdout or "", "\n", { trimempty = true }) do
-    items[#items + 1] = { text = line, file = root .. "/" .. line }
+    -- jj: "M path"   git: "M<TAB>path" (renames: "R100<TAB>old<TAB>new")
+    local status, rest = line:match("^(%S+)%s+(.*)$")
+    if status then
+      local path = rest:match("([^\t]*)$") -- last field = new path on rename
+      items[#items + 1] = {
+        text = status .. " " .. path,
+        file = root .. "/" .. path,
+        cwd = root,
+        path = path,
+        deleted = status:sub(1, 1) == "D",
+      }
+    end
   end
   if #items == 0 then
     vim.notify("DiffFiles: no changes in range", vim.log.levels.INFO)
@@ -575,9 +591,21 @@ local function diff_files_picker()
   end
   require("snacks.picker").pick({
     items = items,
-    format = "file",
-    confirm = "jump",
-    title = "Changed files (" .. (diff_base or (is_jj and "@-" or "HEAD")) .. "..)",
+    format = "text",
+    title = "Changed files (" .. base .. "..)",
+    preview = function(ctx)
+      local cmd = is_jj and { "jj", "diff", "--git", "--from", base, "--to", "@", "--", ctx.item.path }
+        or { "git", "diff", base, "--", ctx.item.path }
+      return Snacks.picker.preview.cmd(cmd, ctx, { ft = "diff" })
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      if item and not item.deleted then
+        vim.cmd.edit(vim.fn.fnameescape(item.file))
+      elseif item then
+        vim.notify(item.path .. " was deleted in this range", vim.log.levels.INFO)
+      end
+    end,
   })
 end
 
