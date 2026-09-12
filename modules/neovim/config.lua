@@ -485,14 +485,70 @@ require("mini.diff").setup({
   },
 })
 
-vim.api.nvim_create_user_command("DiffBase", function(opts)
-  diff_base = opts.args ~= "" and opts.args or nil
+local function refresh_diff()
   for buf_id in pairs(minidiff_attached_buffers) do
     if vim.api.nvim_buf_is_valid(buf_id) then
       set_diff_ref(buf_id)
     end
   end
+end
+
+vim.api.nvim_create_user_command("DiffBase", function(opts)
+  diff_base = opts.args ~= "" and opts.args or nil
+  refresh_diff()
 end, { nargs = "?", desc = "Set VCS diff base revision (empty resets to default)" })
+
+-- Pick the diff base from the VCS log so signs and :DiffFiles retarget to the
+-- chosen revision without typing it out.
+local function diff_base_picker()
+  local dir = vim.uv.cwd()
+  local is_jj = vim.system({ "jj", "root" }, { cwd = dir }):wait().code == 0
+  local log_cmd = is_jj
+      and {
+        "jj",
+        "log",
+        "--no-graph",
+        "--limit",
+        "50",
+        "-T",
+        'change_id.shortest() ++ " " ++ if(description, description.first_line(), "(no description)") ++ "\n"',
+      }
+    or { "git", "log", "--format=%h %s", "-n", "50" }
+  local out = vim.system(log_cmd, { cwd = dir, text = true }):wait()
+  if out.code ~= 0 then
+    vim.notify("DiffBasePick: " .. (out.stderr or "failed to list revisions"), vim.log.levels.ERROR)
+    return
+  end
+  local items = {}
+  for line in vim.gsplit(out.stdout or "", "\n", { trimempty = true }) do
+    local rev = line:match("^(%S+)")
+    if rev then
+      items[#items + 1] = { text = line, rev = rev, cwd = dir }
+    end
+  end
+  require("snacks.picker").pick({
+    items = items,
+    format = "text",
+    title = "Set diff base",
+    preview = function(ctx)
+      local cmd = is_jj and { "jj", "show", "--git", ctx.item.rev } or { "git", "show", ctx.item.rev }
+      return Snacks.picker.preview.cmd(cmd, ctx, { ft = "git" })
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      if item then
+        diff_base = item.rev
+        refresh_diff()
+        vim.notify("Diff base set to " .. item.rev)
+      end
+    end,
+  })
+end
+
+vim.api.nvim_create_user_command("DiffBasePick", diff_base_picker, {
+  desc = "Pick the diff base revision from the VCS log",
+})
+vim.keymap.set("n", "<localleader>Sr", diff_base_picker, { desc = "Set diff base (pick revision)" })
 
 -- Pick files changed in the current diff base range and open the real file
 -- (with mini.diff signs), rather than a diff view. Uses the same base as the
