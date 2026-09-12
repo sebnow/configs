@@ -92,8 +92,7 @@ jj bookmark set feature-name -r <rev>  # At specific change
 **Pushing bookmarks:**
 ```bash
 # Explicit bookmark required (prevents accidental pushes)
-jj git push --bookmark feature-name
-jj git push --bookmark feature-name --allow-new  # For new bookmarks
+jj git push --bookmark feature-name  # New bookmarks are tracked and created automatically
 ```
 
 Never push without specifying bookmark.
