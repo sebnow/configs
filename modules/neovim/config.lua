@@ -494,6 +494,42 @@ vim.api.nvim_create_user_command("DiffBase", function(opts)
   end
 end, { nargs = "?", desc = "Set VCS diff base revision (empty resets to default)" })
 
+-- Pick files changed in the current diff base range and open the real file
+-- (with mini.diff signs), rather than a diff view. Uses the same base as the
+-- signs, so it stays in sync with :DiffBase.
+local function diff_files_picker()
+  local dir = vim.uv.cwd()
+  local is_jj = vim.system({ "jj", "root" }, { cwd = dir }):wait().code == 0
+  local root_cmd = is_jj and { "jj", "root" } or { "git", "rev-parse", "--show-toplevel" }
+  local root = vim.trim(vim.system(root_cmd, { cwd = dir, text = true }):wait().stdout or "")
+  local list_cmd = is_jj and { "jj", "diff", "--from", diff_base or "@-", "--to", "@", "--name-only" }
+    or { "git", "diff", "--name-only", diff_base or "HEAD" }
+  local out = vim.system(list_cmd, { cwd = dir, text = true }):wait()
+  if out.code ~= 0 then
+    vim.notify("DiffFiles: " .. (out.stderr or "failed to list changes"), vim.log.levels.ERROR)
+    return
+  end
+  local items = {}
+  for line in vim.gsplit(out.stdout or "", "\n", { trimempty = true }) do
+    items[#items + 1] = { text = line, file = root .. "/" .. line }
+  end
+  if #items == 0 then
+    vim.notify("DiffFiles: no changes in range", vim.log.levels.INFO)
+    return
+  end
+  require("snacks.picker").pick({
+    items = items,
+    format = "file",
+    confirm = "jump",
+    title = "Changed files (" .. (diff_base or (is_jj and "@-" or "HEAD")) .. "..)",
+  })
+end
+
+vim.api.nvim_create_user_command("DiffFiles", diff_files_picker, {
+  desc = "Pick files changed in the diff base range",
+})
+vim.keymap.set("n", "<localleader>SH", diff_files_picker, { desc = "Changed files in range" })
+
 require("neotest").setup({
   adapters = {
     require("neotest-golang")({
