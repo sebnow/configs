@@ -405,7 +405,6 @@ vim.keymap.set("n", "<localleader>Sc", jj_cmd.commit, { desc = "Commit" })
 vim.keymap.set("n", "<localleader>Sd", jj_cmd.describe, { desc = "Describe" })
 vim.keymap.set("n", "<localleader>Se", jj_cmd.edit, { desc = "Edit change" })
 vim.keymap.set("n", "<localleader>Sf", jj_cmd.fetch, { desc = "Fetch" })
-vim.keymap.set("n", "<localleader>Sh", jj_picker.file_history, { desc = "File history" })
 vim.keymap.set("n", "<localleader>Sl", jj_cmd.log, { desc = "Log" })
 vim.keymap.set("n", "<localleader>SL", function()
   jj_cmd.log({ revisions = "'all()'" })
@@ -613,6 +612,94 @@ vim.api.nvim_create_user_command("DiffFiles", diff_files_picker, {
   desc = "Pick files changed in the diff base range",
 })
 vim.keymap.set("n", "<localleader>SH", diff_files_picker, { desc = "Changed files in range" })
+
+-- Pick individual hunks changed since the diff base, across every changed file.
+-- The whole-range diff is parsed into one entry per hunk; the preview shows just
+-- that hunk and confirm jumps to it. Uses the same base as the signs, so it
+-- stays in sync with :DiffBase (and mini.diff).
+local function diff_hunks_picker()
+  local dir = vim.uv.cwd()
+  local is_jj = vim.system({ "jj", "root" }, { cwd = dir }):wait().code == 0
+  local root_cmd = is_jj and { "jj", "root" } or { "git", "rev-parse", "--show-toplevel" }
+  local root = vim.trim(vim.system(root_cmd, { cwd = dir, text = true }):wait().stdout or "")
+  if root == "" then
+    return
+  end
+  local base = diff_base or (is_jj and "@-" or "HEAD")
+  local diff_cmd = is_jj and { "jj", "diff", "--git", "--from", base, "--to", "@" }
+    or { "git", "diff", base }
+  local out = vim.system(diff_cmd, { cwd = root, text = true }):wait()
+  if out.code ~= 0 then
+    vim.notify("DiffHunks: " .. (out.stderr or "failed to diff"), vim.log.levels.ERROR)
+    return
+  end
+
+  -- Walk the git-format patch: track the current file from its header, then emit
+  -- an item for each "@@ ... +new_start" hunk. Body lines (context/+/-/no-newline)
+  -- are appended to the current hunk's preview text.
+  local items = {}
+  local path, deleted, old_path, hunk
+  for line in vim.gsplit(out.stdout or "", "\n", { plain = true }) do
+    if line:sub(1, 11) == "diff --git " then
+      path, deleted, old_path, hunk = nil, false, nil, nil
+    elseif line:sub(1, 4) == "--- " then
+      old_path = line:match("^%-%-%- a/(.*)$")
+    elseif line:sub(1, 4) == "+++ " then
+      if line == "+++ /dev/null" then
+        deleted, path = true, old_path
+      else
+        path = line:match("^%+%+%+ b/(.*)$")
+      end
+    elseif line:sub(1, 3) == "@@ " and path then
+      local new_start, ctx = line:match("^@@ %-[%d,]+ %+(%d+)[,%d]* @@ ?(.*)$")
+      if new_start then
+        local n = tonumber(new_start)
+        hunk = {
+          text = vim.trim(string.format("%s:%d %s", path, n, ctx)),
+          file = root .. "/" .. path,
+          path = path,
+          line = n,
+          deleted = deleted,
+          preview = { text = line, ft = "diff", loc = false },
+        }
+        items[#items + 1] = hunk
+      end
+    elseif hunk and line:match("^[ +\\-]") then
+      hunk.preview.text = hunk.preview.text .. "\n" .. line
+    end
+  end
+
+  if #items == 0 then
+    vim.notify("DiffHunks: no changes in range", vim.log.levels.INFO)
+    return
+  end
+
+  require("snacks.picker").pick({
+    items = items,
+    format = "text",
+    title = "Changed hunks (" .. base .. "..)",
+    preview = function(ctx)
+      return Snacks.picker.preview.preview(ctx)
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      if not item then
+        return
+      end
+      if item.deleted then
+        vim.notify(item.path .. " was deleted in this range", vim.log.levels.INFO)
+        return
+      end
+      vim.cmd.edit(vim.fn.fnameescape(item.file))
+      pcall(vim.api.nvim_win_set_cursor, 0, { item.line, 0 })
+    end,
+  })
+end
+
+vim.api.nvim_create_user_command("DiffHunks", diff_hunks_picker, {
+  desc = "Pick hunks changed in the diff base range",
+})
+vim.keymap.set("n", "<localleader>Sh", diff_hunks_picker, { desc = "Changed hunks in range" })
 
 require("neotest").setup({
   adapters = {
