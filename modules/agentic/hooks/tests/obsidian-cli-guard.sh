@@ -622,38 +622,6 @@ result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "echo body > /t
 assert_eq "defer P8 (empty vault roots override)" "{}" "$result"
 
 # ---------------------------------------------------------------------------
-# P9: search tools on a vault root
-# ---------------------------------------------------------------------------
-
-# Deny: find with vault as search root
-result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault -name '*.md'")")
-assert_eq "deny P9 (find vault): find /tmp/vault -name '*.md'" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-reason=$(printf '%s' "$result" | reason_of)
-assert_contains "deny-reason P9 (find): names obsidian-cli search" "obsidian-cli search" "$reason"
-
-# Permit: find in a non-vault directory
-result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere -name '*.md'")")
-assert_eq "defer P9 (find non-vault): find /tmp/elsewhere -name '*.md'" \
-  "{}" "$(printf '%s' "$result" | compact)"
-
-# Permit: sibling directory not inside the vault
-result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault-old -name '*.md'")")
-assert_eq "defer P9 (find sibling dir, not inside vault)" "{}" "$(printf '%s' "$result" | compact)"
-
-# Empty vault roots override → P9 defers
-result=$(OBSIDIAN_GUARD_VAULT_ROOTS="" printf '%s' "$(make_input "find /tmp/vault -name '*.md'")" | "$HOOK" | compact)
-assert_eq "defer P9 (empty vault roots override)" "{}" "$result"
-
-# Multi-positional bypass (finding M1): an agent could prepend a non-vault
-# path to evade a single-slot check.
-# find convention: `find [paths...] [predicates]` — multiple roots are
-# accepted before the first -predicate.
-result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/elsewhere /tmp/vault -name '*.md'")")
-assert_eq "deny P9 (find, vault as second root): find /tmp/elsewhere /tmp/vault -name '*.md'" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
-
-# ---------------------------------------------------------------------------
 # P10: obsidian-cli format=json piped to jq .path extraction on array elements
 # ---------------------------------------------------------------------------
 
@@ -741,14 +709,14 @@ rm -rf "$_mock_dir"
 mkdir -p /tmp/glob_guard_test
 touch /tmp/glob_guard_test/note_a.md /tmp/glob_guard_test/note_b.md
 # Vault root is the glob_guard_test directory itself.
-# The command sends `find /tmp/glob_guard_test` as a non-glob path —
+# The command sends `rm /tmp/glob_guard_test/note_a.md` as a non-glob path —
 # that must deny. But a separate command with * in a different position must
 # NOT deny due to glob expansion.
 #
-# Deny: find with vault as explicit path (control case — must still work)
+# Deny: mutation with vault note as explicit path (control case — must still work)
 result=$(run_with_vault "/tmp/glob_guard_test" \
-  "$(make_input "find /tmp/glob_guard_test -name '*.md'")")
-assert_eq "deny P9 (find vault, glob-test control): find /tmp/glob_guard_test" \
+  "$(make_input "rm /tmp/glob_guard_test/note_a.md")")
+assert_eq "deny P7 (rm vault note, glob-test control): rm /tmp/glob_guard_test/note_a.md" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
 # The dangerous case: vault root is "/tmp/glob_guard_test/note_a.md".
@@ -911,20 +879,6 @@ assert_eq "defer scope (redirect non-.md in vault): echo body > /tmp/vault/log.t
 # tee: target inside dot-prefixed vault subdir must defer.
 result=$(run_with_vault "/tmp/vault" "$(make_input "tee /tmp/vault/.tmp-transcript-XYZ/log.md")" | compact)
 assert_eq "defer scope (tee inside dot-prefix subdir)" "{}" "$result"
-
-# Search tools: search root inside dot-prefixed vault subdir must defer.
-for cmd in \
-  "find /tmp/vault/.tmp-transcript-XYZ -name '*.md'" \
-  "find /tmp/vault/.claude/skills -name '*.md'"
-do
-  result=$(run_with_vault "/tmp/vault" "$(make_input "$cmd")" | compact)
-  assert_eq "defer scope (search root in dot-prefix subdir): $cmd" "{}" "$result"
-done
-
-# Search tools: vault root itself remains denied — it contains real notes.
-result=$(run_with_vault "/tmp/vault" "$(make_input "find /tmp/vault -name '*.md'")")
-assert_eq "deny scope (search root at vault root)" \
-  "deny" "$(printf '%s' "$result" | decision_of)"
 
 # ---------------------------------------------------------------------------
 # Summary

@@ -143,21 +143,6 @@ is_protected_vault_md() {
   return 0
 }
 
-# is_protected_vault_search_root returns 0 when candidate is a vault path that
-# could plausibly host real notes: anywhere inside a vault root except a
-# dot-prefixed top-level subdirectory. Search tools (grep/rg/find) are
-# redirected to obsidian-cli search only when they target a region that
-# Obsidian indexes.
-is_protected_vault_search_root() {
-  local candidate="$1"
-  local rel
-  rel=$(_vault_relpath "$candidate") || return 1
-  case "$rel" in
-    .*) return 1 ;;
-  esac
-  return 0
-}
-
 main() {
   if ! input=$(cat); then
     emit_defer
@@ -391,7 +376,7 @@ main() {
   tee_pattern="(?:^|[;(]|&&|\|\|)\s*tee\b\K.*"
   local tee_args
   if tee_args=$(printf '%s' "$cmd" | grep -oP "$tee_pattern" | head -1); then
-    # Same glob-expansion hazard as the P7 and P9 loops — use read -ra.
+    # Same glob-expansion hazard as the mutation-tool loop — use read -ra.
     local -a tokens=()
     read -ra tokens <<< "$tee_args"
     local token last_positional=""
@@ -406,31 +391,6 @@ main() {
         emit_decision "deny" "Do not use tee into vault notes — writing directly bypasses Obsidian's index. Use \`obsidian-cli create\`/\`append\`/\`prepend\` so the file enters Obsidian's index."
       fi
     fi
-  fi
-
-  # find: file search commands whose search root lies inside a vault root
-  # bypass Obsidian's index and do not handle Unicode paths or search operators.
-  # every positional before the first -predicate is a search root.
-  # `find dir1 dir2 -name '*.md'` accepts both dir1 and dir2 — stopping after
-  # the first root let an agent bypass the guard by prepending a non-vault path.
-  local find_pattern
-  find_pattern="(?:^|[;(]|&&|\|\|)\s*find\b\K.*"
-  local find_args
-  if find_args=$(printf '%s' "$cmd" | grep -oP "$find_pattern" | head -1); then
-    # read -ra prevents glob expansion of tokens like * against the hook's cwd.
-    local -a tokens=()
-    read -ra tokens <<< "$find_args"
-    local token
-    for token in "${tokens[@]}"; do
-      # First dash-prefixed token marks the predicate section — paths are
-      # exhausted, so stop scanning.
-      [[ "$token" == -* ]] && break
-      local norm
-      norm=$(normalise_path "$token" "$cmd_cwd")
-      if is_protected_vault_search_root "$norm"; then
-        emit_decision "deny" "Do not use find to search vault paths — it bypasses Obsidian's index. Use \`obsidian-cli search\` so the query uses Obsidian's index and search operators."
-      fi
-    done
   fi
 
   # obsidian-cli format=json output piped to jq .path extraction on array
