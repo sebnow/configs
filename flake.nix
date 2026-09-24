@@ -32,6 +32,10 @@
       url = "github:sebnow/md";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    remark-nvim = {
+      url = "github:sebnow/remark.nvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

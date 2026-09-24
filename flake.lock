@@ -220,6 +220,26 @@
         "type": "github"
       }
     },
+    "remark-nvim": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790283143,
+        "narHash": "sha256-7OsDVlt55cnfvEhKTbT84NOfeDAz5bjgQTV114zSoB0=",
+        "owner": "sebnow",
+        "repo": "remark.nvim",
+        "rev": "e0741e3f2a74bc35ff55a3ebce054dc7f14a1d89",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sebnow",
+        "repo": "remark.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
@@ -230,7 +250,8 @@
         "md": "md",
         "nixgl": "nixgl",
         "nixpkgs": "nixpkgs",
-        "pi-coding-agent-catppuccin": "pi-coding-agent-catppuccin"
+        "pi-coding-agent-catppuccin": "pi-coding-agent-catppuccin",
+        "remark-nvim": "remark-nvim"
       }
     },
     "systems": {

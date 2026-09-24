@@ -37,6 +37,17 @@
           disableRemoteControl = true;
           disableWorkflows = true;
           editorMode = "vim";
+          enabledPlugins = {
+            "remark-nvim@remark-nvim" = true;
+          };
+          extraKnownMarketplaces = {
+            "remark-nvim" = {
+              source = {
+                source = "github";
+                repo = "sebnow/remark.nvim";
+              };
+            };
+          };
           feedbackSurveyRate = 0;
           fileSuggestion =
             let

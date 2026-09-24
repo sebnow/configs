@@ -1,5 +1,7 @@
-{ ... }:
+{ inputs, ... }:
 {
+  flake.overlays.remark-nvim = inputs.remark-nvim.overlays.default;
+
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
     {
@@ -71,6 +73,7 @@
           nvim-web-devicons
           oil-nvim
           plenary-nvim # Required for neogit, neotest
+          remark-nvim
           snacks-nvim
           vim-matchup
           which-key-nvim
