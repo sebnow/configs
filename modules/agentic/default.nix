@@ -89,7 +89,7 @@
           theme = claudeThemeName;
           includeCoAuthoredBy = false;
           includeGitInstructions = false;
-          model = "claude-opus-4-8";
+          model = "claude-opus-5-5";
           skillOverrides = {
             claude-api = "off";
             code-review = "off";
