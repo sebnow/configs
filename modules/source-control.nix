@@ -1,7 +1,7 @@
 { ... }:
 {
   flake.modules.homeManager.source-control =
-    { config, pkgs, ... }:
+    { pkgs, ... }:
     {
       programs.bash.bashrcExtra = ''
         source <(COMPLETE=bash ${pkgs.jujutsu}/bin/jj)
@@ -19,7 +19,6 @@
             diff-formatter = "difft";
           };
           git.write-change-id-header = true;
-          snapshot.auto-track = "none()";
           merge-tools = {
             difft = {
               program = "${pkgs.difftastic}/bin/difft";
