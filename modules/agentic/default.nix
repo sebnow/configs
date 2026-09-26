@@ -232,8 +232,7 @@
             ];
             ask = [
               "Bash(git push:*)"
-              "Bash(jj describe:*)"
-              "Bash(jj squash:*)"
+              "Bash(jj git push:*)"
             ];
             deny = [
               "AskUserQuestion"
