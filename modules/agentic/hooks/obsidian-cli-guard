@@ -72,6 +72,43 @@ load_vault_roots() {
   _VAULT_ROOTS_CACHE="${canonical%$'\n'}"
 }
 
+# Fallback for load_subcommands when obsidian-cli help is unavailable (e.g.
+# Obsidian not running). Space-padded so membership tests use bash substring
+# matching: [[ " $_SUBCOMMANDS_CACHE " == *" $token "* ]]
+# Sorted alphabetically; reproduced verbatim from `obsidian-cli help` output
+# without plugin-provided subcommands.
+FALLBACK_SUBCOMMANDS=" aliases append backlinks base:create base:query base:views bases command commands create deadends delete dev:cdp dev:console dev:css dev:debug dev:dom dev:errors dev:mobile dev:screenshot devtools diff eval file files folder folders help history history:list history:open history:read history:restore homepage homepage:read hotkey hotkeys links move open orphans outline plugin plugin:disable plugin:enable plugin:install plugin:reload plugins plugins:enabled plugins:restrict plugin:uninstall prepend properties property:read property:remove property:set random random:read read recents reload rename restart search search:context search:open snippet:disable snippet:enable snippets snippets:enabled tab:open tabs tag tags task tasks theme theme:install themes theme:set theme:uninstall unique unresolved vault vaults version wordcount workspace "
+
+_SUBCOMMANDS_CACHE=""
+
+# load_subcommands — populates _SUBCOMMANDS_CACHE with the space-padded list of
+# valid subcommands. The live list includes plugin-provided subcommands (e.g.
+# tasknotes:capture) that a fixed list goes stale on.
+# When OBSIDIAN_GUARD_SUBCOMMANDS is set (even empty), it wins.
+# Otherwise parses `obsidian-cli help`; on failure, timeout, or empty output
+# falls back to FALLBACK_SUBCOMMANDS.
+load_subcommands() {
+  local names=""
+  if [[ -v OBSIDIAN_GUARD_SUBCOMMANDS ]]; then
+    names="$OBSIDIAN_GUARD_SUBCOMMANDS"
+  else
+    local raw
+    if raw=$(timeout 2s obsidian-cli help 2>/dev/null); then
+      # Subcommands are the two-space-indented names under "Commands:"; their
+      # parameters are indented four spaces. Lines before "Commands:" (Options,
+      # Notes) are skipped because prose like "  file resolves by name" would
+      # otherwise match.
+      names=$(printf '%s\n' "$raw" | sed -n '/^Commands:/,$p' \
+        | grep -oP '^\s{2}\K[a-z][a-z0-9:_-]*(?=\s)' | tr '\n' ' ') || names=""
+    fi
+    if [[ -z "${names// /}" ]]; then
+      _SUBCOMMANDS_CACHE="$FALLBACK_SUBCOMMANDS"
+      return 0
+    fi
+  fi
+  _SUBCOMMANDS_CACHE=" $names "
+}
+
 # normalise_path resolves a raw path token from the inspected command.
 # Strips surrounding matching quotes, expands leading ~/, resolves relative
 # paths against $cmd_cwd, then collapses .. and . via realpath -m.
@@ -168,6 +205,7 @@ main() {
   # Populate the vault-roots cache once per hook invocation so that token
   # loops below can call in_vault repeatedly without re-spawning obsidian-cli.
   load_vault_roots
+  load_subcommands
 
   # obsidian-cli must appear at a segment start so quoted uses like
   # `echo "obsidian-cli create --help"` (where it is an argument to another
@@ -288,10 +326,8 @@ main() {
   #
   # `obsidian-cli` with no following token (help printed by CLI) also defers.
   #
-  # The allow-list is space-padded so membership tests use bash substring matching:
-  #   [[ " $KNOWN_SUBCOMMANDS " == *" $token "* ]]
-  # Sorted alphabetically; reproduced verbatim from `obsidian-cli help` output.
-  local KNOWN_SUBCOMMANDS=" aliases append backlinks base:create base:query base:views bases command commands create deadends delete dev:cdp dev:console dev:css dev:debug dev:dom dev:errors dev:mobile dev:screenshot devtools diff eval file files folder folders help history history:list history:open history:read history:restore homepage homepage:read hotkey hotkeys links move open orphans outline plugin plugin:disable plugin:enable plugin:install plugin:reload plugins plugins:enabled plugins:restrict plugin:uninstall prepend properties property:read property:remove property:set random random:read read recents reload rename restart search search:context search:open snippet:disable snippet:enable snippets snippets:enabled tab:open tabs tag tags task tasks theme theme:install themes theme:set theme:uninstall unique unresolved vault vaults version wordcount workspace "
+  # The CLI exits 0 on an unknown subcommand, so `obsidian-cli foo && next`
+  # would still run `next`; this deny is what stops the chain.
 
   # Extract every subcommand-shaped token following `obsidian-cli` at a segment
   # start. \K resets the match start so grep -oP returns only the token itself.
@@ -309,7 +345,7 @@ main() {
   local segment_pattern="(?:^|[;(]|&&|\|\|)\s*obsidian-cli\b\s+\K[a-z][a-z0-9:_-]*(?=[\s)]|$)"
   while IFS= read -r candidate; do
     [[ -z "$candidate" ]] && continue
-    [[ " $KNOWN_SUBCOMMANDS " == *" $candidate "* ]] && continue
+    [[ "$_SUBCOMMANDS_CACHE" == *" $candidate "* ]] && continue
     case "$candidate" in
       list-vaults)  suggested_subcommand="vaults" ;;
       headings)     suggested_subcommand="outline" ;;

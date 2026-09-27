@@ -530,6 +530,110 @@ reason=$(printf '%s' "$result" | reason_of)
 assert_contains "deny-reason (unknown, no synonym): contains obsidian-cli help" "obsidian-cli help" "$reason"
 
 # ---------------------------------------------------------------------------
+# Subcommand list: live list from OBSIDIAN_GUARD_SUBCOMMANDS or
+# `obsidian-cli help`, falling back to the fixed list when help is unavailable
+# ---------------------------------------------------------------------------
+
+run_with_subcommands() {
+  local subcommands="$1" input="$2"
+  (export OBSIDIAN_GUARD_SUBCOMMANDS="$subcommands"; printf '%s' "$input" | "$HOOK")
+}
+
+_injected="search outline tasknotes:capture"
+
+result=$(run_with_subcommands "$_injected" "$(make_input 'obsidian-cli tasknotes:capture text="Buy milk"')" | compact)
+assert_eq "defer (injected list: plugin subcommand allowed)" "{}" "$result"
+
+result=$(run_with_subcommands "$_injected" "$(make_input 'obsidian-cli totallymadeup foo=bar')")
+assert_eq "deny (injected list: unknown subcommand still denied)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_with_subcommands "$_injected" "$(make_input 'obsidian-cli tasknotes:capture text=x && obsidian-cli bogus')")
+assert_eq "deny (injected list: unknown later call not masked by plugin subcommand)" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_with_subcommands "$_injected" "$(make_input 'obsidian-cli headings path="Notes/Foo.md"')")
+reason=$(printf '%s' "$result" | reason_of)
+assert_contains "deny-reason (injected list: headings -> outline)" "outline" "$reason"
+
+# Fallback: help fails, returns nothing, or hangs → fixed list is used, so
+# built-in subcommands pass, unknown ones are denied, and plugin-only
+# subcommands (absent from the fixed list) are denied.
+_help_mock_dir=$(mktemp -d)
+for _mode in fail empty hang; do
+  cat > "$_help_mock_dir/obsidian-cli" << MOCK
+#!/bin/bash
+if [[ "\$1" == "help" ]]; then
+  case "$_mode" in
+    fail)  exit 1 ;;
+    empty) exit 0 ;;
+    hang)  sleep 30 ;;
+  esac
+fi
+MOCK
+  chmod +x "$_help_mock_dir/obsidian-cli"
+
+  result=$(unset OBSIDIAN_GUARD_SUBCOMMANDS; export OBSIDIAN_GUARD_VAULT_ROOTS="" PATH="$_help_mock_dir:$PATH"; \
+    printf '%s' "$(make_input 'obsidian-cli outline path="Notes/Foo.md"')" | "$HOOK" | compact)
+  assert_eq "defer (help $_mode: fallback allows built-in subcommand)" "{}" "$result"
+
+  result=$(unset OBSIDIAN_GUARD_SUBCOMMANDS; export OBSIDIAN_GUARD_VAULT_ROOTS="" PATH="$_help_mock_dir:$PATH"; \
+    printf '%s' "$(make_input 'obsidian-cli totallymadeup foo=bar')" | "$HOOK")
+  assert_eq "deny (help $_mode: fallback denies unknown subcommand)" \
+    "deny" "$(printf '%s' "$result" | decision_of)"
+
+  result=$(unset OBSIDIAN_GUARD_SUBCOMMANDS; export OBSIDIAN_GUARD_VAULT_ROOTS="" PATH="$_help_mock_dir:$PATH"; \
+    printf '%s' "$(make_input 'obsidian-cli wikilinks path="Notes/Foo.md"')" | "$HOOK")
+  reason=$(printf '%s' "$result" | reason_of)
+  assert_contains "deny-reason (help $_mode: fallback keeps wikilinks -> links)" "links" "$reason"
+done
+
+# Live parse: subcommands come from the Commands: section only; indented
+# parameter lines and prose under Notes: are not subcommands.
+cat > "$_help_mock_dir/obsidian-cli" << 'MOCK'
+#!/bin/bash
+if [[ "$1" == "help" ]]; then
+  cat << 'HELP'
+Obsidian CLI
+
+Usage: obsidian <command> [options]
+
+Notes:
+  prose resolves by name
+
+Commands:
+  outline               Show headings
+    path=<path>         - File path
+    total               - Return count
+  tasknotes:start-time  Start time tracking
+HELP
+fi
+MOCK
+chmod +x "$_help_mock_dir/obsidian-cli"
+
+for cmd in \
+  'obsidian-cli outline path="Notes/Foo.md"' \
+  'obsidian-cli tasknotes:start-time'
+do
+  result=$(unset OBSIDIAN_GUARD_SUBCOMMANDS; export OBSIDIAN_GUARD_VAULT_ROOTS="" PATH="$_help_mock_dir:$PATH"; \
+    printf '%s' "$(make_input "$cmd")" | "$HOOK" | compact)
+  assert_eq "defer (help parse: listed subcommand): $cmd" "{}" "$result"
+done
+
+for cmd in \
+  'obsidian-cli total' \
+  'obsidian-cli prose' \
+  'obsidian-cli search query=foo'
+do
+  result=$(unset OBSIDIAN_GUARD_SUBCOMMANDS; export OBSIDIAN_GUARD_VAULT_ROOTS="" PATH="$_help_mock_dir:$PATH"; \
+    printf '%s' "$(make_input "$cmd")" | "$HOOK")
+  assert_eq "deny (help parse: not a listed subcommand): $cmd" \
+    "deny" "$(printf '%s' "$result" | decision_of)"
+done
+
+rm -rf "$_help_mock_dir"
+
+# ---------------------------------------------------------------------------
 # P7: filesystem mutation tools on vault paths
 # ---------------------------------------------------------------------------
 
@@ -745,9 +849,9 @@ _memo_counter=$(mktemp)
 echo 0 > "$_memo_counter"
 cat > "$_memo_mock_dir/obsidian-cli" << MOCK
 #!/bin/bash
-n=\$(cat "$_memo_counter")
-echo \$((n+1)) > "$_memo_counter"
 if [[ "\$1 \$2" == "vaults verbose" ]]; then
+  n=\$(cat "$_memo_counter")
+  echo \$((n+1)) > "$_memo_counter"
   printf 'Alpha\t/tmp/vault-alpha\n'
 fi
 MOCK
