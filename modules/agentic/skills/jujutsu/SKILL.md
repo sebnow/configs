@@ -235,9 +235,9 @@ Use `-m` when:
 - Parent message is wrong and needs replacement
 - Combining changes requires new unified message
 
-Common mistake: Using `jj squash -m "add missing file"` when parent has good message.
-This replaces the parent's message instead of preserving it.
-Always check parent message first: `jj log -r @-`
+Common mistake: Using `jj squash -m "add missing file"` when the target has a good message.
+This replaces the target's message instead of preserving it.
+Always check the target message first: `jj log -r <target-change-id>`
 
 ## References
 

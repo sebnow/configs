@@ -4,7 +4,7 @@
 
 **Squashing into commits that have descendants will rebase those descendants.**
 
-Before squashing into any commit that is not @-, check for descendants:
+Before squashing, check the target for descendants:
 
 ```bash
 # Check if commit has descendants
@@ -12,11 +12,31 @@ jj log -r 'descendants(abcd1234) & ~abcd1234'
 # If this shows commits, they will all be rebased
 ```
 
-**Safe squash pattern:**
+**Never use bare `jj squash` or `jj squash -u`.**
+It squashes whatever is in @ into whatever @- is.
+With auto-tracking (the default) or parallel agents mutating the repo,
+@ and @- may contain changes you did not make,
+and may not be the commits you think they are.
+Never let the current repo state decide what gets squashed or where.
+
+Instead, isolate your changes in their own commit,
+then squash that commit into an explicit target by change ID:
+
 ```bash
-# Only squash @ into @- (immediate parent)
-jj squash -u  # Safe - no descendants to rebase
+# Find the target's change ID (never use @- or other relative revsets)
+jj log
+
+# Commit only your files
+jj commit -m "fixup: add missing file" path/to/file.rs
+# Output: Parent commit (@-) : xorloylx e569db08 fixup: add missing file
+#                              ^^^^^^^^ change ID of your new commit
+
+# Squash that commit into the target, both by change ID
+jj squash --from xorloylx --into nppnzwxw -u
 ```
+
+Take the new commit's change ID from the `jj commit` output,
+not from a later `jj log -r @-` (@ may have moved in between).
 
 **Dangerous squash pattern:**
 ```bash
@@ -24,16 +44,16 @@ jj squash -u  # Safe - no descendants to rebase
 # History: A <- B <- C (@)
 jj new A  # Jump to commit A
 # Add forgotten file
-jj squash  # Rebases B and C!
+jj squash  # Rebases B and C, and squashes whatever else is in @
 ```
 
 **If you must add files to past commits:**
 
 Option 1: Accept that descendants will be rebased
 ```bash
-jj new <past-commit>
-# Make changes
-jj squash -u
+jj commit -m "fixup: add missing file" path/to/file
+# Note the change ID on the "Parent commit (@-)" line
+jj squash --from <fixup-change-id> --into <past-change-id> -u
 # Descendants are now rebased - verify they still look correct
 jj log
 ```
