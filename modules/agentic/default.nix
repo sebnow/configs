@@ -102,19 +102,14 @@
           includeGitInstructions = false;
           model = "claude-opus-5-5";
           skillOverrides = {
-            claude-api = "off";
-            code-review = "off";
-            fewer-permission-prompts = "off";
-            init = "off";
-            keybindings-help = "off";
-            loop = "off";
-            review = "off";
-            run = "off";
-            schedule = "off";
-            security-review = "off";
-            simplify = "off";
-            update-config = "off";
-            verify = "off";
+            docs = "off";
+            docx = "off";
+            import-memory = "off";
+            morning = "off";
+            pdf = "off";
+            pptx = "off";
+            skill-creator = "off";
+            xlsx = "off";
           };
           showClearContextOnPlanAccept = true;
           showThinkingSummaries = true;
