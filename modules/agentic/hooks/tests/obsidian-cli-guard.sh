@@ -556,11 +556,12 @@ result=$(run_with_subcommands "$_injected" "$(make_input 'obsidian-cli headings 
 reason=$(printf '%s' "$result" | reason_of)
 assert_contains "deny-reason (injected list: headings -> outline)" "outline" "$reason"
 
-# Fallback: help fails, returns nothing, or hangs → fixed list is used, so
+# Fallback: help fails, returns nothing, hangs, or reports that Obsidian is
+# not running (observed: error message, exit 1) → fixed list is used, so
 # built-in subcommands pass, unknown ones are denied, and plugin-only
 # subcommands (absent from the fixed list) are denied.
 _help_mock_dir=$(mktemp -d)
-for _mode in fail empty hang; do
+for _mode in fail empty hang not-running; do
   cat > "$_help_mock_dir/obsidian-cli" << MOCK
 #!/bin/bash
 if [[ "\$1" == "help" ]]; then
@@ -568,6 +569,9 @@ if [[ "\$1" == "help" ]]; then
     fail)  exit 1 ;;
     empty) exit 0 ;;
     hang)  sleep 30 ;;
+    not-running)
+      echo "The CLI is unable to find Obsidian. Please make sure Obsidian is running and try again."
+      exit 1 ;;
   esac
 fi
 MOCK
