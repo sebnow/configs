@@ -12,6 +12,10 @@ Follow commit skill for VCS-agnostic principles
 (atomic commits, message format, conventions).
 This skill covers jujutsu-specific workflows and commands.
 
+**Always target existing commits by explicit change ID,
+never by relative revsets (@, @-) or implicit defaults.**
+Parallel agents and auto-tracking can change what those refer to.
+
 ## Understanding Working Copy (Critical)
 
 **The working copy is part of the current commit (@).**
@@ -112,11 +116,7 @@ They are not errors or problems.
 **Use `jj describe` only to amend existing commit messages.**
 
 ```bash
-# Fix typo in current commit message
-jj describe -m "Corrected message"
-
-# Fix message in parent commit
-jj describe -r @- -m "Corrected message"
+jj describe -r xorloylx -m "Corrected message"
 ```
 
 Never use `jj describe` + `jj new` to create commits.
@@ -179,7 +179,7 @@ use `jj commit FILESETS` instead (see Commit Workflow above).
 
 ```bash
 # Split a previous commit (rebases descendants automatically)
-jj split -r @- -m "first part" path/to/file.zig
+jj split -r xorloylx -m "first part" path/to/file.zig
 ```
 
 The second commit gets no description — describe or commit it next.
