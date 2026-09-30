@@ -33,7 +33,6 @@
           disableBundledSkills = true;
           disableClaudeAiConnectors = true;
           disableRemoteControl = true;
-          disableWorkflows = true;
           editorMode = "vim";
           enabledPlugins = {
             "remark-nvim@remark-nvim" = true;
