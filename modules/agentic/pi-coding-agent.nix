@@ -22,9 +22,6 @@
           "github-copilot/claude-opus-4.8"
           "github-copilot/gpt-5.5"
         ];
-        packages = [
-          { source = "${pkgs.nonoPacks.pi}"; }
-        ];
       };
 
       home.file.".pi/agent/AGENTS.md".source = ./agents.md;

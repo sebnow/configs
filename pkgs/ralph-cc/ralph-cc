@@ -117,11 +117,6 @@ _done_in_log() {
   grep -q 'RALPH_DONE' "$1"
 }
 
-_nono_args=(run --profile claude-code --allow "$PWD" --allow "$_claude_tmp")
-for _p in "${_user_allow_paths[@]}"; do
-  _nono_args+=(--allow "$_p")
-done
-
 _claude_args=(--dangerously-skip-permissions --model "$_model" -p "$_prompt")
 for _d in "${_add_dirs[@]}"; do
   _claude_args+=(--add-dir "$_d")
@@ -134,7 +129,7 @@ while true; do
   _log="$_log_dir/${_ts}-iter${_iteration}.log"
   printf 'ralph-cc: iteration %d -> %s\n' "$_iteration" "$_log" >&2
 
-  nono "${_nono_args[@]}" -- claude "${_claude_args[@]}" 2>&1 | tee "$_log" &
+  claude "${_claude_args[@]}" 2>&1 | tee "$_log" &
   _iter_pid=$!
 
   # wait may be interrupted early by SIGINT; the job continues under set -m.

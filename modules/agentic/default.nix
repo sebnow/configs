@@ -18,7 +18,6 @@
     {
       home.packages = [
         pkgs.jq
-        pkgs.nono
         pkgs.nushell
       ];
 
