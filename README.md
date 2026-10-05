@@ -59,7 +59,6 @@ automatically imported via import-tree.
 | `shell`           | Bash, Zsh, bat, eza, fzf, starship                                                       |
 | `source-control`  | Jujutsu (primary) and Git with delta                                                     |
 | `terminals`       | Ghostty                                                                                  |
-| `tmux`            | tmux with vi keybindings                                                                 |
 
 ### Packages
 

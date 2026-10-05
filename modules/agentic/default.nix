@@ -20,7 +20,6 @@
         pkgs.jq
         pkgs.nono
         pkgs.nushell
-        pkgs.tmux
       ];
 
       programs.claude-code = {
