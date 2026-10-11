@@ -3,7 +3,12 @@
   configurations.nixos."agentvm" = {
     system = "x86_64-linux";
     module =
-      { pkgs, lib, ... }:
+      {
+        config,
+        pkgs,
+        lib,
+        ...
+      }:
       let
         claude = "${pkgs.claude-code}/bin/claude";
         git = "${pkgs.git}/bin/git";
@@ -37,6 +42,15 @@
         };
 
         services.openssh.enable = true;
+
+        # Agents get a project's toolchain from its flake with nix develop.
+        nix.settings.experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        # Lets prebuilt binaries run, such as Go toolchain downloads and
+        # npm packages with native executables.
+        programs.nix-ld.enable = true;
 
         users.users.admin = {
           isNormalUser = true;
@@ -89,7 +103,8 @@
           wants = [ "network-online.target" ];
           after = [ "network-online.target" ];
           # sudo comes from /run/wrappers. claude inherits this PATH, so it
-          # also holds the agents' tools.
+          # also holds the agents' tools. git and coreutils come first so
+          # that git and rm resolve to the paths in the sudoers rule.
           path = [
             "/run/wrappers"
             pkgs.git
@@ -99,10 +114,31 @@
             pkgs.findutils
             pkgs.gnugrep
             pkgs.gnused
+            pkgs.gawk
+            pkgs.diffutils
+            pkgs.patch
+            pkgs.which
+            pkgs.file
+            pkgs.tree
+            pkgs.procps
+            pkgs.ripgrep
             pkgs.fd
             pkgs.jq
+            pkgs.yq-go
+            pkgs.curl
+            pkgs.gnutar
+            pkgs.gzip
+            pkgs.bzip2
+            pkgs.xz
+            pkgs.zstd
+            pkgs.unzip
+            pkgs.zip
+            pkgs.gnumake
+            pkgs.gcc
+            pkgs.pkg-config
             pkgs.jujutsu
             pkgs.python3
+            config.nix.package
           ];
           script = ''
             creds=''${CREDENTIALS_DIRECTORY:?no orchestrator.* credentials were passed to the VM}
