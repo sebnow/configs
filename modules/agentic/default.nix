@@ -35,6 +35,7 @@
           disableRemoteControl = true;
           editorMode = "vim";
           enabledPlugins = {
+            "sebnow@sebnow" = true;
             "remark-nvim@remark-nvim" = true;
           };
           extraKnownMarketplaces = {
@@ -42,6 +43,12 @@
               source = {
                 source = "github";
                 repo = "sebnow/remark.nvim";
+              };
+            };
+            "sebnow" = {
+              source = {
+                source = "github";
+                repo = "sebnow/skills";
               };
             };
           };
