@@ -1,7 +1,6 @@
 ---
 name: create-pr
 description: "Turns the current branch's committed work into a pull request: writes the description in a conversational reference-document register and, for non-trivial changes, carries forward a diff-marked call-flow tree and a touched-module list. Creates a draft by default; publishes only on explicit request. Triggers: 'create a PR', 'open a pull request', 'raise a PR', 'gh pr create', 'draft a PR'. Do NOT use to write commits."
-disable-model-invocation: true
 ---
 
 # Create PR
