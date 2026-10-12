@@ -25,7 +25,7 @@
           fonts.fontconfig.defaultFonts = {
             monospace = [ "Iosevka" ];
             sansSerif = [ "Lato" ];
-            serif = [ "Bistream Charter" ];
+            serif = [ "Bitstream Charter" ];
           };
         })
       ];
