@@ -27,6 +27,13 @@
             sansSerif = [ "Lato" ];
             serif = [ "Bitstream Charter" ];
           };
+
+          gtk.font = {
+            name = "Lato";
+            size = 11;
+          };
+
+          dconf.settings."org/gnome/desktop/interface".font-name = "Lato 11";
         })
       ];
     };
