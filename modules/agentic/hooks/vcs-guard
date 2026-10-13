@@ -29,6 +29,38 @@ emit_defer() {
   exit 0
 }
 
+# Split a command chain on ' && ', ' || ', ' ; ' and bare ';', one segment per
+# line. The replacement is an escaped literal newline because BSD sed (macOS)
+# does not support \n there.
+split_chain() {
+  sed 's/ && /\
+/g; s/ || /\
+/g; s/ ; /\
+/g; s/;/\
+/g'
+}
+
+# Drop the contents of quoted strings, keeping the quotes, so a quoted commit
+# message is never split into commands, even across lines. A backslash escapes
+# the next character outside quotes and inside "...", but not inside '...'.
+#
+# Known gap, accepted: an unbalanced quote hides everything after it from the
+# jj checks. The realistic case is an apostrophe in an unquoted heredoc body
+# ("don't") followed by a bare interactive jj command in the same call, which
+# then hangs on the editor instead of being denied.
+blank_quotes() {
+  LC_ALL=C awk -v sq="'" '{
+    n = length($0)
+    for (i = 1; i <= n; i++) {
+      c = substr($0, i, 1)
+      if (c == "\\" && q != sq) { if (q == "") printf "%s", substr($0, i, 2); i++ }
+      else if (q == "") { if (c == "\"" || c == sq) q = c; printf "%s", c }
+      else if (c == q) { q = ""; printf "%s", c }
+    }
+    if (q == "") printf "\n"
+  }'
+}
+
 # Check a single jj command segment (no chain separators) for interactive or
 # unsafe usage. Populates the global argv array from the segment, runs all jj
 # guards, and returns normally if the command is safe. Calls emit_decision
@@ -201,17 +233,12 @@ main() {
   # Block jj commands that would open $EDITOR and hang the agent.
   # Check every jj command in the chain, not just the first: a dangerous
   # subcommand at any position (e.g. "jj status && jj squash") must be caught.
-  # Split on ' && ', ' || ', ' ; ', and bare ';' via sed; inspect each segment
-  # that starts with 'jj '. The replacement is an escaped literal newline
-  # because BSD sed (macOS) does not support \n there.
+  # Split the chain with quoted text blanked; inspect each segment that starts
+  # with 'jj '.
   # NOTE: only matches literal "jj ..." — full-path invocations like
   # /usr/bin/jj squash bypass this block (same limitation as the git guard below).
   _jj_found=false
-  _chain=$(printf '%s\n' "$trimmed" | sed 's/ && /\
-/g; s/ || /\
-/g; s/ ; /\
-/g; s/;/\
-/g')
+  _chain=$(printf '%s\n' "$trimmed" | blank_quotes | split_chain)
   while IFS= read -r _seg; do
     _seg="${_seg#"${_seg%%[! ]*}"}"  # trim leading whitespace
     if [[ "$_seg" == jj\ * ]]; then
@@ -225,8 +252,10 @@ main() {
   # rest of the chain is judged from DIR. DIR resolves only when it is one
   # bare or quoted word without expansions naming an existing directory; any
   # other cd is left in place, so the command defers below as it always did.
+  # The cd target needs its quotes' contents, so split the unblanked command.
   start_dir="$cwd"
-  _first="${_chain%%$'\n'*}"
+  _first=$(printf '%s\n' "$trimmed" | split_chain)
+  _first="${_first%%$'\n'*}"
   _rest="${trimmed#"$_first"}"
   _next=""
   case "$_rest" in

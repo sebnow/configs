@@ -595,6 +595,26 @@ assert_eq "jj describe after bare ;: deny" \
   "deny" "$(printf '%s' "$result" | decision_of)"
 
 # ---------------------------------------------------------------------------
+# Tests: quoted text is not split into commands
+# The chain is split line by line, so a commit message line starting with
+# "jj <subcmd>" used to be judged as a command. Quoted contents are blanked
+# before splitting, across line breaks.
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input $'jj commit -m "subj\n\njj commit FILESETS drops it" a.go' "$JJ_REPO")" | compact)
+assert_eq "jj line inside a double-quoted message: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input 'jj describe -m "use \"a\" && jj squash later"' "$JJ_REPO")" | compact)
+assert_eq "&& jj squash inside a double-quoted message: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input $'jj commit -m \'subj\n\njj describe\njj squash\' a.go' "$JJ_REPO")" | compact)
+assert_eq "jj lines inside a single-quoted multi-line message: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input 'jj describe -m "a; b" && jj squash' "$JJ_REPO")")
+assert_eq "jj squash after a quoted message is still checked: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# ---------------------------------------------------------------------------
 # Tests: missing jq
 # Without jq the hook cannot read its input; it warns the user instead of
 # failing silently. The hook runs under the same bash with an empty PATH.
