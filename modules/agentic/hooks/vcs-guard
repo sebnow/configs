@@ -9,7 +9,13 @@
 #            "permissionDecisionReason":string}}
 #          | {}   // no decision; defer to permissions
 # exit   : 0 on every invocation
+# needs  : jq; without it, warns the user via systemMessage and guards nothing
 set -euo pipefail
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf '{"systemMessage":"vcs-guard: jq not found; jj/git command guard is disabled"}\n'
+  exit 0
+fi
 
 emit_decision() {
   local decision="$1" reason="$2"
@@ -196,18 +202,61 @@ main() {
   # Check every jj command in the chain, not just the first: a dangerous
   # subcommand at any position (e.g. "jj status && jj squash") must be caught.
   # Split on ' && ', ' || ', ' ; ', and bare ';' via sed; inspect each segment
-  # that starts with 'jj '.
+  # that starts with 'jj '. The replacement is an escaped literal newline
+  # because BSD sed (macOS) does not support \n there.
   # NOTE: only matches literal "jj ..." — full-path invocations like
   # /usr/bin/jj squash bypass this block (same limitation as the git guard below).
   _jj_found=false
+  _chain=$(printf '%s\n' "$trimmed" | sed 's/ && /\
+/g; s/ || /\
+/g; s/ ; /\
+/g; s/;/\
+/g')
   while IFS= read -r _seg; do
     _seg="${_seg#"${_seg%%[! ]*}"}"  # trim leading whitespace
     if [[ "$_seg" == jj\ * ]]; then
       _jj_found=true
       _check_jj_segment "$_seg"
     fi
-  done < <(printf '%s\n' "$trimmed" | sed 's/ && /\n/g; s/ || /\n/g; s/ ; /\n/g; s/;/\n/g')
+  done <<< "$_chain"
   $_jj_found && emit_defer
+
+  # A leading "cd DIR &&" or "cd DIR;" whose DIR resolves is dropped, and the
+  # rest of the chain is judged from DIR. DIR resolves only when it is one
+  # bare or quoted word without expansions naming an existing directory; any
+  # other cd is left in place, so the command defers below as it always did.
+  start_dir="$cwd"
+  _first="${_chain%%$'\n'*}"
+  _rest="${trimmed#"$_first"}"
+  _next=""
+  case "$_rest" in
+    " && "*) _next="${_rest:4}" ;;
+    " ; "*) _next="${_rest:3}" ;;
+    ";"*) _next="${_rest:1}" ;;
+  esac
+  if [[ "$_first" == "cd "* && -n "$_next" ]]; then
+    _arg="${_first#cd }"
+    _arg="${_arg#"${_arg%%[! ]*}"}"
+    _arg="${_arg%"${_arg##*[! ]}"}"
+    _dir=""
+    case "$_arg" in
+      *[\$\`*?\\]*) ;;
+      \'*\') [[ "${_arg:1:${#_arg}-2}" == *\'* ]] || _dir="${_arg:1:${#_arg}-2}" ;;
+      \"*\") [[ "${_arg:1:${#_arg}-2}" == *\"* ]] || _dir="${_arg:1:${#_arg}-2}" ;;
+      *[[:space:]\'\"]*|-) ;;
+      \~) _dir="${HOME:-}" ;;
+      \~/*) [[ -n "${HOME:-}" ]] && _dir="$HOME/${_arg:2}" ;;
+      \~*) ;;
+      *) _dir="$_arg" ;;
+    esac
+    [[ -n "$_dir" && "$_dir" != /* ]] && _dir="${cwd:+$cwd/$_dir}"
+    # Normalise with the shell's own cd: a raw "repo/sub/.." would make the
+    # dirname walk below step back into sub.
+    if [[ -n "$_dir" ]] && _dir="$(cd -- "$_dir" 2>/dev/null && pwd)"; then
+      start_dir="$_dir"
+      trimmed="${_next#"${_next%%[! ]*}"}"
+    fi
+  fi
 
   # Non-git commands: defer to existing permission system
   if [[ "$trimmed" != git\ * && "$trimmed" != "git" ]]; then
@@ -265,8 +314,8 @@ main() {
   # Walk cwd upward to detect a jj-colocated repo, matching how jj itself
   # locates a repository.
   jj_root=""
-  if [[ -n "$cwd" ]]; then
-    dir="$cwd"
+  if [[ -n "$start_dir" ]]; then
+    dir="$start_dir"
     while [[ "$dir" != "/" ]]; do
       if [[ -d "$dir/.jj" ]]; then
         jj_root="$dir"
@@ -350,5 +399,7 @@ main() {
 
 # Run main; on any unexpected failure, still exit 0 as the hook contract requires.
 # Output may be absent if stdout is closed; Claude Code treats no output as defer.
+# shellcheck disable=SC2317 # main normally exits from emit_*; this is the fallback.
 main || printf '{}\n'
+# shellcheck disable=SC2317
 exit 0

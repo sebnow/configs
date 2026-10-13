@@ -4,6 +4,8 @@
 #
 # Usage: ./tests/vcs-guard.sh
 # Exit 0 if all tests pass, 1 if any fail.
+# VCS_GUARD_BASH=/path/to/bash runs the hook under that bash instead of its
+# shebang, e.g. to check bash 3.2 (macOS /bin/bash) compatibility.
 
 HOOK="$(cd "$(dirname "$0")" && pwd)/../vcs-guard"
 PASS=0
@@ -21,7 +23,11 @@ trap 'rm -rf "$JJ_REPO" "$PLAIN_REPO"' EXIT
 
 run_hook() {
   local input="$1"
-  printf '%s' "$input" | "$HOOK"
+  if [[ -n "${VCS_GUARD_BASH:-}" ]]; then
+    printf '%s' "$input" | "$VCS_GUARD_BASH" "$HOOK"
+  else
+    printf '%s' "$input" | "$HOOK"
+  fi
 }
 
 # Make a hook input JSON for the given command and cwd.
@@ -573,6 +579,88 @@ assert_eq "jj describe -h: defer" "{}" "$result"
 # -h short form → defer (diffedit: unconditionally-denied command; verifies -h overrides even hard denials)
 result=$(run_hook "$(make_input "jj diffedit -h" "$JJ_REPO")" | compact)
 assert_eq "jj diffedit -h: defer" "{}" "$result"
+
+# ---------------------------------------------------------------------------
+# Tests: chain separators other than &&
+# The split must not depend on GNU sed: BSD sed (macOS) writes a literal "n"
+# for \n in a replacement, which used to hide every segment after the first.
+# ---------------------------------------------------------------------------
+
+result=$(run_hook "$(make_input "false || jj describe" "$JJ_REPO")")
+assert_eq "jj describe after ||: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_hook "$(make_input "jj log;jj describe" "$JJ_REPO")")
+assert_eq "jj describe after bare ;: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+# ---------------------------------------------------------------------------
+# Tests: missing jq
+# Without jq the hook cannot read its input; it warns the user instead of
+# failing silently. The hook runs under the same bash with an empty PATH.
+# ---------------------------------------------------------------------------
+
+NO_JQ_PATH=$(mktemp -d)
+input=$(make_input "jj describe" "$JJ_REPO")
+result=$(printf '%s' "$input" | PATH="$NO_JQ_PATH" "${VCS_GUARD_BASH:-$BASH}" "$HOOK" | compact)
+assert_eq "missing jq: systemMessage warning" \
+  '{"systemMessage":"vcs-guard: jq not found; jj/git command guard is disabled"}' "$result"
+rmdir "$NO_JQ_PATH"
+
+# ---------------------------------------------------------------------------
+# Tests: a leading cd moves where git is judged
+# Only "cd DIR &&" or "cd DIR;" as the first segment, with DIR a bare or
+# quoted word without expansions naming an existing directory. Any other cd
+# defers, as every command starting with cd always has.
+# ---------------------------------------------------------------------------
+
+NESTED=$(mktemp -d)
+SPACED=$(mktemp -d)
+mkdir -p "$NESTED/jjsub/.jj" "$SPACED/with space" "$JJ_REPO/sub"
+
+result=$(run_hook "$(make_input "cd $PLAIN_REPO && git commit -m x" "$JJ_REPO")" | compact)
+assert_eq "cd to plain dir from jj repo, git commit: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input "cd $JJ_REPO && git commit -m x" "$PLAIN_REPO")")
+assert_eq "cd to jj repo from plain dir, git commit: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_hook "$(make_input "cd $(basename "$JJ_REPO")/sub; git commit -m x" "$(dirname "$JJ_REPO")")")
+assert_eq "relative cd into jj repo, git commit: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_hook "$(make_input "cd sub && git commit -m x" "$JJ_REPO")")
+assert_eq "relative cd within jj repo, git commit: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+result=$(run_hook "$(make_input "cd .. && git commit -m x" "$NESTED/jjsub")" | compact)
+assert_eq "cd .. out of nested jj repo is normalised: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input "cd \"$SPACED/with space\" && git commit -m x" "$JJ_REPO")" | compact)
+assert_eq "double-quoted cd target with a space: defer" "{}" "$result"
+
+result=$(run_hook "$(make_input "cd '$PLAIN_REPO' && git commit -m x" "$JJ_REPO")" | compact)
+assert_eq "single-quoted cd target: defer" "{}" "$result"
+
+result=$(printf '%s' "$(make_input "cd ~ && git commit -m x" "$JJ_REPO")" \
+  | HOME="$PLAIN_REPO" "${VCS_GUARD_BASH:-$BASH}" "$HOOK" | compact)
+assert_eq "cd ~ resolves via HOME: defer" "{}" "$result"
+
+# shellcheck disable=SC2016 # the literal $DIR is the point
+result=$(run_hook "$(make_input 'cd "$DIR" && git commit -m x' "$JJ_REPO")" | compact)
+assert_eq "cd with a variable: defer like a plain cd command" "{}" "$result"
+
+result=$(run_hook "$(make_input "cd nonexistent && git commit -m x" "$JJ_REPO")" | compact)
+assert_eq "cd to a missing dir: defer like a plain cd command" "{}" "$result"
+
+result=$(run_hook "$(make_input "cd $PLAIN_REPO x && git commit -m x" "$JJ_REPO")" | compact)
+assert_eq "cd with two arguments: defer like a plain cd command" "{}" "$result"
+
+result=$(run_hook "$(make_input "git commit -m x; cd $PLAIN_REPO" "$JJ_REPO")")
+assert_eq "cd later in the chain is ignored: deny" \
+  "deny" "$(printf '%s' "$result" | decision_of)"
+
+rm -rf "$NESTED" "$SPACED"
 
 # ---------------------------------------------------------------------------
 # Report
