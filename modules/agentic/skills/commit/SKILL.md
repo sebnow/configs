@@ -12,10 +12,6 @@ Bad commits create confusion, make debugging harder, and complicate code review.
 
 Core principle: Every commit tells a clear story and is independently reviewable.
 
-If the project uses jujutsu,
-you MUST load and follow the jujutsu skill before running any commands.
-Do not rely on your own knowledge of jujutsu.
-
 ## Detecting Project Conventions (Required)
 
 Before your first commit,
@@ -256,8 +252,6 @@ If you are about to say or think any of these phrases, STOP IMMEDIATELY:
 - "feat: add endpoint (includes regenerated mocks)" -> Generated files never share a commit with hand-written intent
 - "refactor: rename Foo to Bar (callers must update)" -> Renaming a public symbol is breaking; subject needs `!` and body needs `BREAKING CHANGE:` footer
 - "the diff makes it obvious it's breaking" -> Tooling reads the `!` marker and the `BREAKING CHANGE:` token, not the diff
-
-Jujutsu-specific anti-patterns are covered in the jujutsu skill.
 
 **When detected:**
 

@@ -214,7 +214,6 @@
               "Skill(commit)"
               "Skill(council)"
               "Skill(design-architecture)"
-              "Skill(jujutsu)"
               "Skill(obsidian-cli)"
               "Skill(prompt-engineering)"
               "Skill(red-green-refactor)"
