@@ -1,6 +1,6 @@
 ---
 name: blueprint
-description: "Condenses the decided context (brainstorm output, a ticket, prior conversation, codebase exploration) into a single structured design document for one change: the modules it touches, the call flow, and the decisions behind it. Use when the change is decided and needs a structured plan before implementation. Triggers: 'write a blueprint', 'design this change', 'plan this change', 'blueprint'. Do NOT interview — run the brainstorm skill first if the change is undecided. Do NOT use for permanent decision records (use adr-writing) or whole-system specs (use spec)."
+description: "Condenses the decided context (brainstorm output, a ticket, prior conversation, codebase exploration) into a single structured design document for one change: the modules it touches, the call flow, and the decisions behind it. Use when the change is decided and needs a structured plan before implementation. Triggers: 'write a blueprint', 'design this change', 'plan this change', 'blueprint'. Do NOT interview — run the brainstorm skill first if the change is undecided. Do NOT use for permanent decision records (use adr-writing) or whole-system specs."
 disable-model-invocation: true
 ---
 

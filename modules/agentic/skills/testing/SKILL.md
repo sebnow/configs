@@ -13,6 +13,7 @@ reliable,
 and deterministic.
 
 You must:
+
 - Test through execution, not speculation
 - Tie each test to a requirement or behavior
 - Focus on observable behavior, not implementation details
@@ -75,6 +76,7 @@ Errors are more common than happy paths.
 You must test error conditions explicitly:
 
 Required error tests:
+
 - Invalid inputs and boundaries
 - Network failures and timeouts
 - Database connection errors
@@ -154,6 +156,7 @@ See [go.md](references/go.md) for Go-specific parallel isolation APIs.
 Concurrency must be tested explicitly.
 
 Required practices:
+
 - Enable race detection during development
 - Test concurrent task lifecycles and proper cleanup
 - Verify blocking primitives don't deadlock
@@ -165,17 +168,20 @@ See [go.md](references/go.md) for race detection examples.
 ## Testing I/O Operations
 
 Database testing:
+
 - Use transactions with deferred rollback for test isolation
 - Test migration up and down
 - Verify connection error handling
 
 Network testing:
+
 - Use an in-process HTTP server for HTTP handlers
 - Test with random ports for parallel execution
 - Set deadlines to prevent hanging tests
 - Test timeout and retry logic
 
 File system testing:
+
 - Use temp directories with automatic cleanup
 - Test permission errors
 - Verify symlink handling
@@ -202,6 +208,7 @@ Test invariants across many inputs rather than specific cases.
 ## Benchmarking
 
 Required practices:
+
 - Exclude setup time from benchmark measurements
 - Prevent the compiler from optimizing away benchmark code
 - Use subtests for multiple sizes
@@ -209,22 +216,10 @@ Required practices:
 
 See [go.md](references/go.md) for examples.
 
-## TDD Workflow
-
-Follow red-green-refactor skill for the core TDD methodology.
-
-When practicing TDD:
-
-1. Red: Write failing test that defines desired behavior
-2. Green: Write minimal code to make test pass
-3. Refactor: Improve code while keeping tests green
-4. Verify: Run full test suite including race detection
-
-Required: Run test before and after implementation to verify red-green cycle.
-
 ## Test Quality Standards
 
 Before considering tests complete:
+
 - All tests pass consistently (no flakiness)
 - Race detector passes
 - Tests run quickly (parallelize when possible)

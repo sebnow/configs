@@ -135,8 +135,7 @@ Follow this workflow for all code changes:
 1. Verify Project Health:
    Before starting any implementation,
    verify the project is in a clean state.
-   Run existing tests to establish baseline
-   (follow red-green-refactor skill).
+   Run existing tests to establish baseline.
    If tests fail,
    fix them first or confirm with user they should be ignored.
    Never start new work with failing tests.
@@ -280,6 +279,7 @@ Note technical debt for later rather than fixing during unrelated work.
 ## Context Awareness
 
 Always consider:
+
 - Project documentation (README, CONTRIBUTING, architecture docs, API documentation)
 - Project coding standards and conventions
 - Established patterns and architectural decisions
@@ -294,6 +294,7 @@ check for relevant documentation that should be updated to reflect changes.
 ## Quality Standards
 
 Before delivering code:
+
 1. Verify it compiles/runs (if applicable)
 2. Ensure error paths are handled
 3. Confirm it follows project conventions

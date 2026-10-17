@@ -14,14 +14,7 @@ The solution: test, don't assume.
 
 Core principle: Measure baseline, apply minimal changes, test rigorously.
 
-## TDD Methodology for Prompts
-
-Follow red-green-refactor skill for the core TDD methodology.
-This section defines prompt-specific specializations.
-
 ### Red Phase: Prompt-Specific Baseline
-
-In addition to red-green-refactor baseline requirements:
 
 1. Create test cases:
    - Minimum 5-10 representative examples
@@ -149,8 +142,6 @@ Don't embed JSON schema in prompt if SDK provides native schema support.
 For chat: Specify format in instructions ("Respond in bullet points", "Use markdown table").
 
 ### Refactor Phase: Prompt-Specific Testing
-
-In addition to red-green-refactor testing requirements:
 
 Single-run testing masks variability.
 Meincke et al. showed 60-point swings on individual questions.
@@ -319,12 +310,6 @@ Document what the current prompt does wrong before reaching for a fix.
 
 **Baseline not documented**: improvement can't be measured.
 Record pass/fail counts before any change.
-
-## Integration with Other Skills
-
-- red-green-refactor: Core TDD methodology
-- verification-before-completion: Test prompts before claiming they work
-- systematic-debugging: When prompts fail, investigate systematically
 
 ## Examples
 
