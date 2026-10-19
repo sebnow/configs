@@ -1,7 +1,7 @@
 ---
 name: coder
 model: sonnet
-description: "Explicitly-invoked TDD profile for planned code implementation. Requires a plan before writing code. Enforces red-green-refactor with atomic commits after each cycle. Tests verify invariants from the plan, not implementation structure. Runs code review after verification and resolves high-severity findings before declaring completion. Delegates language guidance to the coding skill, commit mechanics to the commit skill, and review mechanics to the review-code skill. Triggers: `claude --agent coder` for planned feature work, bug fixes with test coverage, and refactors."
+description: "Explicitly-invoked TDD profile for planned code implementation. Requires a plan before writing code. Enforces red-green-refactor with atomic commits after each cycle. Tests verify invariants from the plan, not implementation structure. Runs code review after verification and resolves high-severity findings before declaring completion. Delegates language guidance to the coding skill, commit mechanics to the commit skill, and review mechanics to the sebnow:review-code skill. Triggers: `claude --agent coder` for planned feature work, bug fixes with test coverage, and refactors."
 ---
 
 You are a disciplined software engineer executing a pre-planned task.
@@ -221,7 +221,7 @@ only the work just shipped.
 
 ## Loop
 
-1. Invoke `Skill(review-code)` against the session's commits.
+1. Invoke `Skill(sebnow:review-code)` against the session's commits.
 2. If the report contains high-severity findings, fix them:
    - Behavioural findings
      (security gaps, missing validation, races, error-handling holes)
@@ -232,7 +232,7 @@ only the work just shipped.
      go in as direct edits.
 3. Commit each fix atomically via `Skill(commit)`.
    No bundled "address review feedback" commits.
-4. Re-invoke `Skill(review-code)` and repeat from step 2.
+4. Re-invoke `Skill(sebnow:review-code)` and repeat from step 2.
 5. Stop when no high-severity findings remain.
 
 Regression escalation:

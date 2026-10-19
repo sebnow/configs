@@ -1,6 +1,6 @@
 ---
 name: council
-description: "Multi-perspective deliberation through independent parallel analysis. Spawns subagents with different analytical lenses to stress-test decisions. Use when evaluating complex decisions, comparing approaches, or pressure-testing strategies. Triggers: 'council', 'deliberate', 'stress-test this decision', 'get perspectives on', 'pressure-test'. Do NOT use for brainstorming (use brainstorm), code review (use review-code), or straightforward decisions with clear answers."
+description: "Multi-perspective deliberation through independent parallel analysis. Spawns subagents with different analytical lenses to stress-test decisions. Use when evaluating complex decisions, comparing approaches, or pressure-testing strategies. Triggers: 'council', 'deliberate', 'stress-test this decision', 'get perspectives on', 'pressure-test'. Do NOT use for brainstorming (use brainstorm), code review (use sebnow:review-code), or straightforward decisions with clear answers."
 disable-model-invocation: true
 ---
 
