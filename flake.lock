@@ -185,6 +185,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-electron-43-7": {
+      "locked": {
+        "lastModified": 1792116957,
+        "narHash": "sha256-EjZqHKObBfIOeHZnMRVV87HB3pPq/WBkmRJWyFxmZu8=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "f20cd90e28fe0403873f473b29e42662cd86e8c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "f20cd90e28fe0403873f473b29e42662cd86e8c4",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1769909678,
@@ -250,6 +266,7 @@
         "md": "md",
         "nixgl": "nixgl",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-electron-43-7": "nixpkgs-electron-43-7",
         "pi-coding-agent-catppuccin": "pi-coding-agent-catppuccin",
         "remark-nvim": "remark-nvim"
       }
