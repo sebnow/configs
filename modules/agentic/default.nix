@@ -17,6 +17,7 @@
     in
     {
       home.packages = [
+        pkgs.agent-browser
         pkgs.jq
         pkgs.nushell
       ];
