@@ -86,6 +86,10 @@
         };
       };
 
+      # Qt doesn't recognise XDG_CURRENT_DESKTOP=niri and falls back to its
+      # generic platform theme, which ignores the portal's dark preference.
+      systemd.user.sessionVariables.QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
+
       xdg.configFile."niri/config.kdl".source = ./config.kdl;
       xdg.configFile."niri/theme.kdl".source = themeFile;
 
