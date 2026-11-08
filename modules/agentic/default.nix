@@ -138,10 +138,6 @@
                 }
                 {
                   type = "command";
-                  command = "$HOME/.claude/hooks/block-test-output-filtering";
-                }
-                {
-                  type = "command";
                   command = "$HOME/.claude/hooks/obsidian-cli-guard";
                 }
               ];
