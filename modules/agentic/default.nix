@@ -212,10 +212,6 @@
               "Glob"
               "Grep"
             ];
-            ask = [
-              "Bash(git push:*)"
-              "Bash(jj git push:*)"
-            ];
             deny = [
               "AskUserQuestion"
               "CronCreate"
