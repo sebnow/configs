@@ -62,6 +62,7 @@
               proto
               query
               regex
+              tlaplus
               tsx
               typescript
               vim
