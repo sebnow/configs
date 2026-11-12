@@ -17,6 +17,8 @@
           After = [ "network.target" ];
         };
         Service = {
+          # The default gateway port (8080) collides with common dev servers.
+          ExecStartPre = "${pkgs.kubo}/bin/ipfs config Addresses.Gateway /ip4/127.0.0.1/tcp/8480";
           ExecStart = "${pkgs.kubo}/bin/ipfs daemon --enable-gc";
           Restart = "on-failure";
         };
