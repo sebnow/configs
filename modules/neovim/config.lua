@@ -460,10 +460,13 @@ require("mini.diff").setup({
     name = "vcs",
     attach = function(buf_id)
       local path = vim.api.nvim_buf_get_name(buf_id)
-      if path == "" or vim.bo[buf_id].buftype ~= "" then
-        return
+      local dir = vim.fs.dirname(path)
+      -- buftype is not yet set when plugins like oil create the buffer, so
+      -- also reject non-filesystem paths (e.g. oil://) which are invalid cwds.
+      if path == "" or vim.bo[buf_id].buftype ~= "" or vim.fn.isdirectory(dir) == 0 then
+        return false
       end
-      vim.system({ "jj", "root" }, { cwd = vim.fs.dirname(path) }, function(root)
+      vim.system({ "jj", "root" }, { cwd = dir }, function(root)
         minidiff_attached_buffers[buf_id] = { is_jj = root.code == 0 }
         vim.schedule(function()
           set_diff_ref(buf_id)
