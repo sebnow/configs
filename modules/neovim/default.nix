@@ -6,16 +6,11 @@
     { pkgs, lib, ... }:
     {
       imports = [
-        ./_lang/bash.nix
-        ./_lang/c.nix
         ./_lang/golang.nix
         ./_lang/javascript.nix
         ./_lang/lua.nix
-        ./_lang/markdown.nix
         ./_lang/nix.nix
         ./_lang/protobuf.nix
-        ./_lang/yaml.nix
-        ./_lang/zig.nix
       ];
 
       programs.neovim = {

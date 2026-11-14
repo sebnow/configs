@@ -3,7 +3,6 @@
   config = {
     programs.neovim = {
       extraPackages = [
-        pkgs.nixd
         pkgs.nixfmt
       ];
     };

@@ -5,7 +5,6 @@
       extraPackages = [
         pkgs.prettier
         pkgs.prettierd
-        pkgs.typescript-language-server
       ];
     };
   };
