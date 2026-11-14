@@ -320,6 +320,8 @@ require("treesitter-context").setup({
 require("Comment").setup()
 
 require("conform").setup({
+  -- Formatters come from the project's environment; skip missing ones quietly.
+  notify_no_formatters = false,
   lsp_format = "fallback",
   formatters_by_ft = {
     lua = { "stylua" },

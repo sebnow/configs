@@ -5,14 +5,6 @@
   flake.modules.homeManager.neovim =
     { pkgs, lib, ... }:
     {
-      imports = [
-        ./_lang/golang.nix
-        ./_lang/javascript.nix
-        ./_lang/lua.nix
-        ./_lang/nix.nix
-        ./_lang/protobuf.nix
-      ];
-
       programs.neovim = {
         enable = true;
         defaultEditor = true;
