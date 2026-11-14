@@ -49,6 +49,7 @@
               proto
               query
               regex
+              rust
               tlaplus
               tsx
               typescript

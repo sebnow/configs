@@ -207,6 +207,7 @@ vim.lsp.enable({
   "lua_ls",
   "marksman",
   "nixd",
+  "rust_analyzer",
   "ts_ls",
   "yamlls",
   "zls",
@@ -331,6 +332,7 @@ require("conform").setup({
     typescript = { "prettierd", "prettier", stop_after_first = true },
     proto = { "buf" },
     go = { "gofumpt" },
+    rust = { "rustfmt" },
     markdown = { "prettier", "injected" },
   },
   formatters = {
