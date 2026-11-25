@@ -13,7 +13,7 @@
           fonts.fontconfig = {
             antialiasing = true;
             hinting = "slight";
-            subpixelRendering = "none";
+            subpixelRendering = "rgb";
           };
 
           home.packages = with pkgs; [
