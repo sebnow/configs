@@ -10,8 +10,10 @@
     {
       config = lib.mkMerge [
         (lib.mkIf config.fonts.fontconfig.enable {
-          xdg.configFile = {
-            "fontconfig/conf.d/50-sad-state-of-font-rendering.conf".source = ./fonts.conf;
+          fonts.fontconfig = {
+            antialiasing = true;
+            hinting = "slight";
+            subpixelRendering = "none";
           };
 
           home.packages = with pkgs; [
